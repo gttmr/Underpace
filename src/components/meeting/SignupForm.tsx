@@ -1,18 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { MeetingWithCounts } from "@/lib/types";
+
+interface SessionUser {
+  kakaoId: string;
+  nickname: string;
+  profileImage?: string;
+}
 
 interface SignupFormProps {
   meeting: MeetingWithCounts;
 }
 
-function formatContact(value: string): string {
-  const digits = value.replace(/\D/g, "").slice(0, 11);
-  if (digits.length <= 3) return digits;
-  if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
-  return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+function KakaoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+      <path d="M12 3C6.477 3 2 6.477 2 10.857c0 2.713 1.584 5.1 3.988 6.577L5 21l4.29-2.287C10.145 18.9 11.058 19 12 19c5.523 0 10-3.477 10-7.143C22 6.477 17.523 3 12 3z" />
+    </svg>
+  );
 }
 
 export function SignupForm({ meeting }: SignupFormProps) {
@@ -20,27 +27,34 @@ export function SignupForm({ meeting }: SignupFormProps) {
   const isFull = meeting.approvedCount >= meeting.maxCapacity;
   const isClosed = !meeting.isOpen;
 
+  const [user, setUser] = useState<SessionUser | null | undefined>(undefined); // undefined = 로딩중
   const [name, setName] = useState("");
-  const [contact, setContact] = useState("");
   const [note, setNote] = useState("");
-  const [errors, setErrors] = useState<{ name?: string; contact?: string }>({});
+  const [nameError, setNameError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
   const [duplicate, setDuplicate] = useState(false);
 
-  function validate() {
-    const e: { name?: string; contact?: string } = {};
-    if (!name.trim()) e.name = "이름을 입력해주세요";
-    if (!contact.trim()) e.contact = "연락처를 입력해주세요";
-    else if (contact.replace(/\D/g, "").length < 10) e.contact = "올바른 연락처를 입력해주세요";
-    setErrors(e);
-    return Object.keys(e).length === 0;
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((data) => {
+        setUser(data);
+        if (data?.nickname) setName(data.nickname);
+      })
+      .catch(() => setUser(null));
+  }, []);
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+    setName("");
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!validate()) return;
-
+    if (!name.trim()) { setNameError("이름을 입력해주세요"); return; }
+    setNameError("");
     setSubmitting(true);
     setServerError("");
     setDuplicate(false);
@@ -49,25 +63,23 @@ export function SignupForm({ meeting }: SignupFormProps) {
       const res = await fetch("/api/participants", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ meetingId: meeting.id, name, contact, note }),
+        body: JSON.stringify({ meetingId: meeting.id, name, note }),
       });
 
-      if (res.status === 409) {
-        setDuplicate(true);
-        setSubmitting(false);
-        return;
-      }
-
+      if (res.status === 409) { setDuplicate(true); setSubmitting(false); return; }
       if (!res.ok) {
-        setServerError("신청 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        const data = await res.json();
+        setServerError(data.error ?? "신청 중 오류가 발생했습니다.");
         setSubmitting(false);
         return;
       }
 
       const data = await res.json();
-      router.push(`/signup/confirm?status=${data.status}&waitlist=${data.waitlistPosition ?? ""}&meetingId=${meeting.id}&name=${encodeURIComponent(name)}`);
+      router.push(
+        `/signup/confirm?status=${data.status}&waitlist=${data.waitlistPosition ?? ""}&meetingId=${meeting.id}&name=${encodeURIComponent(name)}`
+      );
     } catch {
-      setServerError("네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      setServerError("네트워크 오류가 발생했습니다.");
       setSubmitting(false);
     }
   }
@@ -80,6 +92,42 @@ export function SignupForm({ meeting }: SignupFormProps) {
     );
   }
 
+  // 로딩 중
+  if (user === undefined) {
+    return <div className="py-8 text-center text-slate-400 text-sm">불러오는 중...</div>;
+  }
+
+  // 비로그인 상태
+  if (!user) {
+    const returnTo = `/meeting/${meeting.id}`;
+    return (
+      <div className="space-y-4">
+        {isFull && (
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+            <span className="text-amber-500 text-lg mt-0.5">⚠️</span>
+            <div>
+              <p className="font-semibold text-amber-800 text-sm">정원이 마감되었습니다</p>
+              <p className="text-amber-700 text-sm mt-0.5">
+                대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.
+              </p>
+            </div>
+          </div>
+        )}
+        <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 text-center space-y-3">
+          <p className="text-sm text-slate-600">카카오 계정으로 간편하게 신청할 수 있습니다</p>
+          <a
+            href={`/api/auth/kakao?returnTo=${encodeURIComponent(returnTo)}`}
+            className="inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-bold px-5 py-3 rounded-xl transition-colors w-full justify-center text-sm"
+          >
+            <KakaoIcon />
+            카카오로 로그인하여 신청하기
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  // 로그인 상태
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {isFull && (
@@ -88,7 +136,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
           <div>
             <p className="font-semibold text-amber-800 text-sm">정원이 마감되었습니다</p>
             <p className="text-amber-700 text-sm mt-0.5">
-              현재 대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.
+              대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.
             </p>
           </div>
         </div>
@@ -96,7 +144,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
 
       {duplicate && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-          이미 이 모임에 신청하셨습니다.
+          이 모임에 이미 신청하셨습니다.
         </div>
       )}
 
@@ -106,45 +154,45 @@ export function SignupForm({ meeting }: SignupFormProps) {
         </div>
       )}
 
+      {/* 카카오 계정 표시 */}
+      <div className="flex items-center gap-3 bg-[#FEE500]/20 border border-[#FEE500] rounded-xl p-3">
+        {user.profileImage && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={user.profileImage} alt="" className="w-8 h-8 rounded-full object-cover" />
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-slate-500">카카오 계정으로 로그인됨</p>
+          <p className="text-sm font-semibold text-slate-800 truncate">{user.nickname}</p>
+        </div>
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="text-xs text-slate-400 hover:text-slate-600 shrink-0"
+        >
+          변경
+        </button>
+      </div>
+
+      {/* 이름 */}
       <div>
         <label className="block text-sm font-semibold text-slate-700 mb-1.5">
           이름 <span className="text-red-500">*</span>
+          <span className="font-normal text-slate-400 ml-1 text-xs">(카카오 닉네임을 사용하거나 수정하세요)</span>
         </label>
         <input
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={() => !name.trim() && setErrors((p) => ({ ...p, name: "이름을 입력해주세요" }))}
+          onChange={(e) => { setName(e.target.value); setNameError(""); }}
           placeholder="홍길동"
           disabled={submitting}
           className={`w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-colors
-            ${errors.name ? "border-red-400 bg-red-50" : "border-slate-200 focus:border-blue-500"}
+            ${nameError ? "border-red-400 bg-red-50" : "border-slate-200 focus:border-blue-500"}
             disabled:bg-slate-50 disabled:text-slate-400`}
         />
-        {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+        {nameError && <p className="mt-1 text-xs text-red-500">{nameError}</p>}
       </div>
 
-      <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          연락처 <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="tel"
-          value={contact}
-          onChange={(e) => setContact(formatContact(e.target.value))}
-          onBlur={() => {
-            if (!contact.trim()) setErrors((p) => ({ ...p, contact: "연락처를 입력해주세요" }));
-            else if (contact.replace(/\D/g, "").length < 10) setErrors((p) => ({ ...p, contact: "올바른 연락처를 입력해주세요" }));
-          }}
-          placeholder="010-0000-0000"
-          disabled={submitting}
-          className={`w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-colors
-            ${errors.contact ? "border-red-400 bg-red-50" : "border-slate-200 focus:border-blue-500"}
-            disabled:bg-slate-50 disabled:text-slate-400`}
-        />
-        {errors.contact && <p className="mt-1 text-xs text-red-500">{errors.contact}</p>}
-      </div>
-
+      {/* 메모 */}
       <div>
         <label className="block text-sm font-semibold text-slate-700 mb-1.5">
           메모 <span className="text-slate-400 font-normal">(선택)</span>
@@ -162,9 +210,9 @@ export function SignupForm({ meeting }: SignupFormProps) {
 
       <button
         type="submit"
-        disabled={submitting || !name.trim() || !contact.trim()}
+        disabled={submitting || !name.trim()}
         className={`w-full py-3 rounded-xl font-bold text-white text-sm transition-all
-          ${submitting || !name.trim() || !contact.trim()
+          ${submitting || !name.trim()
             ? "bg-slate-300 cursor-not-allowed"
             : isFull
               ? "bg-blue-500 hover:bg-blue-600 active:scale-[0.99]"
@@ -182,9 +230,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
         ) : isFull ? "대기자로 신청하기" : "신청하기"}
       </button>
 
-      <p className="text-xs text-slate-400 text-center">
-        ⓘ 관리자 승인 후 확정됩니다
-      </p>
+      <p className="text-xs text-slate-400 text-center">ⓘ 관리자 승인 후 확정됩니다</p>
     </form>
   );
 }
