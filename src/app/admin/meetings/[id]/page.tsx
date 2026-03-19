@@ -13,7 +13,7 @@ const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 interface Participant {
   id: number;
   name: string;
-  contact: string;
+  kakaoNickname: string;
   note: string | null;
   status: ParticipantStatus;
   waitlistPosition: number | null;
@@ -47,22 +47,13 @@ const TAB_LABELS: Record<Tab, string> = {
   all: "전체",
 };
 
-function MaskedContact({ contact }: { contact: string }) {
-  const [revealed, setRevealed] = useState(false);
-  const masked = contact.length > 8
-    ? contact.slice(0, 3) + "-****-" + contact.slice(-4)
-    : contact.slice(0, 2) + "****";
-
+function KakaoBadge({ nickname }: { nickname: string }) {
   return (
-    <span className="inline-flex items-center gap-1 text-sm">
-      <span className="font-mono">{revealed ? contact : masked}</span>
-      <button
-        onClick={() => setRevealed((v) => !v)}
-        className="text-slate-400 hover:text-slate-600 text-xs"
-        title={revealed ? "숨기기" : "전체 보기"}
-      >
-        {revealed ? "🙈" : "👁"}
-      </button>
+    <span className="inline-flex items-center gap-1 text-xs bg-[#FEE500]/30 text-[#3C1E1E] px-1.5 py-0.5 rounded-full">
+      <svg viewBox="0 0 24 24" className="w-3 h-3" fill="currentColor">
+        <path d="M12 3C6.477 3 2 6.477 2 10.857c0 2.713 1.584 5.1 3.988 6.577L5 21l4.29-2.287C10.145 18.9 11.058 19 12 19c5.523 0 10-3.477 10-7.143C22 6.477 17.523 3 12 3z" />
+      </svg>
+      {nickname}
     </span>
   );
 }
@@ -218,7 +209,7 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
                     <span className="font-semibold text-slate-900">{p.name}</span>
                     <StatusBadge status={p.status} waitlistPosition={p.waitlistPosition} size="sm" />
                   </div>
-                  <MaskedContact contact={p.contact} />
+                  <KakaoBadge nickname={p.kakaoNickname} />
                   {p.note && (
                     <p className="text-xs text-slate-500 mt-1 bg-slate-50 rounded px-2 py-1">{p.note}</p>
                   )}

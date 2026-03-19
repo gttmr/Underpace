@@ -41,13 +41,16 @@ model Participant {
   meetingId        Int
   meeting          Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
   name             String
-  contact          String
+  kakaoId          String
+  kakaoNickname    String    // 카카오 프로필 닉네임 (참고용)
   note             String?
   status           String    @default("PENDING") // PENDING | APPROVED | WAITLISTED | REJECTED
   waitlistPosition Int?
   rejectionNote    String?
   submittedAt      DateTime  @default(now())
   reviewedAt       DateTime?
+
+  @@unique([meetingId, kakaoId])
 }
 
 model Notice {
