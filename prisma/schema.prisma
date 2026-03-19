@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model RecurringSchedule {
+  id          Int       @id @default(autoincrement())
+  dayOfWeek   Int       // 0=일요일 ~ 6=토요일
+  startTime   String    // "10:00"
+  endTime     String    // "12:00"
+  location    String
+  maxCapacity Int
+  description String?
+  isActive    Boolean   @default(true)
+  meetings    Meeting[]
+  createdAt   DateTime  @default(now())
+}
+
+model Meeting {
+  id           Int                @id @default(autoincrement())
+  scheduleId   Int?
+  schedule     RecurringSchedule? @relation(fields: [scheduleId], references: [id])
+  date         String             // "2026-03-21"
+  startTime    String             // "10:00"
+  endTime      String             // "12:00"
+  location     String
+  maxCapacity  Int
+  description  String?
+  isOpen       Boolean            @default(true)
+  isOverridden Boolean            @default(false)
+  participants Participant[]
+  createdAt    DateTime           @default(now())
+}
+
+model Participant {
+  id               Int       @id @default(autoincrement())
+  meetingId        Int
+  meeting          Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  name             String
+  contact          String
+  note             String?
+  status           String    @default("PENDING") // PENDING | APPROVED | WAITLISTED | REJECTED
+  waitlistPosition Int?
+  rejectionNote    String?
+  submittedAt      DateTime  @default(now())
+  reviewedAt       DateTime?
+}
+
+model Notice {
+  id        Int      @id @default(autoincrement())
+  title     String
+  body      String
+  isPinned  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
