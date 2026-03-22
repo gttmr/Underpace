@@ -16,6 +16,15 @@ export type MeetingForCalendar = {
   approvedCount: number;
 };
 
+export type MarathonForCalendar = {
+  id: number;
+  title: string;
+  date: string;
+  startTime: string;
+  location: string | null;
+  link: string | null;
+};
+
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate();
 }
@@ -24,7 +33,13 @@ function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
-export default function CalendarView({ meetings }: { meetings: MeetingForCalendar[] }) {
+export default function CalendarView({
+  meetings,
+  marathons = [],
+}: {
+  meetings: MeetingForCalendar[];
+  marathons?: MarathonForCalendar[];
+}) {
   const today = new Date().toISOString().split("T")[0];
   const todayDate = new Date();
 
@@ -38,6 +53,13 @@ export default function CalendarView({ meetings }: { meetings: MeetingForCalenda
 
   // meetings grouped by date
   const meetingsByDate = meetings.reduce<Record<string, MeetingForCalendar[]>>((acc, m) => {
+    acc[m.date] = acc[m.date] ?? [];
+    acc[m.date].push(m);
+    return acc;
+  }, {});
+
+  // marathons grouped by date
+  const marathonsByDate = marathons.reduce<Record<string, MarathonForCalendar[]>>((acc, m) => {
     acc[m.date] = acc[m.date] ?? [];
     acc[m.date].push(m);
     return acc;
@@ -61,18 +83,23 @@ export default function CalendarView({ meetings }: { meetings: MeetingForCalenda
   while (cells.length % 7 !== 0) cells.push(null);
 
   const selectedMeetings = selectedDate ? (meetingsByDate[selectedDate] ?? []) : [];
+  const selectedMarathons = selectedDate ? (marathonsByDate[selectedDate] ?? []) : [];
 
   function dateStr(day: number) {
     return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
   }
 
-  function MeetingDots({ day }: { day: number }) {
+  function EventDots({ day }: { day: number }) {
     const ds = dateStr(day);
     const ms = meetingsByDate[ds];
-    if (!ms) return null;
+    const mars = marathonsByDate[ds];
+    if (!ms && !mars) return null;
     return (
       <div className="flex justify-center gap-0.5 mt-0.5 flex-wrap">
-        {ms.map((m) => {
+        {mars?.map((m) => (
+          <span key={`mar-${m.id}`} className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+        ))}
+        {ms?.map((m) => {
           const isFull = m.approvedCount >= m.maxCapacity;
           const isClosed = !m.isOpen;
           const isPast = ds < today;
@@ -81,7 +108,7 @@ export default function CalendarView({ meetings }: { meetings: MeetingForCalenda
             : isFull
             ? "bg-red-400"
             : "bg-blue-500";
-          return <span key={m.id} className={`w-1.5 h-1.5 rounded-full ${color}`} />;
+          return <span key={`meet-${m.id}`} className={`w-1.5 h-1.5 rounded-full ${color}`} />;
         })}
       </div>
     );
@@ -175,7 +202,7 @@ export default function CalendarView({ meetings }: { meetings: MeetingForCalenda
           const ds = dateStr(day);
           const isToday = ds === today;
           const isSelected = ds === selectedDate;
-          const hasMeeting = !!meetingsByDate[ds];
+          const hasMeeting = !!meetingsByDate[ds] || !!marathonsByDate[ds];
           const col = idx % 7;
 
           return (
@@ -191,7 +218,7 @@ export default function CalendarView({ meetings }: { meetings: MeetingForCalenda
               <span className={`text-sm font-semibold leading-none ${isToday && !isSelected ? "underline underline-offset-2" : ""}`}>
                 {day}
               </span>
-              {hasMeeting && !isSelected && <MeetingDots day={day} />}
+              {hasMeeting && !isSelected && <EventDots day={day} />}
               {hasMeeting && isSelected && (
                 <span className="w-1.5 h-1.5 rounded-full bg-white mt-0.5" />
               )}
@@ -202,28 +229,73 @@ export default function CalendarView({ meetings }: { meetings: MeetingForCalenda
 
       {/* Legend */}
       <div className="flex gap-3 text-xs text-slate-400 px-1">
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />신청 가능</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500 inline-block" />마라톤</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />정규신청</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />정원마감</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-slate-300 inline-block" />마감/종료</span>
       </div>
 
-      {/* Selected date meetings */}
+      {/* Selected date events */}
       {selectedDate && (
         <div className="border-t border-slate-100 pt-4 space-y-2">
-          {selectedMeetings.length === 0 ? (
+          {selectedMeetings.length === 0 && selectedMarathons.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-4">이 날 일정이 없습니다</p>
           ) : (
             <>
               <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                {selectedDate.slice(5).replace("-", "월 ")}일 모임
+                {selectedDate.slice(5).replace("-", "월 ")}일 일정
               </h3>
+              
+              {/* Marathons */}
+              {selectedMarathons.map((marathon) => (
+                <Link
+                  key={`m-${marathon.id}`}
+                  href={`/marathon/${marathon.id}`}
+                  className="block mt-3 bg-white p-4 rounded-xl border border-orange-100 shadow-sm relative overflow-hidden transition-transform active:scale-[0.98] hover:shadow-md"
+                >
+                  <div className="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
+                  <div className="flex justify-between items-center">
+                    <div className="flex-1 pr-4">
+                      <span className="inline-block px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded mb-1.5">
+                        마라톤
+                      </span>
+                      <h4 className="font-bold text-slate-800 text-[15px] mb-1">
+                        {marathon.title}
+                      </h4>
+                      <div className="flex items-center text-xs text-slate-500 space-x-3 mt-2">
+                        <span className="flex items-center">
+                          <svg className="w-3.5 h-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {marathon.startTime}
+                        </span>
+                        {marathon.location && (
+                          <span className="flex items-center truncate max-w-[120px]">
+                            <svg className="w-3.5 h-3.5 mr-1 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span className="truncate">{marathon.location}</span>
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-slate-400">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+
+              {/* Meetings */}
               {selectedMeetings.map((m) => {
                 const isFull = m.approvedCount >= m.maxCapacity;
                 const isClosed = !m.isOpen;
                 const isPast = selectedDate < today;
                 return (
                   <div
-                    key={m.id}
+                    key={`meet-${m.id}`}
                     className={`bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3 ${isPast || isClosed ? "opacity-60" : ""}`}
                   >
                     <div className="flex-1 min-w-0">

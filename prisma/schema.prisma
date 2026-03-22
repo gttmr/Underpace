@@ -61,3 +61,32 @@ model Notice {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Marathon {
+  id          Int      @id @default(autoincrement())
+  title       String
+  date        String   // YYYY-MM-DD
+  startTime   String   // HH:MM
+  location    String?
+  description String?
+  link        String?  // 접수 링크
+  createdAt   DateTime @default(now())
+  
+  // 카카오 연동 시 작성자 추적용
+  createdById String?
+
+  participants MarathonParticipant[]
+}
+
+model MarathonParticipant {
+  id          Int      @id @default(autoincrement())
+  marathonId  Int
+  marathon    Marathon @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  kakaoId     String
+  name        String
+  note        String?
+  status      String   @default("APPROVED")
+  submittedAt DateTime @default(now())
+
+  @@unique([marathonId, kakaoId])
+}

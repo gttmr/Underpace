@@ -1,16 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { CapacityBar } from "@/components/ui/CapacityBar";
-import CalendarView, { type MeetingForCalendar } from "./CalendarView";
+import CalendarView, { type MeetingForCalendar, type MarathonForCalendar } from "./CalendarView";
+import MarathonRegistrationModal from "@/components/marathon/MarathonRegistrationModal";
+import type { SessionUser } from "@/lib/session";
 
 const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 
 type View = "calendar" | "list";
 
-export default function ScheduleView({ meetings }: { meetings: MeetingForCalendar[] }) {
+export default function ScheduleView({ 
+  meetings, 
+  marathons = [],
+  user
+}: { 
+  meetings: MeetingForCalendar[];
+  marathons?: MarathonForCalendar[];
+  user: SessionUser | null;
+}) {
   const [view, setView] = useState<View>("calendar");
+  const [isMarathonModalOpen, setIsMarathonModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const authError = searchParams.get("auth_error");
+    if (authError) {
+      alert(`카카오 로그인 중 오류가 발생했습니다.\n에러 코드: ${authError}\n\n(카카오 디벨로퍼스 설정의 Redirect URI 혹은 앱 키를 확인해주세요)`);
+      // URL에서 에러 파라미터 지우기
+      window.history.replaceState({}, "", "/schedule");
+    }
+  }, [searchParams]);
 
   const today = new Date().toISOString().split("T")[0];
   const upcoming = meetings.filter((m) => m.date >= today);
@@ -64,26 +86,34 @@ export default function ScheduleView({ meetings }: { meetings: MeetingForCalenda
 
   return (
     <>
-      {/* View toggle */}
+      {/* View toggle & Actions */}
       <div className="flex bg-slate-100 rounded-lg p-1 gap-1">
+        <div className="flex flex-1 gap-1">
+          <button
+            onClick={() => setView("calendar")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors
+              ${view === "calendar" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+          >
+            <span>📅</span> 달력
+          </button>
+          <button
+            onClick={() => setView("list")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors
+              ${view === "list" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+          >
+            <span>☰</span> 목록
+          </button>
+        </div>
         <button
-          onClick={() => setView("calendar")}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors
-            ${view === "calendar" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+          onClick={() => setIsMarathonModalOpen(true)}
+          className="px-3 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-bold bg-orange-500 text-white hover:bg-orange-600 transition-colors shadow-sm ml-2"
         >
-          <span>📅</span> 달력
-        </button>
-        <button
-          onClick={() => setView("list")}
-          className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors
-            ${view === "list" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
-        >
-          <span>☰</span> 목록
+          마라톤 등록
         </button>
       </div>
 
       {/* Calendar view */}
-      {view === "calendar" && <CalendarView meetings={meetings} />}
+      {view === "calendar" && <CalendarView meetings={meetings} marathons={marathons} />}
 
       {/* List view */}
       {view === "list" && (
@@ -112,6 +142,13 @@ export default function ScheduleView({ meetings }: { meetings: MeetingForCalenda
           )}
         </div>
       )}
+
+      {/* Marathon Registration Modal */}
+      <MarathonRegistrationModal 
+        isOpen={isMarathonModalOpen} 
+        onClose={() => setIsMarathonModalOpen(false)} 
+        user={user}
+      />
     </>
   );
 }

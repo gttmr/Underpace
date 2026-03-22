@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { AdminLayout } from "@/components/admin/AdminLayout";
+import DeleteMarathonButton from "@/components/admin/DeleteMarathonButton";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
   const today = new Date().toISOString().split("T")[0];
 
-  const [upcomingMeetings, recentParticipants] = await Promise.all([
+  const [upcomingMeetings, recentParticipants, upcomingMarathons] = await Promise.all([
     prisma.meeting.findMany({
       where: { date: { gte: today } },
       orderBy: { date: "asc" },
@@ -18,6 +19,11 @@ export default async function AdminDashboard() {
       orderBy: { submittedAt: "desc" },
       take: 10,
       include: { meeting: { select: { date: true } } },
+    }),
+    prisma.marathon.findMany({
+      where: { date: { gte: today } },
+      orderBy: { date: "asc" },
+      take: 5,
     }),
   ]);
 
@@ -111,6 +117,37 @@ export default async function AdminDashboard() {
           })}
           {upcomingMeetings.length === 0 && (
             <p className="text-sm text-slate-400 text-center py-6">예정된 모임이 없습니다</p>
+          )}
+        </div>
+      </section>
+
+      {/* 예정된 마라톤 대회 */}
+      <section className="mb-8">
+        <h2 className="text-sm font-bold text-slate-700 mb-3">예정된 마라톤 대회</h2>
+        <div className="space-y-3">
+          {upcomingMarathons.map((m) => {
+            const d = new Date(m.date + "T00:00:00");
+            const [, month, day] = m.date.split("-");
+
+            return (
+              <div key={m.id} className="bg-orange-50 rounded-xl border border-orange-200 p-4 flex items-center justify-between shadow-sm">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="font-semibold text-orange-900 text-xs">
+                      {parseInt(month)}월 {parseInt(day)}일 ({DAY_KO[d.getDay()]}) {m.startTime}
+                    </p>
+                  </div>
+                  <p className="text-sm font-extrabold text-slate-900">{m.title}</p>
+                  {m.location && <p className="text-xs text-slate-500 mt-1">📍 {m.location}</p>}
+                </div>
+                <DeleteMarathonButton id={m.id} />
+              </div>
+            );
+          })}
+          {upcomingMarathons.length === 0 && (
+            <div className="bg-white rounded-xl border border-slate-200 p-6 text-center shadow-sm">
+              <p className="text-sm text-slate-400">예정된 마라톤 대회가 없습니다</p>
+            </div>
           )}
         </div>
       </section>
