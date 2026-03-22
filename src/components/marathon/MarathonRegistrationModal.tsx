@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { SessionUser } from "@/lib/session";
+import { kakaoLogin } from "@/lib/kakao";
 
 interface MarathonRegistrationModalProps {
   isOpen: boolean;
@@ -147,7 +148,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user }: Mar
             {!user ? (
               <button
                 type="button"
-                onClick={() => window.location.href = `/api/auth/kakao?returnTo=${encodeURIComponent("/schedule")}`}
+                onClick={() => kakaoLogin("/schedule")}
                 className="w-full h-12 rounded-xl bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-bold text-sm transition-colors flex items-center justify-center gap-2"
               >
                 카카오로 로그인하고 등록하기

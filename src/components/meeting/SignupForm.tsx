@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { MeetingWithCounts } from "@/lib/types";
+import { kakaoLogin } from "@/lib/kakao";
 
 interface SessionUser {
   kakaoId: string;
@@ -127,7 +128,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
           <div className="pt-2">
             <button
               type="button"
-              onClick={() => window.location.href = `/api/auth/kakao?returnTo=${encodeURIComponent(returnTo)}`}
+              onClick={() => kakaoLogin(returnTo)}
               className="w-full h-12 inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-bold rounded-xl transition-colors justify-center text-sm"
             >
               <KakaoIcon />
