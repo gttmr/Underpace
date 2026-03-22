@@ -9,7 +9,12 @@ export async function GET(req: NextRequest) {
   const returnTo = state ? decodeURIComponent(state) : "/";
 
   if (errorParam) {
-    require("fs").writeFileSync("kakao_error.log", `Kakao OAuth Error: ${errorParam} - ${errorDescription}`);
+    // prompt=none 자동 로그인 실패 시 → 일반 로그인으로 폴백
+    if (errorParam === "consent_required" || errorParam === "interaction_required") {
+      const fallbackUrl = `/api/auth/kakao?returnTo=${encodeURIComponent(returnTo)}&force=true`;
+      return NextResponse.redirect(new URL(fallbackUrl, req.url));
+    }
+    console.error(`Kakao OAuth Error: ${errorParam} - ${errorDescription}`);
     return NextResponse.redirect(new URL(`${returnTo}?auth_error=${errorParam}`, req.url));
   }
 
@@ -39,12 +44,12 @@ export async function GET(req: NextRequest) {
   try {
     tokenData = JSON.parse(tokenText || "{}");
   } catch (error) {
-    require("fs").writeFileSync("kakao_error.log", "Kakao Token Parsing Error: " + tokenText);
+    console.error("Kakao Token Parsing Error:", tokenText);
     return NextResponse.redirect(new URL(`${returnTo}?auth_error=token_parse_failed`, req.url));
   }
 
   if (!tokenData.access_token) {
-    require("fs").writeFileSync("kakao_error.log", "No access token. Data: " + JSON.stringify(tokenData));
+    console.error("No access token. Data:", JSON.stringify(tokenData));
     return NextResponse.redirect(new URL(`${returnTo}?auth_error=token`, req.url));
   }
 

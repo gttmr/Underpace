@@ -9,14 +9,21 @@ export async function GET(req: NextRequest) {
   }
 
   const returnTo = req.nextUrl.searchParams.get("returnTo") ?? "/";
+  const force = req.nextUrl.searchParams.get("force") === "true";
   const state = encodeURIComponent(returnTo);
+
+  // 카카오톡 인앱 브라우저에서는 prompt=none으로 자동 로그인 시도
+  const userAgent = req.headers.get("user-agent") ?? "";
+  const isKakaoTalk = userAgent.includes("KAKAOTALK");
+  const prompt = !force && isKakaoTalk ? "&prompt=none" : "";
 
   const kakaoUrl =
     `https://kauth.kakao.com/oauth/authorize` +
     `?client_id=${clientId}` +
     `&redirect_uri=${encodeURIComponent(redirectUri)}` +
     `&response_type=code` +
-    `&state=${state}`;
+    `&state=${state}` +
+    prompt;
 
   return NextResponse.redirect(kakaoUrl);
 }
