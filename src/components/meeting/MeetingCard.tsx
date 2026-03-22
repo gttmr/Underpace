@@ -52,15 +52,11 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         </div>
       </div>
 
-      <h2 className="text-lg font-bold text-slate-900 mb-3">
-        주간 {dayName}요일 모임
+      <h2 className="text-xl font-bold text-slate-900 mb-3">
+        {displayDate} 모임
       </h2>
 
       <div className="space-y-1.5 mb-4 text-sm text-slate-600">
-        <div className="flex items-center gap-2">
-          <span>📅</span>
-          <span>{displayDate}</span>
-        </div>
         <div className="flex items-center gap-2">
           <span>📍</span>
           <span>{meeting.location}</span>
