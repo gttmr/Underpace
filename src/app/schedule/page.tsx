@@ -1,13 +1,20 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import ScheduleView from "@/components/schedule/ScheduleView";
+import { getSession } from "@/lib/session";
 
 export const dynamic = "force-dynamic";
 
 export default async function SchedulePage() {
+  const user = await getSession();
+
   const meetings = await prisma.meeting.findMany({
     orderBy: { date: "asc" },
     include: { participants: { select: { status: true } } },
+  });
+
+  const marathons = await prisma.marathon.findMany({
+    orderBy: { date: "asc" },
   });
 
   const meetingsForClient = meetings.map((m) => ({
@@ -31,7 +38,7 @@ export default async function SchedulePage() {
       </header>
 
       <main className="max-w-xl mx-auto px-4 py-6 space-y-4">
-        <ScheduleView meetings={meetingsForClient} />
+        <ScheduleView meetings={meetingsForClient} marathons={marathons} user={user} />
       </main>
     </div>
   );

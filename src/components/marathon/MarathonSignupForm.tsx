@@ -2,16 +2,26 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { MeetingWithCounts } from "@/lib/types";
+import type { SessionUser } from "@/lib/session";
 
-interface SessionUser {
+interface MarathonParticipant {
+  id: number;
   kakaoId: string;
-  nickname: string;
-  profileImage?: string;
+  name: string;
+  status: string;
 }
 
-interface SignupFormProps {
-  meeting: MeetingWithCounts;
+interface MarathonSignupFormProps {
+  marathon: {
+    id: number;
+    title: string;
+    date: string;
+    startTime: string;
+    location: string | null;
+    description: string | null;
+    link: string | null;
+    participants: MarathonParticipant[];
+  };
 }
 
 function KakaoIcon() {
@@ -22,19 +32,18 @@ function KakaoIcon() {
   );
 }
 
-export function SignupForm({ meeting }: SignupFormProps) {
+export function MarathonSignupForm({ marathon }: MarathonSignupFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isFull = meeting.approvedCount >= meeting.maxCapacity;
-  const isClosed = !meeting.isOpen;
 
-  const [user, setUser] = useState<SessionUser | null | undefined>(undefined); // undefined = 로딩중
+  const [user, setUser] = useState<SessionUser | null | undefined>(undefined);
   const [name, setName] = useState("");
   const [note, setNote] = useState("");
   const [nameError, setNameError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
   const [duplicate, setDuplicate] = useState(false);
+
   useEffect(() => {
     fetch("/api/auth/me")
       .then((r) => r.json())
@@ -49,10 +58,9 @@ export function SignupForm({ meeting }: SignupFormProps) {
     const authError = searchParams.get("auth_error");
     if (authError) {
       alert(`카카오 로그인 중 오류가 발생했습니다.\n에러 코드: ${authError}\n\n(카카오 디벨로퍼스 설정의 Redirect URI 혹은 앱 키를 확인해주세요)`);
-      // Remove query param from URL
-      window.history.replaceState({}, "", `/meeting/${meeting.id}`);
+      window.history.replaceState({}, "", `/marathon/${marathon.id}`);
     }
-  }, [searchParams, meeting.id]);
+  }, [searchParams, marathon.id]);
 
   async function handleLogout() {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -69,59 +77,39 @@ export function SignupForm({ meeting }: SignupFormProps) {
     setDuplicate(false);
 
     try {
-      const res = await fetch("/api/participants", {
+      const res = await fetch(`/api/marathons/${marathon.id}/participate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ meetingId: meeting.id, name, note }),
+        body: JSON.stringify({ name, note }),
       });
 
       if (res.status === 409) { setDuplicate(true); setSubmitting(false); return; }
       if (!res.ok) {
         const data = await res.json();
-        setServerError(data.error ?? "신청 중 오류가 발생했습니다.");
+        setServerError(data.error ?? "참가 신청 중 오류가 발생했습니다.");
         setSubmitting(false);
         return;
       }
 
-      const data = await res.json();
-      router.push(
-        `/signup/confirm?status=${data.status}&waitlist=${data.waitlistPosition ?? ""}&meetingId=${meeting.id}&name=${encodeURIComponent(name)}`
-      );
+      alert("마라톤 대회 참가 신청이 완료되었습니다!");
+      router.refresh();
+      setSubmitting(false);
     } catch {
       setServerError("네트워크 오류가 발생했습니다.");
       setSubmitting(false);
     }
   }
 
-  if (isClosed) {
-    return (
-      <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center text-slate-500">
-        이 모임의 신청이 마감되었습니다.
-      </div>
-    );
-  }
+  const isAlreadyParticipating = user && marathon.participants.some(p => p.kakaoId === user.kakaoId);
 
-  // 로딩 중
   if (user === undefined) {
     return <div className="py-8 text-center text-slate-400 text-sm">불러오는 중...</div>;
   }
 
-  // 비로그인 상태
   if (!user) {
-    const returnTo = `/meeting/${meeting.id}`;
+    const returnTo = `/marathon/${marathon.id}`;
     return (
       <div className="space-y-4">
-        {isFull && (
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-            <span className="text-amber-500 text-lg mt-0.5">⚠️</span>
-            <div>
-              <p className="font-semibold text-amber-800 text-sm">정원이 마감되었습니다</p>
-              <p className="text-amber-700 text-sm mt-0.5">
-                대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.
-              </p>
-            </div>
-          </div>
-        )}
         <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 text-center space-y-3">
           <p className="text-sm text-slate-600">카카오 계정으로 간편하게 신청할 수 있습니다</p>
           <div className="pt-2">
@@ -139,27 +127,22 @@ export function SignupForm({ meeting }: SignupFormProps) {
     );
   }
 
-  // 로그인 상태
+  if (isAlreadyParticipating || duplicate) {
+    return (
+      <div className="bg-green-50 border border-green-200 rounded-xl p-6 text-center space-y-4">
+        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-500 text-xl">
+          ✓
+        </div>
+        <div>
+          <p className="font-bold text-green-800">참가 신청이 완료되었습니다</p>
+          <p className="text-sm text-green-600 mt-1">대회 당일 뵙겠습니다!</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      {isFull && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-          <span className="text-amber-500 text-lg mt-0.5">⚠️</span>
-          <div>
-            <p className="font-semibold text-amber-800 text-sm">정원이 마감되었습니다</p>
-            <p className="text-amber-700 text-sm mt-0.5">
-              대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {duplicate && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
-          이 모임에 이미 신청하셨습니다.
-        </div>
-      )}
-
       {serverError && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
           {serverError}
@@ -188,8 +171,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
       {/* 이름 */}
       <div>
         <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          이름 <span className="text-red-500">*</span>
-          <span className="font-normal text-slate-400 ml-1 text-xs">(카카오 닉네임을 사용하거나 수정하세요)</span>
+          참가자 이름 <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
@@ -198,7 +180,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
           placeholder="홍길동"
           disabled={submitting}
           className={`w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-colors
-            ${nameError ? "border-red-400 bg-red-50" : "border-slate-200 focus:border-blue-500"}
+            ${nameError ? "border-red-400 bg-red-50" : "border-slate-200 focus:border-orange-500"}
             disabled:bg-slate-50 disabled:text-slate-400`}
         />
         {nameError && <p className="mt-1 text-xs text-red-500">{nameError}</p>}
@@ -207,15 +189,15 @@ export function SignupForm({ meeting }: SignupFormProps) {
       {/* 메모 */}
       <div>
         <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          메모 <span className="text-slate-400 font-normal">(선택)</span>
+          참여 메모 <span className="text-slate-400 font-normal">(선택)</span>
         </label>
         <textarea
           value={note}
           onChange={(e) => setNote(e.target.value.slice(0, 100))}
-          placeholder="처음 참가합니다, 주차 문의 등..."
+          placeholder="풀코스/하프코스 참여 여부나 기타 메모를 남겨주세요."
           rows={3}
           disabled={submitting}
-          className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors resize-none disabled:bg-slate-50 disabled:text-slate-400"
+          className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-orange-500 transition-colors resize-none disabled:bg-slate-50 disabled:text-slate-400"
         />
         <p className="mt-1 text-xs text-slate-400 text-right">{note.length}/100</p>
       </div>
@@ -226,23 +208,11 @@ export function SignupForm({ meeting }: SignupFormProps) {
         className={`w-full py-3 rounded-xl font-bold text-white text-sm transition-all
           ${submitting || !name.trim()
             ? "bg-slate-300 cursor-not-allowed"
-            : isFull
-              ? "bg-blue-500 hover:bg-blue-600 active:scale-[0.99]"
-              : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99]"
+            : "bg-orange-500 hover:bg-orange-600 active:scale-[0.99]"
           }`}
       >
-        {submitting ? (
-          <span className="flex items-center justify-center gap-2">
-            <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-            </svg>
-            처리 중...
-          </span>
-        ) : isFull ? "대기자로 신청하기" : "신청하기"}
+        {submitting ? "진행 중..." : "참가 신청하기"}
       </button>
-
-      <p className="text-xs text-slate-400 text-center">ⓘ 관리자 승인 후 확정됩니다</p>
     </form>
   );
 }

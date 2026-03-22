@@ -4,7 +4,14 @@ import { encodeSession, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/session";
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
   const state = req.nextUrl.searchParams.get("state");
+  const errorParam = req.nextUrl.searchParams.get("error");
+  const errorDescription = req.nextUrl.searchParams.get("error_description");
   const returnTo = state ? decodeURIComponent(state) : "/";
+
+  if (errorParam) {
+    require("fs").writeFileSync("kakao_error.log", `Kakao OAuth Error: ${errorParam} - ${errorDescription}`);
+    return NextResponse.redirect(new URL(`${returnTo}?auth_error=${errorParam}`, req.url));
+  }
 
   if (!code) {
     return NextResponse.redirect(new URL("/", req.url));
