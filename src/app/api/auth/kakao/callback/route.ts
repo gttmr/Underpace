@@ -23,12 +23,21 @@ export async function GET(req: NextRequest) {
 
   const tokenRes = await fetch("https://kauth.kakao.com/oauth/token", {
     method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params,
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=utf-8" },
+    body: params.toString(),
   });
 
-  const tokenData = await tokenRes.json();
+  const tokenText = await tokenRes.text();
+  let tokenData;
+  try {
+    tokenData = JSON.parse(tokenText || "{}");
+  } catch (error) {
+    require("fs").writeFileSync("kakao_error.log", "Kakao Token Parsing Error: " + tokenText);
+    return NextResponse.redirect(new URL(`${returnTo}?auth_error=token_parse_failed`, req.url));
+  }
+
   if (!tokenData.access_token) {
+    require("fs").writeFileSync("kakao_error.log", "No access token. Data: " + JSON.stringify(tokenData));
     return NextResponse.redirect(new URL(`${returnTo}?auth_error=token`, req.url));
   }
 
@@ -36,7 +45,15 @@ export async function GET(req: NextRequest) {
   const userRes = await fetch("https://kapi.kakao.com/v2/user/me", {
     headers: { Authorization: `Bearer ${tokenData.access_token}` },
   });
-  const userData = await userRes.json();
+  
+  const userText = await userRes.text();
+  let userData;
+  try {
+    userData = JSON.parse(userText || "{}");
+  } catch (error) {
+    console.error("Kakao User Parsing Error. Raw response:", userText);
+    return NextResponse.redirect(new URL(`${returnTo}?auth_error=user_parse_failed`, req.url));
+  }
 
   const kakaoId = String(userData.id);
   const nickname: string =

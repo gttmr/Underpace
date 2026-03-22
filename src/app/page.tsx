@@ -47,9 +47,6 @@ export default async function HomePage() {
               <h1 className="text-2xl font-extrabold tracking-tight">⚡ 동호회</h1>
               <p className="text-blue-200 text-sm mt-0.5">주간 모임 참가신청</p>
             </div>
-            <Link href="/schedule" className="text-blue-200 hover:text-white text-sm transition-colors">
-              전체 일정 →
-            </Link>
           </div>
         </div>
       </header>
@@ -69,7 +66,12 @@ export default async function HomePage() {
 
       {/* 모임 목록 */}
       <main className="max-w-2xl mx-auto px-4 py-6">
-        <h2 className="text-lg font-bold text-slate-800 mb-4">예정된 모임</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-bold text-slate-800">예정된 모임</h2>
+          <Link href="/schedule" className="text-sm font-semibold text-slate-500 hover:text-slate-800 transition-colors">
+            전체 일정
+          </Link>
+        </div>
 
         {meetings.length === 0 ? (
           <div className="text-center py-16 text-slate-400">
