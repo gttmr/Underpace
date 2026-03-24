@@ -43,6 +43,7 @@ model Participant {
   meeting          Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
   name             String
   kakaoId          String
+  user             User?     @relation(fields: [kakaoId], references: [kakaoId])
   kakaoNickname    String    // 카카오 프로필 닉네임 (참고용)
   note             String?
   status           String    @default("PENDING") // PENDING | APPROVED | WAITLISTED | REJECTED
@@ -84,10 +85,25 @@ model MarathonParticipant {
   marathonId  Int
   marathon    Marathon @relation(fields: [marathonId], references: [id], onDelete: Cascade)
   kakaoId     String
+  user        User?    @relation(fields: [kakaoId], references: [kakaoId])
   name        String
   note        String?
   status      String   @default("APPROVED")
   submittedAt DateTime @default(now())
 
   @@unique([marathonId, kakaoId])
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  kakaoId      String   @unique
+  name         String?  // 카카오 또는 유저가 정한 이름
+  profileImage String?
+  phoneNumber  String?
+  role         String   @default("MEMBER") // ADMIN, MEMBER, BANNED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  participants         Participant[]
+  marathonParticipants MarathonParticipant[]
 }

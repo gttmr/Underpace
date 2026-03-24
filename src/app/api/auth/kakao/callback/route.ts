@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { encodeSession, SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/session";
+import { prisma } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -76,6 +77,26 @@ export async function GET(req: NextRequest) {
     userData.kakao_account?.profile?.thumbnail_image_url ??
     userData.properties?.thumbnail_image ??
     undefined;
+
+  // DB에 회원 정보 기록 또는 갱신 (자동 회원가입)
+  try {
+    await prisma.user.upsert({
+      where: { kakaoId },
+      update: {
+        name: nickname,
+        profileImage: profileImage || null,
+      },
+      create: {
+        kakaoId,
+        name: nickname,
+        profileImage: profileImage || null,
+        role: "MEMBER",
+      },
+    });
+  } catch (dbError) {
+    console.error("Failed to upsert user:", dbError);
+    // DB 에러가 나더라도 세션 발급은 진행하도록 예외 처리
+  }
 
   // 3) 세션 쿠키 설정 후 returnTo로 리다이렉트
   const token = encodeSession({ kakaoId, nickname, profileImage });
