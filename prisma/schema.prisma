@@ -101,6 +101,16 @@ model User {
   profileImage String?
   phoneNumber  String?
   role         String   @default("MEMBER") // ADMIN, MEMBER, BANNED
+  
+  // 마라톤 PB 기록 (HH:MM:SS 형식)
+  pbFull       String?  // 풀 마라톤 (42.195km)
+  pbHalf       String?  // 하프 마라톤 (21.0975km)
+  pb10k        String?  // 10km
+  pb5k         String?  // 5km
+
+  // 강습 관련
+  coachingNote String?  // 강습 시 바라는 점
+
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
