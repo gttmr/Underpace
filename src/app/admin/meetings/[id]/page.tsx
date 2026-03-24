@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { CapacityBar } from "@/components/ui/CapacityBar";
@@ -24,6 +25,7 @@ interface Participant {
 
 interface Meeting {
   id: number;
+  scheduleId: number | null;
   date: string;
   startTime: string;
   endTime: string;
@@ -66,6 +68,22 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
   const [rejectNote, setRejectNote] = useState("");
   const [loading, setLoading] = useState(true);
   const { toasts, addToast, removeToast } = useToast();
+  const router = useRouter();
+
+  async function handleDelete(allFuture: boolean) {
+    if (!confirm(allFuture ? "이 일정과 이후 생성된 모든 반복 일정을 완전 삭제하시겠습니까?" : "이 일정(단건)만 삭제하시겠습니까? (다른 주차의 반복 일정은 유지됩니다)")) return;
+    
+    const res = await fetch(`/api/meetings/${meeting?.id}${allFuture ? "?allFuture=true" : ""}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      addToast("성공적으로 삭제되었습니다", "success");
+      setTimeout(() => router.push("/admin/meetings"), 500);
+    } else {
+      addToast("삭제에 실패했습니다", "error");
+    }
+  }
 
   async function load() {
     const res = await fetch(`/api/meetings/${id}`);
@@ -145,16 +163,34 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
             {meeting.startTime}–{meeting.endTime} · {meeting.location}
           </p>
         </div>
-        <button
-          onClick={handleToggleOpen}
-          className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors
-            ${meeting.isOpen
-              ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              : "bg-green-100 text-green-700 hover:bg-green-200"
-            }`}
-        >
-          {meeting.isOpen ? "신청 마감하기" : "신청 열기"}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={handleToggleOpen}
+            className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors
+              ${meeting.isOpen
+                ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                : "bg-green-100 text-green-700 hover:bg-green-200"
+              }`}
+          >
+            {meeting.isOpen ? "신청 마감하기" : "신청 열기"}
+          </button>
+          
+          <div className="group relative">
+            <button className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100">
+              삭제하기 ▾
+            </button>
+            <div className="absolute right-0 top-full mt-1 hidden group-hover:flex flex-col bg-white border border-slate-200 shadow-xl rounded-lg overflow-hidden w-40 z-50">
+               <button onClick={() => handleDelete(false)} className="px-4 py-3 text-xs text-left font-bold text-slate-700 hover:bg-red-50 hover:text-red-700 border-b border-slate-100 transition-colors">
+                 이 일정만 삭제
+               </button>
+               {meeting.scheduleId && (
+                 <button onClick={() => handleDelete(true)} className="px-4 py-3 text-xs text-left font-bold text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors">
+                   이후 모든 반복 일정 삭제
+                 </button>
+               )}
+            </div>
+          </div>
+        </div>
       </div>
 
       <div className="mb-6">
