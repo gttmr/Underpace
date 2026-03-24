@@ -36,11 +36,13 @@ interface UserDetail extends Omit<UserWithCounts, "_count"> {
 
 const ROLE_LABELS: Record<string, string> = {
   ADMIN: "관리자",
+  COACH: "코치",
   MEMBER: "일반 회원",
   BANNED: "차단됨",
 };
 const ROLE_COLORS: Record<string, string> = {
   ADMIN: "bg-purple-100 text-purple-700",
+  COACH: "bg-teal-100 text-teal-700",
   MEMBER: "bg-green-100 text-green-700",
   BANNED: "bg-red-100 text-red-700",
 };
@@ -196,8 +198,8 @@ export default function AdminMembersPage() {
                   {/* 권한 변경 */}
                   <div className="mb-6">
                     <label className="block text-xs font-bold text-slate-500 mb-2">회원 등급</label>
-                    <div className="flex gap-2">
-                      {(["MEMBER", "ADMIN", "BANNED"] as const).map((role) => (
+                    <div className="flex gap-2 flex-wrap">
+                      {(["MEMBER", "COACH", "ADMIN", "BANNED"] as const).map((role) => (
                         <button
                           key={role}
                           onClick={() => handleRoleChange(selectedUser.id, role)}
@@ -207,6 +209,8 @@ export default function AdminMembersPage() {
                                 ? "bg-red-600 text-white shadow-sm"
                                 : role === "ADMIN"
                                 ? "bg-purple-600 text-white shadow-sm"
+                                : role === "COACH"
+                                ? "bg-teal-600 text-white shadow-sm"
                                 : "bg-green-600 text-white shadow-sm"
                               : "bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200"
                           }`}
