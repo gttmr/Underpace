@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "대시보드", icon: "📊", exact: true },
   { href: "/admin/schedule", label: "일정관리", icon: "📅", exact: false },
   { href: "/admin/meetings", label: "모임관리", icon: "👥", exact: false },
+  { href: "/admin/members", label: "회원관리", icon: "🧑‍💼", exact: false },
   { href: "/admin/notices", label: "공지관리", icon: "📢", exact: false },
 ];
 
