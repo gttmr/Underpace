@@ -54,6 +54,34 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   }
 
   const { id } = await params;
-  await prisma.meeting.delete({ where: { id: parseInt(id) } });
+  const meetingId = parseInt(id);
+  const searchParams = req.nextUrl.searchParams;
+  const allFuture = searchParams.get("allFuture") === "true";
+
+  const targetMeeting = await prisma.meeting.findUnique({
+    where: { id: meetingId }
+  });
+
+  if (!targetMeeting) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
+  }
+
+  if (allFuture && targetMeeting.scheduleId) {
+    await prisma.$transaction([
+      prisma.meeting.deleteMany({
+        where: {
+          scheduleId: targetMeeting.scheduleId,
+          date: { gte: targetMeeting.date }
+        }
+      }),
+      prisma.recurringSchedule.update({
+        where: { id: targetMeeting.scheduleId },
+        data: { isActive: false }
+      })
+    ]);
+  } else {
+    await prisma.meeting.delete({ where: { id: meetingId } });
+  }
+
   return NextResponse.json({ ok: true });
 }
