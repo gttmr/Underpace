@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   const waitlistedCount = meeting.participants.filter((p) => p.status === "WAITLISTED").length;
   const isFull = approvedCount >= meeting.maxCapacity;
 
-  const status = isFull ? "WAITLISTED" : "PENDING";
+  const status = isFull ? "WAITLISTED" : "APPROVED";
   const waitlistPosition = isFull ? waitlistedCount + 1 : null;
 
   const participant = await prisma.participant.create({
