@@ -30,6 +30,7 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
     isOpen: meeting.isOpen,
     signupOpensAt: meeting.signupOpensAt?.toISOString() ?? null,
     approvedCount: meeting.participants.filter((participant) => participant.status === "APPROVED").length,
+    waitlistedCount: meeting.participants.filter((participant) => participant.status === "WAITLISTED").length,
   }));
 
   const marathonsForClient = marathons.map((marathon) => ({

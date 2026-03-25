@@ -107,7 +107,7 @@ export function MarathonSignupForm({ marathon }: MarathonSignupFormProps) {
         return;
       }
 
-      alert("마라톤 대회 참가 신청이 완료되었습니다!");
+      alert("대회 참가 신청이 완료되었습니다!");
       router.refresh();
       setSubmitting(false);
     } catch {
@@ -202,7 +202,7 @@ export function MarathonSignupForm({ marathon }: MarathonSignupFormProps) {
           placeholder="홍길동"
           disabled={submitting}
           className={`w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-colors
-            ${nameError ? "border-red-400 bg-red-50" : profileName ? "border-slate-200 bg-slate-50 text-slate-600" : "border-slate-200 focus:border-orange-500"}
+            ${nameError ? "border-red-400 bg-red-50" : profileName ? "border-slate-200 bg-slate-50 text-slate-600" : "border-slate-200 focus:border-emerald-500"}
             disabled:bg-slate-50 disabled:text-slate-400`}
         />
         {nameError && <p className="mt-1 text-xs text-red-500">{nameError}</p>}
@@ -219,7 +219,7 @@ export function MarathonSignupForm({ marathon }: MarathonSignupFormProps) {
           placeholder="풀코스/하프코스 참여 여부나 기타 메모를 남겨주세요."
           rows={3}
           disabled={submitting}
-          className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-orange-500 transition-colors resize-none disabled:bg-slate-50 disabled:text-slate-400"
+          className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-emerald-500 transition-colors resize-none disabled:bg-slate-50 disabled:text-slate-400"
         />
         <p className="mt-1 text-xs text-slate-400 text-right">{note.length}/100</p>
       </div>
@@ -230,7 +230,7 @@ export function MarathonSignupForm({ marathon }: MarathonSignupFormProps) {
         className={`w-full py-3 rounded-xl font-bold text-white text-sm transition-all
           ${submitting || !name.trim()
             ? "bg-slate-300 cursor-not-allowed"
-            : "bg-orange-500 hover:bg-orange-600 active:scale-[0.99]"
+            : "bg-emerald-500 hover:bg-emerald-600 active:scale-[0.99]"
           }`}
       >
         {submitting ? "진행 중..." : "참가 신청하기"}

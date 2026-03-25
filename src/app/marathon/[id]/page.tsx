@@ -38,11 +38,11 @@ export default async function MarathonDetailPage({
       </div>
 
       <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 mb-6 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
+        <div className="absolute top-0 left-0 w-1 h-full bg-emerald-400"></div>
         <div className="flex justify-between items-start mb-4">
           <div className="flex-1 pr-4">
-            <span className="inline-block px-2 py-1 bg-orange-100 text-orange-700 text-xs font-semibold rounded mb-2">
-              마라톤
+            <span className="inline-block px-2 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded mb-2">
+              대회
             </span>
             <h2 className="text-xl font-bold text-slate-800 leading-tight">
               {marathon.title}
@@ -111,7 +111,7 @@ export default async function MarathonDetailPage({
       <div>
         <div className="flex items-center justify-between mb-4 px-1">
           <h2 className="text-lg font-bold text-slate-800">참가 예정자</h2>
-          <span className="bg-orange-100 text-orange-700 text-sm font-semibold px-2.5 py-0.5 rounded-full">
+          <span className="bg-emerald-100 text-emerald-700 text-sm font-semibold px-2.5 py-0.5 rounded-full">
             {marathon.participants.length}명
           </span>
         </div>

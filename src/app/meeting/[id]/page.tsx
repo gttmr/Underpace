@@ -94,7 +94,7 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
             <p className="text-sm text-slate-600 bg-slate-50 rounded-lg p-3 mb-5">{meeting.description}</p>
           )}
 
-          <CapacityBar current={meeting.approvedCount} max={meeting.maxCapacity} />
+          <CapacityBar current={meeting.approvedCount} max={meeting.maxCapacity} waitlisted={meeting.waitlistedCount} />
         </div>
 
         {/* 신청 폼 카드 */}
