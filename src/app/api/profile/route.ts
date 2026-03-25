@@ -38,10 +38,12 @@ export async function PUT(req: NextRequest) {
   const body = await req.json();
   const { name, phoneNumber, pbFull, pbHalf, pb10k, pb5k, coachingNote } = body;
 
+  const trimmedName = name !== undefined ? (name.trim() || null) : undefined;
+
   const user = await prisma.user.update({
     where: { kakaoId: session.kakaoId },
     data: {
-      ...(name !== undefined && { name: name.trim() || null }),
+      ...(trimmedName !== undefined && { name: trimmedName }),
       ...(phoneNumber !== undefined && { phoneNumber: phoneNumber.trim() || null }),
       ...(pbFull !== undefined && { pbFull: pbFull.trim() || null }),
       ...(pbHalf !== undefined && { pbHalf: pbHalf.trim() || null }),
@@ -58,6 +60,20 @@ export async function PUT(req: NextRequest) {
       },
     },
   });
+
+  // 이름 변경 시 기존 신청 기록의 이름도 동기화
+  if (trimmedName) {
+    await Promise.all([
+      prisma.participant.updateMany({
+        where: { kakaoId: session.kakaoId },
+        data: { name: trimmedName },
+      }),
+      prisma.marathonParticipant.updateMany({
+        where: { kakaoId: session.kakaoId },
+        data: { name: trimmedName },
+      }),
+    ]);
+  }
 
   return NextResponse.json(user);
 }
