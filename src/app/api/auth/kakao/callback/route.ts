@@ -79,11 +79,13 @@ export async function GET(req: NextRequest) {
     undefined;
 
   // DB에 회원 정보 기록 또는 갱신 (자동 회원가입)
+  let isNewUser = false;
   try {
+    const existing = await prisma.user.findUnique({ where: { kakaoId } });
+    isNewUser = !existing;
     await prisma.user.upsert({
       where: { kakaoId },
       update: {
-        name: nickname,
         profileImage: profileImage || null,
       },
       create: {
@@ -98,9 +100,10 @@ export async function GET(req: NextRequest) {
     // DB 에러가 나더라도 세션 발급은 진행하도록 예외 처리
   }
 
-  // 3) 세션 쿠키 설정 후 returnTo로 리다이렉트
+  // 3) 세션 쿠키 설정 후 리다이렉트 (신규 유저는 프로필 설정으로)
   const token = encodeSession({ kakaoId, nickname, profileImage });
-  const res = NextResponse.redirect(new URL(returnTo, req.url));
+  const redirectTo = isNewUser ? "/profile?setup=true" : returnTo;
+  const res = NextResponse.redirect(new URL(redirectTo, req.url));
   res.cookies.set(SESSION_COOKIE, token, {
     httpOnly: true,
     sameSite: "lax",
