@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { formatSignupOpensAtCompact, isSignupAvailable } from "@/lib/meetingSignup";
 
 const DAY_HEADERS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -13,6 +14,7 @@ export type MeetingForCalendar = {
   location: string;
   maxCapacity: number;
   isOpen: boolean;
+  signupOpensAt: string | null;
   approvedCount: number;
 };
 
@@ -44,43 +46,51 @@ export default function CalendarView({
   const todayDate = new Date();
 
   const [year, setYear] = useState(todayDate.getFullYear());
-  const [month, setMonth] = useState(todayDate.getMonth()); // 0-indexed
+  const [month, setMonth] = useState(todayDate.getMonth());
   const [selectedDate, setSelectedDate] = useState<string | null>(today);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const daysInMonth = getDaysInMonth(year, month);
   const firstDay = getFirstDayOfMonth(year, month);
 
-  // meetings grouped by date
-  const meetingsByDate = meetings.reduce<Record<string, MeetingForCalendar[]>>((acc, m) => {
-    acc[m.date] = acc[m.date] ?? [];
-    acc[m.date].push(m);
+  const meetingsByDate = meetings.reduce<Record<string, MeetingForCalendar[]>>((acc, meeting) => {
+    acc[meeting.date] = acc[meeting.date] ?? [];
+    acc[meeting.date].push(meeting);
     return acc;
   }, {});
 
-  // marathons grouped by date
-  const marathonsByDate = marathons.reduce<Record<string, MarathonForCalendar[]>>((acc, m) => {
-    acc[m.date] = acc[m.date] ?? [];
-    acc[m.date].push(m);
+  const marathonsByDate = marathons.reduce<Record<string, MarathonForCalendar[]>>((acc, marathon) => {
+    acc[marathon.date] = acc[marathon.date] ?? [];
+    acc[marathon.date].push(marathon);
     return acc;
   }, {});
 
   function prevMonth() {
-    if (month === 0) { setYear(y => y - 1); setMonth(11); }
-    else setMonth(m => m - 1);
-  }
-  function nextMonth() {
-    if (month === 11) { setYear(y => y + 1); setMonth(0); }
-    else setMonth(m => m + 1);
+    if (month === 0) {
+      setYear((currentYear) => currentYear - 1);
+      setMonth(11);
+    } else {
+      setMonth((currentMonth) => currentMonth - 1);
+    }
   }
 
-  // build calendar cells: nulls for leading empty days, then day numbers
+  function nextMonth() {
+    if (month === 11) {
+      setYear((currentYear) => currentYear + 1);
+      setMonth(0);
+    } else {
+      setMonth((currentMonth) => currentMonth + 1);
+    }
+  }
+
   const cells: (number | null)[] = [
     ...Array(firstDay).fill(null),
-    ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
+    ...Array.from({ length: daysInMonth }, (_, index) => index + 1),
   ];
-  // pad to full weeks
-  while (cells.length % 7 !== 0) cells.push(null);
+
+  while (cells.length % 7 !== 0) {
+    cells.push(null);
+  }
 
   const selectedMeetings = selectedDate ? (meetingsByDate[selectedDate] ?? []) : [];
   const selectedMarathons = selectedDate ? (marathonsByDate[selectedDate] ?? []) : [];
@@ -91,24 +101,32 @@ export default function CalendarView({
 
   function EventDots({ day }: { day: number }) {
     const ds = dateStr(day);
-    const ms = meetingsByDate[ds];
-    const mars = marathonsByDate[ds];
-    if (!ms && !mars) return null;
+    const dayMeetings = meetingsByDate[ds];
+    const dayMarathons = marathonsByDate[ds];
+
+    if (!dayMeetings && !dayMarathons) {
+      return null;
+    }
+
     return (
       <div className="flex justify-center gap-0.5 mt-0.5 flex-wrap">
-        {mars?.map((m) => (
-          <span key={`mar-${m.id}`} className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+        {dayMarathons?.map((marathon) => (
+          <span key={`mar-${marathon.id}`} className="w-1.5 h-1.5 rounded-full bg-orange-500" />
         ))}
-        {ms?.map((m) => {
-          const isFull = m.approvedCount >= m.maxCapacity;
-          const isClosed = !m.isOpen;
+        {dayMeetings?.map((meeting) => {
+          const isFull = meeting.approvedCount >= meeting.maxCapacity;
+          const isClosed = !meeting.isOpen;
+          const isSignupReady = isSignupAvailable(meeting);
           const isPast = ds < today;
           const color = isPast || isClosed
             ? "bg-slate-300"
+            : !isSignupReady
+            ? "bg-amber-400"
             : isFull
             ? "bg-red-400"
             : "bg-blue-500";
-          return <span key={`meet-${m.id}`} className={`w-1.5 h-1.5 rounded-full ${color}`} />;
+
+          return <span key={`meet-${meeting.id}`} className={`w-1.5 h-1.5 rounded-full ${color}`} />;
         })}
       </div>
     );
@@ -116,7 +134,6 @@ export default function CalendarView({
 
   return (
     <div className="space-y-4">
-      {/* Month navigation */}
       <div className="relative flex items-center justify-between px-1">
         <button
           onClick={prevMonth}
@@ -140,30 +157,31 @@ export default function CalendarView({
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
               <div className="absolute top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 z-50 flex gap-4 w-max animate-in fade-in slide-in-from-top-2 duration-200">
-                {/* Year list */}
                 <div className="flex flex-col h-48 overflow-y-auto pr-2 custom-scrollbar">
                   <div className="text-xs font-semibold text-slate-400 mb-2 px-2 sticky top-0 bg-white">연도</div>
-                  {Array.from({ length: 11 }, (_, i) => todayDate.getFullYear() - 5 + i).map(y => (
+                  {Array.from({ length: 11 }, (_, index) => todayDate.getFullYear() - 5 + index).map((value) => (
                     <button
-                      key={y}
-                      onClick={() => setYear(y)}
-                      className={`text-sm px-3 py-1.5 rounded-md text-left transition-colors ${year === y ? "bg-blue-50 text-blue-600 font-bold" : "text-slate-600 hover:bg-slate-50"}`}
+                      key={value}
+                      onClick={() => setYear(value)}
+                      className={`text-sm px-3 py-1.5 rounded-md text-left transition-colors ${year === value ? "bg-blue-50 text-blue-600 font-bold" : "text-slate-600 hover:bg-slate-50"}`}
                     >
-                      {y}년
+                      {value}년
                     </button>
                   ))}
                 </div>
-                {/* Month grid */}
                 <div>
                   <div className="text-xs font-semibold text-slate-400 mb-2 px-1">월</div>
                   <div className="grid grid-cols-3 gap-1">
-                    {Array.from({ length: 12 }, (_, i) => i).map(m => (
+                    {Array.from({ length: 12 }, (_, index) => index).map((value) => (
                       <button
-                        key={m}
-                        onClick={() => { setMonth(m); setIsDropdownOpen(false); }}
-                        className={`text-sm w-12 py-2 rounded-md transition-colors ${month === m ? "bg-blue-50 text-blue-600 font-bold" : "text-slate-600 hover:bg-slate-50"}`}
+                        key={value}
+                        onClick={() => {
+                          setMonth(value);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`text-sm w-12 py-2 rounded-md transition-colors ${month === value ? "bg-blue-50 text-blue-600 font-bold" : "text-slate-600 hover:bg-slate-50"}`}
                       >
-                        {m + 1}월
+                        {value + 1}월
                       </button>
                     ))}
                   </div>
@@ -181,29 +199,30 @@ export default function CalendarView({
         </button>
       </div>
 
-      {/* Day headers */}
       <div className="grid grid-cols-7 text-center">
-        {DAY_HEADERS.map((d, i) => (
+        {DAY_HEADERS.map((day, index) => (
           <div
-            key={d}
+            key={day}
             className={`text-xs font-semibold py-1 ${
-              i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : "text-slate-400"
+              index === 0 ? "text-red-500" : index === 6 ? "text-blue-500" : "text-slate-400"
             }`}
           >
-            {d}
+            {day}
           </div>
         ))}
       </div>
 
-      {/* Calendar grid */}
       <div className="grid grid-cols-7 gap-y-1">
-        {cells.map((day, idx) => {
-          if (!day) return <div key={`empty-${idx}`} />;
+        {cells.map((day, index) => {
+          if (!day) {
+            return <div key={`empty-${index}`} />;
+          }
+
           const ds = dateStr(day);
           const isToday = ds === today;
           const isSelected = ds === selectedDate;
           const hasMeeting = !!meetingsByDate[ds] || !!marathonsByDate[ds];
-          const col = idx % 7;
+          const column = index % 7;
 
           return (
             <button
@@ -211,8 +230,8 @@ export default function CalendarView({
               onClick={() => setSelectedDate(isSelected ? null : ds)}
               className={`flex flex-col items-center py-1.5 rounded-lg transition-colors
                 ${isSelected ? "bg-blue-600 text-white" : isToday ? "bg-blue-50 text-blue-700" : "hover:bg-slate-50"}
-                ${col === 0 && !isSelected ? "text-red-500" : ""}
-                ${col === 6 && !isSelected ? "text-blue-500" : ""}
+                ${column === 0 && !isSelected ? "text-red-500" : ""}
+                ${column === 6 && !isSelected ? "text-blue-500" : ""}
               `}
             >
               <span className={`text-sm font-semibold leading-none ${isToday && !isSelected ? "underline underline-offset-2" : ""}`}>
@@ -227,14 +246,13 @@ export default function CalendarView({
         })}
       </div>
 
-      {/* Legend */}
       <div className="flex gap-3 text-xs text-slate-400 px-1">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500 inline-block" />마라톤</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />신청예정</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />정규신청</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />정원마감</span>
       </div>
 
-      {/* Selected date events */}
       {selectedDate && (
         <div className="border-t border-slate-100 pt-4 space-y-2">
           {selectedMeetings.length === 0 && selectedMarathons.length === 0 ? (
@@ -244,15 +262,14 @@ export default function CalendarView({
               <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
                 {selectedDate.slice(5).replace("-", "월 ")}일 일정
               </h3>
-              
-              {/* Marathons */}
+
               {selectedMarathons.map((marathon) => (
                 <Link
                   key={`m-${marathon.id}`}
                   href={`/marathon/${marathon.id}`}
                   className="block mt-3 bg-white p-4 rounded-xl border border-orange-100 shadow-sm relative overflow-hidden transition-transform active:scale-[0.98] hover:shadow-md"
                 >
-                  <div className="absolute top-0 left-0 w-1 h-full bg-orange-400"></div>
+                  <div className="absolute top-0 left-0 w-1 h-full bg-orange-400" />
                   <div className="flex justify-between items-center">
                     <div className="flex-1 pr-4">
                       <span className="inline-block px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded mb-1.5">
@@ -288,39 +305,56 @@ export default function CalendarView({
                 </Link>
               ))}
 
-              {/* Meetings */}
-              {selectedMeetings.map((m) => {
-                const isFull = m.approvedCount >= m.maxCapacity;
-                const isClosed = !m.isOpen;
+              {selectedMeetings.map((meeting) => {
+                const isFull = meeting.approvedCount >= meeting.maxCapacity;
+                const isClosed = !meeting.isOpen;
                 const isPast = selectedDate < today;
+                const isSignupReady = isSignupAvailable(meeting);
+                const isWaitingForOpen = !isClosed && !isSignupReady;
+
                 return (
                   <div
-                    key={`meet-${m.id}`}
+                    key={`meet-${meeting.id}`}
                     className={`bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3 ${isPast || isClosed ? "opacity-60" : ""}`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
                         <span className="text-sm font-semibold text-slate-800">
-                          {m.startTime} – {m.endTime}
+                          {meeting.startTime} – {meeting.endTime}
                         </span>
                         {isClosed && (
                           <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full">마감</span>
+                        )}
+                        {isWaitingForOpen && (
+                          <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">오픈 전</span>
                         )}
                         {!isClosed && isFull && (
                           <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">정원마감</span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 truncate">📍 {m.location}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{m.approvedCount}/{m.maxCapacity}명</p>
+                      <p className="text-xs text-slate-500 truncate">📍 {meeting.location}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{meeting.approvedCount}/{meeting.maxCapacity}명</p>
+                      {isWaitingForOpen && (
+                        <p className="text-xs text-amber-700 mt-1">신청 시작: {formatSignupOpensAtCompact(meeting.signupOpensAt)}</p>
+                      )}
                     </div>
-                    {!isPast && !isClosed && (
+                    {!isPast && !isClosed && !isWaitingForOpen && (
                       <Link
-                        href={`/meeting/${m.id}`}
+                        href={`/meeting/${meeting.id}`}
                         className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors
                           ${isFull ? "bg-blue-400 hover:bg-blue-500" : "bg-blue-600 hover:bg-blue-700"}`}
                       >
                         {isFull ? "대기 신청" : "신청"}
                       </Link>
+                    )}
+                    {!isPast && !isClosed && isWaitingForOpen && (
+                      <button
+                        type="button"
+                        disabled
+                        className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-400 cursor-not-allowed"
+                      >
+                        오픈 전
+                      </button>
                     )}
                   </div>
                 );

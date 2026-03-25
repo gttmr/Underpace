@@ -9,32 +9,35 @@ datasource db {
 }
 
 model RecurringSchedule {
-  id          Int       @id @default(autoincrement())
-  dayOfWeek   Int       // 0=일요일 ~ 6=토요일
-  startTime   String    // "10:00"
-  endTime     String    // "12:00"
-  location    String
-  maxCapacity Int
-  description String?
-  isActive    Boolean   @default(true)
-  meetings    Meeting[]
-  createdAt   DateTime  @default(now())
+  id                   Int       @id @default(autoincrement())
+  dayOfWeek            Int       // 0=일요일 ~ 6=토요일
+  startTime            String    // "10:00"
+  endTime              String    // "12:00"
+  location             String
+  maxCapacity          Int
+  description          String?
+  signupOpenDayOfWeek  Int?      // null이면 항상 오픈
+  signupOpenTime       String?   // "18:00", null이면 항상 오픈
+  isActive             Boolean   @default(true)
+  meetings             Meeting[]
+  createdAt            DateTime  @default(now())
 }
 
 model Meeting {
-  id           Int                @id @default(autoincrement())
-  scheduleId   Int?
-  schedule     RecurringSchedule? @relation(fields: [scheduleId], references: [id])
-  date         String             // "2026-03-21"
-  startTime    String             // "10:00"
-  endTime      String             // "12:00"
-  location     String
-  maxCapacity  Int
-  description  String?
-  isOpen       Boolean            @default(true)
-  isOverridden Boolean            @default(false)
-  participants Participant[]
-  createdAt    DateTime           @default(now())
+  id             Int                @id @default(autoincrement())
+  scheduleId     Int?
+  schedule       RecurringSchedule? @relation(fields: [scheduleId], references: [id])
+  date           String             // "2026-03-21"
+  startTime      String             // "10:00"
+  endTime        String             // "12:00"
+  location       String
+  maxCapacity    Int
+  description    String?
+  signupOpensAt  DateTime?          // null이면 항상 오픈
+  isOpen         Boolean            @default(true)
+  isOverridden   Boolean            @default(false)
+  participants   Participant[]
+  createdAt      DateTime           @default(now())
 }
 
 model Participant {
