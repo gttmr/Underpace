@@ -165,25 +165,6 @@ export function MarathonSignupForm({ marathon }: MarathonSignupFormProps) {
         </div>
       )}
 
-      {/* 카카오 계정 표시 */}
-      <div className="flex items-center gap-3 bg-[#FEE500]/20 border border-[#FEE500] rounded-xl p-3">
-        {user.profileImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={user.profileImage} alt="" className="w-8 h-8 rounded-full object-cover" />
-        )}
-        <div className="flex-1 min-w-0">
-          <p className="text-xs text-slate-500">카카오 계정으로 로그인됨</p>
-          <p className="text-sm font-semibold text-slate-800 truncate">{user.nickname}</p>
-        </div>
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="text-xs text-slate-400 hover:text-slate-600 shrink-0"
-        >
-          변경
-        </button>
-      </div>
-
       {/* 이름 */}
       <div>
         <label className="block text-sm font-semibold text-slate-700 mb-1.5">

@@ -6,6 +6,12 @@ import ScheduleView from "./ScheduleView";
 export default async function SchedulePageContent({ returnTo }: { returnTo: string }) {
   const user = await getSession();
 
+  // 사용자 역할 조회 (코치/관리자 버튼 표시용)
+  const userRole = user
+    ? (await prisma.user.findUnique({ where: { kakaoId: user.kakaoId }, select: { role: true } }))?.role ?? null
+    : null;
+  const isCoachOrAdmin = userRole === "COACH" || userRole === "ADMIN";
+
   const [meetings, marathons, pinnedNotice] = await Promise.all([
     prisma.meeting.findMany({
       orderBy: { date: "asc" },
@@ -51,12 +57,22 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
             <p className="text-blue-200 text-xs mt-0.5">모임과 대회 일정을 한눈에 확인하세요</p>
           </div>
           {user ? (
-            <Link
-              href="/profile"
-              className="px-3 py-2 rounded-lg bg-white/15 hover:bg-white/20 text-white text-sm font-semibold transition-colors whitespace-nowrap"
-            >
-              내 프로필
-            </Link>
+            <div className="flex items-center gap-2">
+              {isCoachOrAdmin && (
+                <Link
+                  href="/coach"
+                  className="px-3 py-2 rounded-lg bg-teal-500/80 hover:bg-teal-500 text-white text-sm font-semibold transition-colors whitespace-nowrap"
+                >
+                  코치
+                </Link>
+              )}
+              <Link
+                href="/profile"
+                className="px-3 py-2 rounded-lg bg-white/15 hover:bg-white/20 text-white text-sm font-semibold transition-colors whitespace-nowrap"
+              >
+                내 프로필
+              </Link>
+            </div>
           ) : (
             <Link
               href={`/api/auth/kakao?returnTo=${encodeURIComponent(returnTo)}`}
