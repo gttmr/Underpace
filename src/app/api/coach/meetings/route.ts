@@ -36,7 +36,12 @@ export async function GET(req: NextRequest) {
       participants: {
         where: { status: { in: ["APPROVED", "PENDING"] } },
         orderBy: { submittedAt: "asc" },
-        include: {
+        select: {
+          id: true,
+          name: true,
+          status: true,
+          note: true,
+          kakaoId: true,
           user: {
             select: {
               name: true,
