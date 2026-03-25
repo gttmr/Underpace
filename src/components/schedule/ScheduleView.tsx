@@ -2,21 +2,22 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { CapacityBar } from "@/components/ui/CapacityBar";
 import CalendarView, { type MeetingForCalendar, type MarathonForCalendar } from "./CalendarView";
 import MarathonRegistrationModal from "@/components/marathon/MarathonRegistrationModal";
 import type { SessionUser } from "@/lib/session";
+import { formatSignupOpensAtCompact, isSignupAvailable } from "@/lib/meetingSignup";
 
 const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 
 type View = "calendar" | "list";
 
-export default function ScheduleView({ 
-  meetings, 
+export default function ScheduleView({
+  meetings,
   marathons = [],
-  user
-}: { 
+  user,
+}: {
   meetings: MeetingForCalendar[];
   marathons?: MarathonForCalendar[];
   user: SessionUser | null;
@@ -24,61 +25,78 @@ export default function ScheduleView({
   const [view, setView] = useState<View>("calendar");
   const [isMarathonModalOpen, setIsMarathonModalOpen] = useState(false);
   const searchParams = useSearchParams();
+  const pathname = usePathname();
 
   useEffect(() => {
     const authError = searchParams.get("auth_error");
     if (authError) {
       alert(`카카오 로그인 중 오류가 발생했습니다.\n에러 코드: ${authError}\n\n(카카오 디벨로퍼스 설정의 Redirect URI 혹은 앱 키를 확인해주세요)`);
-      // URL에서 에러 파라미터 지우기
-      window.history.replaceState({}, "", "/schedule");
+      window.history.replaceState({}, "", pathname || "/");
     }
-  }, [searchParams]);
+  }, [pathname, searchParams]);
 
   const today = new Date().toISOString().split("T")[0];
-  const upcoming = meetings.filter((m) => m.date >= today);
-  const past = meetings.filter((m) => m.date < today).reverse();
+  const upcoming = meetings.filter((meeting) => meeting.date >= today);
+  const past = meetings.filter((meeting) => meeting.date < today).reverse();
 
-  function MeetingRow({ m }: { m: MeetingForCalendar }) {
-    const isClosed = !m.isOpen;
-    const isFull = m.approvedCount >= m.maxCapacity;
-    const isPast = m.date < today;
-    const date = new Date(m.date + "T00:00:00");
+  function MeetingRow({ meeting }: { meeting: MeetingForCalendar }) {
+    const isClosed = !meeting.isOpen;
+    const isFull = meeting.approvedCount >= meeting.maxCapacity;
+    const isPast = meeting.date < today;
+    const isSignupReady = isSignupAvailable(meeting);
+    const isWaitingForOpen = !isClosed && !isSignupReady;
+    const date = new Date(meeting.date + "T00:00:00");
     const dayName = DAY_KO[date.getDay()];
-    const [, month, day] = m.date.split("-");
+    const [, month, day] = meeting.date.split("-");
 
     return (
       <div className={`bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 ${isClosed || isPast ? "opacity-60" : ""}`}>
         <div className="text-center min-w-[52px]">
-          <p className="text-xs text-slate-500">{parseInt(month)}월</p>
-          <p className="text-2xl font-extrabold text-slate-900 leading-none">{parseInt(day)}</p>
+          <p className="text-xs text-slate-500">{parseInt(month, 10)}월</p>
+          <p className="text-2xl font-extrabold text-slate-900 leading-none">{parseInt(day, 10)}</p>
           <p className="text-xs text-slate-500">{dayName}요일</p>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="text-sm font-semibold text-slate-800">
-              {m.startTime} – {m.endTime}
+              {meeting.startTime} – {meeting.endTime}
             </span>
             {isClosed && (
               <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full">마감</span>
+            )}
+            {isWaitingForOpen && (
+              <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">오픈 전</span>
             )}
             {!isClosed && isFull && (
               <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">정원마감</span>
             )}
           </div>
-          <p className="text-xs text-slate-500 truncate">📍 {m.location}</p>
+          <p className="text-xs text-slate-500 truncate">📍 {meeting.location}</p>
           <div className="mt-2">
-            <CapacityBar current={m.approvedCount} max={m.maxCapacity} showLabel={false} />
-            <p className="text-xs text-slate-400 mt-0.5">{m.approvedCount}/{m.maxCapacity}명</p>
+            <CapacityBar current={meeting.approvedCount} max={meeting.maxCapacity} showLabel={false} />
+            <p className="text-xs text-slate-400 mt-0.5">{meeting.approvedCount}/{meeting.maxCapacity}명</p>
+            {isWaitingForOpen && (
+              <p className="text-xs text-amber-700 mt-1">신청 시작: {formatSignupOpensAtCompact(meeting.signupOpensAt)}</p>
+            )}
           </div>
         </div>
-        {!isPast && !isClosed && (
+        {!isPast && !isClosed && !isWaitingForOpen && (
           <Link
-            href={`/meeting/${m.id}`}
+            href={`/meeting/${meeting.id}`}
             className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors
               ${isFull ? "bg-blue-400 hover:bg-blue-500" : "bg-blue-600 hover:bg-blue-700"}`}
           >
             {isFull ? "대기 신청" : "신청"}
           </Link>
+        )}
+        {!isPast && !isClosed && isWaitingForOpen && (
+          <button
+            type="button"
+            disabled
+            className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-400 cursor-not-allowed"
+          >
+            오픈 전
+          </button>
         )}
       </div>
     );
@@ -86,7 +104,6 @@ export default function ScheduleView({
 
   return (
     <>
-      {/* View toggle & Actions */}
       <div className="flex bg-slate-100 rounded-lg p-1 gap-1">
         <div className="flex flex-1 gap-1">
           <button
@@ -112,17 +129,15 @@ export default function ScheduleView({
         </button>
       </div>
 
-      {/* Calendar view */}
       {view === "calendar" && <CalendarView meetings={meetings} marathons={marathons} />}
 
-      {/* List view */}
       {view === "list" && (
         <div className="space-y-8">
           {upcoming.length > 0 && (
             <section>
               <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">예정된 모임</h2>
               <div className="space-y-3">
-                {upcoming.map((m) => <MeetingRow key={m.id} m={m} />)}
+                {upcoming.map((meeting) => <MeetingRow key={meeting.id} meeting={meeting} />)}
               </div>
             </section>
           )}
@@ -130,7 +145,7 @@ export default function ScheduleView({
             <section>
               <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">지난 모임</h2>
               <div className="space-y-3">
-                {past.map((m) => <MeetingRow key={m.id} m={m} />)}
+                {past.map((meeting) => <MeetingRow key={meeting.id} meeting={meeting} />)}
               </div>
             </section>
           )}
@@ -143,11 +158,11 @@ export default function ScheduleView({
         </div>
       )}
 
-      {/* Marathon Registration Modal */}
-      <MarathonRegistrationModal 
-        isOpen={isMarathonModalOpen} 
-        onClose={() => setIsMarathonModalOpen(false)} 
+      <MarathonRegistrationModal
+        isOpen={isMarathonModalOpen}
+        onClose={() => setIsMarathonModalOpen(false)}
         user={user}
+        returnTo={pathname || "/"}
       />
     </>
   );

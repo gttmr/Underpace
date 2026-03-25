@@ -8,6 +8,7 @@ export interface MeetingWithCounts {
   location: string;
   maxCapacity: number;
   description: string | null;
+  signupOpensAt: string | null;
   isOpen: boolean;
   scheduleId: number | null;
   approvedCount: number;
