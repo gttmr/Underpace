@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 
 interface UserProfile {
@@ -22,6 +22,40 @@ interface UserProfile {
   };
 }
 
+// 숫자만 입력하면 자동으로 HH:MM:SS 또는 MM:SS 형식으로 변환
+function formatTimeInput(raw: string): string {
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, -2)}:${digits.slice(-2)}`;
+  // 5~6자리: HH:MM:SS
+  return `${digits.slice(0, -4)}:${digits.slice(-4, -2)}:${digits.slice(-2)}`;
+}
+
+function TimeInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    // 콜론이 포함된 경우 (사용자가 직접 포맷 입력) 그대로 허용
+    if (raw.includes(":")) {
+      onChange(raw);
+      return;
+    }
+    // 숫자만 입력 시 자동 포맷
+    const digits = raw.replace(/\D/g, "").slice(0, 6);
+    onChange(formatTimeInput(digits));
+  };
+
+  return (
+    <input
+      type="text"
+      inputMode="numeric"
+      value={value}
+      onChange={handleChange}
+      placeholder={placeholder}
+      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+    />
+  );
+}
+
 function KakaoIcon() {
   return (
     <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
@@ -30,13 +64,24 @@ function KakaoIcon() {
   );
 }
 
-export default function ProfilePage() {
+export default function ProfilePageWrapper() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 text-sm">불러오는 중...</p></div>}>
+      <ProfilePage />
+    </Suspense>
+  );
+}
+
+function ProfilePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isSetup = searchParams.get("setup") === "true";
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [notLoggedIn, setNotLoggedIn] = useState(false);
+  const [showSetup, setShowSetup] = useState(false);
 
   // 폼 상태
   const [name, setName] = useState("");
@@ -64,9 +109,27 @@ export default function ProfilePage() {
         setPb5k(data.pb5k || "");
         setCoachingNote(data.coachingNote || "");
         setLoading(false);
+        if (isSetup) setShowSetup(true);
       })
       .catch(() => setLoading(false));
-  }, []);
+  }, [isSetup]);
+
+  const handleSetupSave = useCallback(async () => {
+    if (!name.trim()) return;
+    setSaving(true);
+    const res = await fetch("/api/profile", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, pbFull, pbHalf, pb10k, pb5k }),
+    });
+    if (res.ok) {
+      const updated = await res.json();
+      setUser(updated);
+      setShowSetup(false);
+      router.replace("/profile");
+    }
+    setSaving(false);
+  }, [name, pbFull, pbHalf, pb10k, pb5k, router]);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -120,6 +183,66 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24">
+      {/* 첫 로그인 설정 모달 */}
+      {showSetup && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-2">🏃‍♂️</div>
+              <h2 className="text-xl font-extrabold text-slate-900">환영합니다!</h2>
+              <p className="text-sm text-slate-500 mt-1">이름과 기록을 입력해주세요</p>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">이름(닉네임) <span className="text-red-400">*</span></label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="동호회에서 사용할 이름"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+                  autoFocus
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">풀 마라톤 PB <span className="text-slate-400 font-normal">(선택)</span></label>
+                <TimeInput value={pbFull} onChange={setPbFull} placeholder="숫자만 입력 예: 34530 → 3:45:30" />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">하프 마라톤 PB <span className="text-slate-400 font-normal">(선택)</span></label>
+                <TimeInput value={pbHalf} onChange={setPbHalf} placeholder="숫자만 입력 예: 14215 → 1:42:15" />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">10K PB</label>
+                  <TimeInput value={pb10k} onChange={setPb10k} placeholder="예: 4830" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">5K PB</label>
+                  <TimeInput value={pb5k} onChange={setPb5k} placeholder="예: 2200" />
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={handleSetupSave}
+              disabled={saving || !name.trim()}
+              className={`w-full mt-6 py-3 rounded-xl font-bold text-white text-sm transition-all ${
+                saving || !name.trim()
+                  ? "bg-slate-300 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99]"
+              }`}
+            >
+              {saving ? "저장 중..." : "시작하기"}
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* 헤더 */}
       <header className="bg-gradient-to-r from-blue-600 to-blue-500 text-white">
         <div className="max-w-lg mx-auto px-4 py-5 flex items-center gap-3">
@@ -191,43 +314,19 @@ export default function ProfilePage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5">풀 마라톤 (42.195km)</label>
-                <input
-                  type="text"
-                  value={pbFull}
-                  onChange={(e) => setPbFull(e.target.value)}
-                  placeholder="예: 3:45:30"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
-                />
+                <TimeInput value={pbFull} onChange={setPbFull} placeholder="예: 34530" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5">하프 마라톤 (21km)</label>
-                <input
-                  type="text"
-                  value={pbHalf}
-                  onChange={(e) => setPbHalf(e.target.value)}
-                  placeholder="예: 1:42:15"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
-                />
+                <TimeInput value={pbHalf} onChange={setPbHalf} placeholder="예: 14215" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5">10K</label>
-                <input
-                  type="text"
-                  value={pb10k}
-                  onChange={(e) => setPb10k(e.target.value)}
-                  placeholder="예: 48:30"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
-                />
+                <TimeInput value={pb10k} onChange={setPb10k} placeholder="예: 4830" />
               </div>
               <div>
                 <label className="block text-xs font-bold text-slate-500 mb-1.5">5K</label>
-                <input
-                  type="text"
-                  value={pb5k}
-                  onChange={(e) => setPb5k(e.target.value)}
-                  placeholder="예: 22:00"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
-                />
+                <TimeInput value={pb5k} onChange={setPb5k} placeholder="예: 2200" />
               </div>
             </div>
           </div>
