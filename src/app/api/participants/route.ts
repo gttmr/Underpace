@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionFromRequest } from "@/lib/session";
+import { formatSignupOpensAt, isSignupAvailable } from "@/lib/meetingSignup";
 
 export async function POST(req: NextRequest) {
   const user = getSessionFromRequest(req);
@@ -22,6 +23,12 @@ export async function POST(req: NextRequest) {
 
   if (!meeting) return NextResponse.json({ error: "모임을 찾을 수 없습니다" }, { status: 404 });
   if (!meeting.isOpen) return NextResponse.json({ error: "신청이 마감된 모임입니다" }, { status: 400 });
+  if (!isSignupAvailable(meeting)) {
+    return NextResponse.json(
+      { error: `신청은 ${formatSignupOpensAt(meeting.signupOpensAt)}부터 가능합니다` },
+      { status: 400 },
+    );
+  }
 
   // 같은 카카오 계정으로 중복 신청 확인
   const duplicate = meeting.participants.find((p) => p.kakaoId === user.kakaoId);

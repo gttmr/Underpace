@@ -1,4 +1,5 @@
 import { prisma } from "./db";
+import { getSignupOpensAtForSchedule } from "./meetingSignup";
 
 // 반복 일정에서 앞으로 N주치 모임 자동 생성
 export async function generateMeetingsFromSchedule(
@@ -39,6 +40,11 @@ export async function generateMeetingsFromSchedule(
       location: schedule.location,
       maxCapacity: schedule.maxCapacity,
       description: schedule.description,
+      signupOpensAt: getSignupOpensAtForSchedule(
+        dateStr,
+        schedule.signupOpenDayOfWeek,
+        schedule.signupOpenTime,
+      ),
       isOpen: true,
       isOverridden: false,
     });
@@ -49,4 +55,46 @@ export async function generateMeetingsFromSchedule(
   }
 
   return meetings.length;
+}
+
+export async function syncUpcomingMeetingSignupWindows(scheduleId: number) {
+  const schedule = await prisma.recurringSchedule.findUnique({
+    where: { id: scheduleId },
+    select: {
+      signupOpenDayOfWeek: true,
+      signupOpenTime: true,
+    },
+  });
+
+  if (!schedule) return;
+
+  const today = new Date().toISOString().split("T")[0];
+  const meetings = await prisma.meeting.findMany({
+    where: {
+      scheduleId,
+      date: { gte: today },
+      isOverridden: false,
+    },
+    select: {
+      id: true,
+      date: true,
+    },
+  });
+
+  if (meetings.length === 0) return;
+
+  await prisma.$transaction(
+    meetings.map((meeting) =>
+      prisma.meeting.update({
+        where: { id: meeting.id },
+        data: {
+          signupOpensAt: getSignupOpensAtForSchedule(
+            meeting.date,
+            schedule.signupOpenDayOfWeek,
+            schedule.signupOpenTime,
+          ),
+        },
+      }),
+    ),
+  );
 }
