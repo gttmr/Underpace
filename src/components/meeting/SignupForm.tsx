@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { MeetingWithCounts } from "@/lib/types";
 import { kakaoLogin } from "@/lib/kakao";
+import { formatSignupOpensAt, isSignupAvailable } from "@/lib/meetingSignup";
 
 interface SessionUser {
   kakaoId: string;
@@ -28,6 +29,8 @@ export function SignupForm({ meeting }: SignupFormProps) {
   const searchParams = useSearchParams();
   const isFull = meeting.approvedCount >= meeting.maxCapacity;
   const isClosed = !meeting.isOpen;
+  const isSignupReady = isSignupAvailable(meeting);
+  const isWaitingForOpen = !isClosed && !isSignupReady;
 
   const [user, setUser] = useState<SessionUser | null | undefined>(undefined); // undefined = 로딩중
   const [name, setName] = useState("");
@@ -98,6 +101,17 @@ export function SignupForm({ meeting }: SignupFormProps) {
     return (
       <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center text-slate-500">
         이 모임의 신청이 마감되었습니다.
+      </div>
+    );
+  }
+
+  if (isWaitingForOpen) {
+    return (
+      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
+        <p className="text-sm font-semibold text-blue-800">아직 신청 오픈 전입니다</p>
+        <p className="text-sm text-blue-700 mt-1">
+          신청은 {formatSignupOpensAt(meeting.signupOpensAt)}부터 가능합니다.
+        </p>
       </div>
     );
   }

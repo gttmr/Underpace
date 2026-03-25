@@ -9,9 +9,10 @@ interface MarathonRegistrationModalProps {
   isOpen: boolean;
   onClose: () => void;
   user: SessionUser | null;
+  returnTo: string;
 }
 
-export default function MarathonRegistrationModal({ isOpen, onClose, user }: MarathonRegistrationModalProps) {
+export default function MarathonRegistrationModal({ isOpen, onClose, user, returnTo }: MarathonRegistrationModalProps) {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
@@ -148,7 +149,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user }: Mar
             {!user ? (
               <button
                 type="button"
-                onClick={() => kakaoLogin("/schedule")}
+                onClick={() => kakaoLogin(returnTo)}
                 className="w-full h-12 rounded-xl bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-bold text-sm transition-colors flex items-center justify-center gap-2"
               >
                 카카오로 로그인하고 등록하기

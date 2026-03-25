@@ -40,6 +40,7 @@ async function getMeeting(id: number): Promise<DetailedMeeting | null> {
     location: meeting.location,
     maxCapacity: meeting.maxCapacity,
     description: meeting.description,
+    signupOpensAt: meeting.signupOpensAt?.toISOString() ?? null,
     isOpen: meeting.isOpen,
     scheduleId: meeting.scheduleId,
     approvedCount: meeting.participants.filter((p) => p.status === "APPROVED").length,
