@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage() {
@@ -8,6 +8,21 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [autoLogging, setAutoLogging] = useState(true);
+
+  // ADMIN 역할 사용자는 자동 로그인
+  useEffect(() => {
+    fetch("/api/admin/auto-login", { method: "POST" })
+      .then((res) => {
+        if (res.ok) {
+          router.push("/admin");
+          router.refresh();
+        } else {
+          setAutoLogging(false);
+        }
+      })
+      .catch(() => setAutoLogging(false));
+  }, [router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,6 +43,14 @@ export default function AdminLoginPage() {
       setError(data.error || "오류가 발생했습니다");
       setLoading(false);
     }
+  }
+
+  if (autoLogging) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-400 text-sm">확인 중...</p>
+      </div>
+    );
   }
 
   return (

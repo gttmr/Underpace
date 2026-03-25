@@ -71,7 +71,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         <p className="text-sm text-slate-500 mb-4 line-clamp-2">{meeting.description}</p>
       )}
 
-      <CapacityBar current={meeting.approvedCount} max={meeting.maxCapacity} />
+      <CapacityBar current={meeting.approvedCount} max={meeting.maxCapacity} waitlisted={meeting.waitlistedCount} />
 
       <div className="mt-4 flex flex-col gap-2">
         {isClosed ? (

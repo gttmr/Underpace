@@ -16,6 +16,7 @@ export type MeetingForCalendar = {
   isOpen: boolean;
   signupOpensAt: string | null;
   approvedCount: number;
+  waitlistedCount: number;
 };
 
 export type MarathonForCalendar = {
@@ -111,7 +112,7 @@ export default function CalendarView({
     return (
       <div className="flex justify-center gap-0.5 mt-0.5 flex-wrap">
         {dayMarathons?.map((marathon) => (
-          <span key={`mar-${marathon.id}`} className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+          <span key={`mar-${marathon.id}`} className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
         ))}
         {dayMeetings?.map((meeting) => {
           const isFull = meeting.approvedCount >= meeting.maxCapacity;
@@ -122,8 +123,6 @@ export default function CalendarView({
             ? "bg-slate-300"
             : !isSignupReady
             ? "bg-amber-400"
-            : isFull
-            ? "bg-red-400"
             : "bg-blue-500";
 
           return <span key={`meet-${meeting.id}`} className={`w-1.5 h-1.5 rounded-full ${color}`} />;
@@ -247,10 +246,9 @@ export default function CalendarView({
       </div>
 
       <div className="flex gap-3 text-xs text-slate-400 px-1">
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-orange-500 inline-block" />마라톤</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />대회</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />신청예정</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />정규신청</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400 inline-block" />정원마감</span>
       </div>
 
       {selectedDate && (
@@ -267,13 +265,13 @@ export default function CalendarView({
                 <Link
                   key={`m-${marathon.id}`}
                   href={`/marathon/${marathon.id}`}
-                  className="block mt-3 bg-white p-4 rounded-xl border border-orange-100 shadow-sm relative overflow-hidden transition-transform active:scale-[0.98] hover:shadow-md"
+                  className="block mt-3 bg-white p-4 rounded-xl border border-emerald-100 shadow-sm relative overflow-hidden transition-transform active:scale-[0.98] hover:shadow-md"
                 >
-                  <div className="absolute top-0 left-0 w-1 h-full bg-orange-400" />
+                  <div className="absolute top-0 left-0 w-1 h-full bg-emerald-400" />
                   <div className="flex justify-between items-center">
                     <div className="flex-1 pr-4">
-                      <span className="inline-block px-2 py-0.5 bg-orange-100 text-orange-700 text-[10px] font-bold rounded mb-1.5">
-                        마라톤
+                      <span className="inline-block px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded mb-1.5">
+                        대회
                       </span>
                       <h4 className="font-bold text-slate-800 text-[15px] mb-1">
                         {marathon.title}
@@ -328,12 +326,14 @@ export default function CalendarView({
                         {isWaitingForOpen && (
                           <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">오픈 전</span>
                         )}
-                        {!isClosed && isFull && (
-                          <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">정원마감</span>
-                        )}
                       </div>
                       <p className="text-xs text-slate-500 truncate">📍 {meeting.location}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{meeting.approvedCount}/{meeting.maxCapacity}명</p>
+                      <p className="text-xs text-slate-400 mt-0.5">
+                        정원 {meeting.approvedCount}/{meeting.maxCapacity}명
+                        {meeting.waitlistedCount > 0 && (
+                          <span className="ml-1.5 text-amber-600">· 대기 {meeting.waitlistedCount}명</span>
+                        )}
+                      </p>
                       {isWaitingForOpen && (
                         <p className="text-xs text-amber-700 mt-1">신청 시작: {formatSignupOpensAtCompact(meeting.signupOpensAt)}</p>
                       )}

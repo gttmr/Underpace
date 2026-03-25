@@ -8,7 +8,7 @@ export default function DeleteMarathonButton({ id }: { id: number }) {
   const [deleting, setDeleting] = useState(false);
 
   async function handleDelete() {
-    if (!confirm("정말 이 마라톤 일정을 삭제하시겠습니까?")) return;
+    if (!confirm("정말 이 대회 일정을 삭제하시겠습니까?")) return;
     setDeleting(true);
 
     try {

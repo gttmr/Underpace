@@ -64,7 +64,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user, retur
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-slate-900/50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-          <h2 className="text-lg font-bold text-slate-800">마라톤 대회 등록</h2>
+          <h2 className="text-lg font-bold text-slate-800">대회 등록</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors p-1">
             ✕
           </button>
@@ -85,7 +85,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user, retur
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="예: 2026 서울마라톤"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-sm"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-sm"
             />
           </div>
 
@@ -97,7 +97,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user, retur
                 required
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-sm"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-sm"
               />
             </div>
             <div>
@@ -107,7 +107,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user, retur
                 required
                 value={startTime}
                 onChange={(e) => setStartTime(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-sm"
+                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-sm"
               />
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user, retur
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="예: 광화문 광장"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-sm"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-sm"
             />
           </div>
 
@@ -130,7 +130,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user, retur
               value={link}
               onChange={(e) => setLink(e.target.value)}
               placeholder="https://..."
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-sm"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-sm"
             />
           </div>
 
@@ -141,7 +141,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user, retur
               onChange={(e) => setDescription(e.target.value)}
               placeholder="코스 정보, 참가비 등을 적어주세요."
               rows={2}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 outline-none transition-all text-sm resize-none custom-scrollbar"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 outline-none transition-all text-sm resize-none custom-scrollbar"
             />
           </div>
 
@@ -158,7 +158,7 @@ export default function MarathonRegistrationModal({ isOpen, onClose, user, retur
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm transition-colors disabled:opacity-50"
+                className="w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition-colors disabled:opacity-50"
               >
                 {submitting ? "등록 중..." : "등록하기"}
               </button>

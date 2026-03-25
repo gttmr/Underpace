@@ -67,14 +67,16 @@ export default function ScheduleView({
             {isWaitingForOpen && (
               <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">오픈 전</span>
             )}
-            {!isClosed && isFull && (
-              <span className="text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">정원마감</span>
-            )}
           </div>
           <p className="text-xs text-slate-500 truncate">📍 {meeting.location}</p>
           <div className="mt-2">
             <CapacityBar current={meeting.approvedCount} max={meeting.maxCapacity} showLabel={false} />
-            <p className="text-xs text-slate-400 mt-0.5">{meeting.approvedCount}/{meeting.maxCapacity}명</p>
+            <p className="text-xs text-slate-400 mt-0.5">
+              정원 {meeting.approvedCount}/{meeting.maxCapacity}명
+              {meeting.waitlistedCount > 0 && (
+                <span className="ml-1.5 text-amber-600">· 대기 {meeting.waitlistedCount}명</span>
+              )}
+            </p>
             {isWaitingForOpen && (
               <p className="text-xs text-amber-700 mt-1">신청 시작: {formatSignupOpensAtCompact(meeting.signupOpensAt)}</p>
             )}
@@ -123,9 +125,9 @@ export default function ScheduleView({
         </div>
         <button
           onClick={() => setIsMarathonModalOpen(true)}
-          className="px-3 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-bold bg-orange-500 text-white hover:bg-orange-600 transition-colors shadow-sm ml-2"
+          className="px-3 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-bold bg-emerald-500 text-white hover:bg-emerald-600 transition-colors shadow-sm ml-2"
         >
-          마라톤 등록
+          대회 등록
         </button>
       </div>
 

@@ -121,19 +121,19 @@ export default async function AdminDashboard() {
         </div>
       </section>
 
-      {/* 예정된 마라톤 대회 */}
+      {/* 예정된 대회 */}
       <section className="mb-8">
-        <h2 className="text-sm font-bold text-slate-700 mb-3">예정된 마라톤 대회</h2>
+        <h2 className="text-sm font-bold text-slate-700 mb-3">예정된 대회</h2>
         <div className="space-y-3">
           {upcomingMarathons.map((m) => {
             const d = new Date(m.date + "T00:00:00");
             const [, month, day] = m.date.split("-");
 
             return (
-              <div key={m.id} className="bg-orange-50 rounded-xl border border-orange-200 p-4 flex items-center justify-between shadow-sm">
+              <div key={m.id} className="bg-emerald-50 rounded-xl border border-emerald-200 p-4 flex items-center justify-between shadow-sm">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="font-semibold text-orange-900 text-xs">
+                    <p className="font-semibold text-emerald-900 text-xs">
                       {parseInt(month)}월 {parseInt(day)}일 ({DAY_KO[d.getDay()]}) {m.startTime}
                     </p>
                   </div>
@@ -146,7 +146,7 @@ export default async function AdminDashboard() {
           })}
           {upcomingMarathons.length === 0 && (
             <div className="bg-white rounded-xl border border-slate-200 p-6 text-center shadow-sm">
-              <p className="text-sm text-slate-400">예정된 마라톤 대회가 없습니다</p>
+              <p className="text-sm text-slate-400">예정된 대회가 없습니다</p>
             </div>
           )}
         </div>

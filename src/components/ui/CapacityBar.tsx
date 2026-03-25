@@ -3,10 +3,11 @@
 interface CapacityBarProps {
   current: number;
   max: number;
+  waitlisted?: number;
   showLabel?: boolean;
 }
 
-export function CapacityBar({ current, max, showLabel = true }: CapacityBarProps) {
+export function CapacityBar({ current, max, waitlisted = 0, showLabel = true }: CapacityBarProps) {
   const ratio = max > 0 ? current / max : 0;
   const pct = Math.min(ratio * 100, 100);
 
@@ -32,7 +33,10 @@ export function CapacityBar({ current, max, showLabel = true }: CapacityBarProps
       {showLabel && (
         <div className="flex justify-between text-sm">
           <span className="text-slate-600">
-            <span className="font-semibold text-slate-800">{current}</span>/{max}명
+            정원 <span className="font-semibold text-slate-800">{current}</span>/{max}명
+            {waitlisted > 0 && (
+              <span className="ml-1.5 text-amber-600 text-xs font-semibold">· 대기 {waitlisted}명</span>
+            )}
           </span>
           {label && (
             <span className={`text-xs font-semibold ${textColor}`}>{label}</span>
