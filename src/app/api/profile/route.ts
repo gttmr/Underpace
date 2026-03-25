@@ -49,6 +49,14 @@ export async function PUT(req: NextRequest) {
       ...(pb5k !== undefined && { pb5k: pb5k.trim() || null }),
       ...(coachingNote !== undefined && { coachingNote: coachingNote.trim() || null }),
     },
+    include: {
+      _count: {
+        select: {
+          participants: true,
+          marathonParticipants: true,
+        },
+      },
+    },
   });
 
   return NextResponse.json(user);
