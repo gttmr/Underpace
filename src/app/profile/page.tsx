@@ -23,26 +23,25 @@ interface UserProfile {
 }
 
 // 숫자만 입력하면 자동으로 H:MM:SS 또는 MM:SS 형식으로 변환
-// 5자리(15800) 또는 6자리(015800) 모두 1:58:00으로 처리
-function formatTimeInput(raw: string): string {
-  const digits = raw.replace(/\D/g, "");
+// 3~4자리: M:SS 또는 MM:SS, 5~6자리: H:MM:SS (앞자리 0 자동 제거)
+function formatTimeInput(digits: string): string {
+  if (digits.length === 0) return "";
   if (digits.length <= 2) return digits;
-  if (digits.length <= 4) return `${digits.slice(0, -2)}:${digits.slice(-2)}`;
-  // 5~6자리: H:MM:SS (앞자리 0 자동 제거, 예: 015800 → 1:58:00)
+  if (digits.length <= 4) {
+    // MM:SS — 앞자리 0 제거 (예: 0230 → 2:30, 4730 → 47:30)
+    const mins = parseInt(digits.slice(0, -2), 10);
+    return `${mins}:${digits.slice(-2)}`;
+  }
+  // 5~6자리: H:MM:SS (예: 15800 → 1:58:00, 015800 → 1:58:00)
   const hours = parseInt(digits.slice(0, -4), 10);
   return `${hours}:${digits.slice(-4, -2)}:${digits.slice(-2)}`;
 }
 
 function TimeInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    // 콜론이 포함된 경우 (사용자가 직접 포맷 입력) 그대로 허용
-    if (raw.includes(":")) {
-      onChange(raw);
-      return;
-    }
-    // 숫자만 입력 시 자동 포맷
-    const digits = raw.replace(/\D/g, "").slice(0, 6);
+    // 콜론 포함 여부와 무관하게 항상 숫자만 추출해서 재포맷
+    // (자동 삽입된 콜론 이후 입력 시 "1:4450" 같은 오류 방지)
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 6);
     onChange(formatTimeInput(digits));
   };
 
