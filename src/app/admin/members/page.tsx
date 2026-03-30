@@ -53,6 +53,8 @@ export default function AdminMembersPage() {
   const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
 
   useEffect(() => {
     fetch("/api/admin/members")
@@ -63,10 +65,41 @@ export default function AdminMembersPage() {
 
   async function loadDetail(userId: number) {
     setDetailLoading(true);
+    setEditingName(false);
     const res = await fetch(`/api/admin/members/${userId}`);
     const data = await res.json();
     setSelectedUser(data);
     setDetailLoading(false);
+  }
+
+  async function handleNameSave() {
+    if (!selectedUser || !nameInput.trim()) return;
+    await fetch(`/api/admin/members/${selectedUser.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: nameInput.trim() }),
+    });
+    const newName = nameInput.trim();
+    setSelectedUser({ ...selectedUser, name: newName });
+    setUsers((prev) => prev.map((u) => (u.id === selectedUser.id ? { ...u, name: newName } : u)));
+    setEditingName(false);
+  }
+
+  async function handleDeleteParticipant(participantId: number) {
+    if (!selectedUser) return;
+    if (!confirm("이 신청 내역을 삭제하시겠습니까?")) return;
+    await fetch(`/api/participants/${participantId}`, { method: "DELETE" });
+    setSelectedUser({
+      ...selectedUser,
+      participants: selectedUser.participants.filter((p) => p.id !== participantId),
+    });
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === selectedUser.id
+          ? { ...u, _count: { ...u._count, participants: u._count.participants - 1 } }
+          : u
+      )
+    );
   }
 
   async function handleRoleChange(userId: number, newRole: string) {
@@ -184,9 +217,31 @@ export default function AdminMembersPage() {
                         <span className="text-3xl text-slate-300">👤</span>
                       )}
                     </div>
-                    <div>
-                      <h2 className="text-lg font-extrabold text-slate-900">{selectedUser.name || "이름 없음"}</h2>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                    <div className="flex-1 min-w-0">
+                      {editingName ? (
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <input
+                            autoFocus
+                            type="text"
+                            value={nameInput}
+                            onChange={(e) => setNameInput(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") handleNameSave(); if (e.key === "Escape") setEditingName(false); }}
+                            className="flex-1 min-w-0 px-2 py-1 text-sm font-bold border border-blue-400 rounded-lg outline-none"
+                          />
+                          <button onClick={handleNameSave} className="text-xs bg-blue-600 text-white px-2 py-1 rounded-lg font-bold shrink-0">저장</button>
+                          <button onClick={() => setEditingName(false)} className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-lg font-bold shrink-0">취소</button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <h2 className="text-lg font-extrabold text-slate-900">{selectedUser.name || "이름 없음"}</h2>
+                          <button
+                            onClick={() => { setNameInput(selectedUser.name || ""); setEditingName(true); }}
+                            className="text-xs text-slate-400 hover:text-blue-500 transition-colors"
+                            title="이름 수정"
+                          >✏️</button>
+                        </div>
+                      )}
+                      <p className="text-xs text-slate-400">
                         카카오 ID: {selectedUser.kakaoId}
                       </p>
                       <p className="text-xs text-slate-400">
@@ -240,6 +295,11 @@ export default function AdminMembersPage() {
                                 }`}>
                                   {p.status === "APPROVED" ? "참석" : p.status === "WAITLISTED" ? "대기" : "승인대기"}
                                 </span>
+                                <button
+                                  onClick={() => handleDeleteParticipant(p.id)}
+                                  className="ml-auto text-slate-300 hover:text-red-400 transition-colors font-bold"
+                                  title="신청 내역 삭제"
+                                >✕</button>
                               </div>
                               <p className="text-slate-600">{p.meeting.date} · {p.meeting.startTime} · {p.meeting.location}</p>
                             </div>
