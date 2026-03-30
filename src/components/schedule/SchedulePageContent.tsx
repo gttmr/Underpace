@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import ScheduleView from "./ScheduleView";
+import PinnedNoticeCard from "./PinnedNoticeCard";
 
 export default async function SchedulePageContent({ returnTo }: { returnTo: string }) {
   const user = await getSession();
@@ -85,15 +86,7 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
       </header>
 
       {pinnedNotice && (
-        <div className="bg-amber-50 border-b border-amber-200">
-          <div className="max-w-xl mx-auto px-4 py-3 flex items-start gap-2">
-            <span className="text-amber-500 text-sm font-bold shrink-0">📢</span>
-            <div>
-              <span className="text-sm font-semibold text-amber-800">{pinnedNotice.title}</span>
-              <p className="text-xs text-amber-700 mt-0.5 line-clamp-2">{pinnedNotice.body}</p>
-            </div>
-          </div>
-        </div>
+        <PinnedNoticeCard title={pinnedNotice.title} body={pinnedNotice.body} />
       )}
 
       <main className="max-w-xl mx-auto px-4 py-6 space-y-4">

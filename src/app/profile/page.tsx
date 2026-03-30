@@ -22,13 +22,15 @@ interface UserProfile {
   };
 }
 
-// 숫자만 입력하면 자동으로 HH:MM:SS 또는 MM:SS 형식으로 변환
+// 숫자만 입력하면 자동으로 H:MM:SS 또는 MM:SS 형식으로 변환
+// 5자리(15800) 또는 6자리(015800) 모두 1:58:00으로 처리
 function formatTimeInput(raw: string): string {
   const digits = raw.replace(/\D/g, "");
   if (digits.length <= 2) return digits;
   if (digits.length <= 4) return `${digits.slice(0, -2)}:${digits.slice(-2)}`;
-  // 5~6자리: HH:MM:SS
-  return `${digits.slice(0, -4)}:${digits.slice(-4, -2)}:${digits.slice(-2)}`;
+  // 5~6자리: H:MM:SS (앞자리 0 자동 제거, 예: 015800 → 1:58:00)
+  const hours = parseInt(digits.slice(0, -4), 10);
+  return `${hours}:${digits.slice(-4, -2)}:${digits.slice(-2)}`;
 }
 
 function TimeInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
