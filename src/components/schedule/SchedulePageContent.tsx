@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import ScheduleView from "./ScheduleView";
-import PinnedNoticeCard from "./PinnedNoticeCard";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 export default async function SchedulePageContent({ returnTo }: { returnTo: string }) {
   const user = await getSession();
@@ -12,13 +12,12 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
     : null;
   const isCoachOrAdmin = userRole === "COACH" || userRole === "ADMIN";
 
-  const [meetings, marathons, pinnedNotice] = await Promise.all([
+  const [meetings, marathons] = await Promise.all([
     prisma.meeting.findMany({
       orderBy: { date: "asc" },
       include: { participants: { select: { status: true } } },
     }),
     prisma.marathon.findMany({ orderBy: { date: "asc" } }),
-    prisma.notice.findFirst({ where: { isPinned: true }, orderBy: { createdAt: "desc" } }),
   ]);
 
   const meetingsForClient = meetings.map((meeting) => ({
@@ -73,6 +72,7 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
                   코치
                 </Link>
               )}
+              <NotificationBell />
               <Link
                 href="/profile"
                 className="px-3 py-2 rounded-xl bg-[rgba(255,255,255,0.12)] hover:bg-[rgba(255,255,255,0.2)] text-white text-sm font-bold transition-colors border border-[rgba(255,255,255,0.15)] whitespace-nowrap"
@@ -90,10 +90,6 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
           )}
         </div>
       </header>
-
-      {pinnedNotice && (
-        <PinnedNoticeCard title={pinnedNotice.title} body={pinnedNotice.body} />
-      )}
 
       <main className="max-w-xl mx-auto px-4 py-5 space-y-4">
         <ScheduleView meetings={meetingsForClient} marathons={marathonsForClient} user={user} />
