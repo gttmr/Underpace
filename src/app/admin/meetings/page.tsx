@@ -28,7 +28,7 @@ export default async function AdminMeetingsPage() {
     return (
       <Link
         href={`/admin/meetings/${m.id}`}
-        className="block bg-white rounded-xl border border-slate-200 p-4 hover:border-blue-300 transition-colors"
+        className="block bg-white rounded-xl border border-slate-200 p-4 hover:border-[#7fb5ff] transition-colors"
       >
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
@@ -42,7 +42,7 @@ export default async function AdminMeetingsPage() {
           <div className="flex items-center gap-1.5 shrink-0">
             {!m.isOpen && <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full">마감</span>}
             {pending > 0 && <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">대기 {pending}</span>}
-            {waitlisted > 0 && <span className="text-xs bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded-full">대기자 {waitlisted}</span>}
+            {waitlisted > 0 && <span className="text-xs bg-[#c4ddff] text-[#001d6e] px-1.5 py-0.5 rounded-full">대기자 {waitlisted}</span>}
           </div>
         </div>
         <div className="flex items-center gap-3">

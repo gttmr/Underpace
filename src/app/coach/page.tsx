@@ -58,7 +58,7 @@ const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 function PbBadge({ label, value }: { label: string; value: string | null }) {
   if (!value) return null;
   return (
-    <span className="inline-flex items-center gap-1 text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded font-bold">
+    <span className="inline-flex items-center gap-1 text-[10px] bg-[#c4ddff] text-[#001d6e] px-1.5 py-0.5 rounded font-bold">
       {label} {value}
     </span>
   );
@@ -161,7 +161,7 @@ export default function CoachDashboardPage() {
           <div className="text-5xl mb-4">🚫</div>
           <h1 className="text-xl font-extrabold text-slate-900 mb-2">접근 권한이 없습니다</h1>
           <p className="text-sm text-slate-500 mb-6">코치 또는 관리자 권한이 필요합니다.</p>
-          <Link href="/" className="text-sm text-blue-600 hover:underline">← 홈으로 돌아가기</Link>
+          <Link href="/" className="text-sm text-[#001d6e] hover:underline">← 홈으로 돌아가기</Link>
         </div>
       </div>
     );
@@ -335,27 +335,27 @@ export default function CoachDashboardPage() {
                       <h3 className="text-sm font-extrabold text-slate-700 mb-2">🏅 마라톤 PB 기록</h3>
                       <div className="grid grid-cols-2 gap-2">
                         {memberRecord.pbFull && (
-                          <div className="bg-blue-50 rounded-xl px-3 py-2.5">
-                            <p className="text-[10px] text-blue-500 font-bold">풀마라톤</p>
-                            <p className="text-sm font-extrabold text-blue-700">{memberRecord.pbFull}</p>
+                          <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
+                            <p className="text-[10px] text-[#001d6e] font-bold">풀마라톤</p>
+                            <p className="text-sm font-extrabold text-[#001d6e]">{memberRecord.pbFull}</p>
                           </div>
                         )}
                         {memberRecord.pbHalf && (
-                          <div className="bg-blue-50 rounded-xl px-3 py-2.5">
-                            <p className="text-[10px] text-blue-500 font-bold">하프마라톤</p>
-                            <p className="text-sm font-extrabold text-blue-700">{memberRecord.pbHalf}</p>
+                          <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
+                            <p className="text-[10px] text-[#001d6e] font-bold">하프마라톤</p>
+                            <p className="text-sm font-extrabold text-[#001d6e]">{memberRecord.pbHalf}</p>
                           </div>
                         )}
                         {memberRecord.pb10k && (
-                          <div className="bg-blue-50 rounded-xl px-3 py-2.5">
-                            <p className="text-[10px] text-blue-500 font-bold">10K</p>
-                            <p className="text-sm font-extrabold text-blue-700">{memberRecord.pb10k}</p>
+                          <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
+                            <p className="text-[10px] text-[#001d6e] font-bold">10K</p>
+                            <p className="text-sm font-extrabold text-[#001d6e]">{memberRecord.pb10k}</p>
                           </div>
                         )}
                         {memberRecord.pb5k && (
-                          <div className="bg-blue-50 rounded-xl px-3 py-2.5">
-                            <p className="text-[10px] text-blue-500 font-bold">5K</p>
-                            <p className="text-sm font-extrabold text-blue-700">{memberRecord.pb5k}</p>
+                          <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
+                            <p className="text-[10px] text-[#001d6e] font-bold">5K</p>
+                            <p className="text-sm font-extrabold text-[#001d6e]">{memberRecord.pb5k}</p>
                           </div>
                         )}
                       </div>

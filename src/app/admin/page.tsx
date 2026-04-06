@@ -61,7 +61,7 @@ export default async function AdminDashboard() {
         {[
           { label: "이번 주 승인", value: totalApproved, color: "text-green-600" },
           { label: "대기 승인", value: totalPending, color: "text-amber-600" },
-          { label: "대기자", value: totalWaitlisted, color: "text-blue-600" },
+          { label: "대기자", value: totalWaitlisted, color: "text-[#001d6e]" },
         ].map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4 text-center">
             <p className={`text-2xl font-extrabold ${stat.color}`}>{stat.value}</p>
@@ -74,7 +74,7 @@ export default async function AdminDashboard() {
       <section className="mb-8">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-bold text-slate-700">예정된 모임</h2>
-          <Link href="/admin/meetings" className="text-xs text-blue-600 hover:underline">전체 보기 →</Link>
+          <Link href="/admin/meetings" className="text-xs text-[#001d6e] hover:underline">전체 보기 →</Link>
         </div>
         <div className="space-y-3">
           {upcomingMeetings.map((m) => {
@@ -95,7 +95,7 @@ export default async function AdminDashboard() {
                   </div>
                   <Link
                     href={`/admin/meetings/${m.id}`}
-                    className="text-xs text-blue-600 hover:underline shrink-0 ml-2"
+                    className="text-xs text-[#001d6e] hover:underline shrink-0 ml-2"
                   >
                     관리 →
                   </Link>
@@ -160,7 +160,7 @@ export default async function AdminDashboard() {
             const statusColors: Record<string, string> = {
               PENDING: "text-amber-600",
               APPROVED: "text-green-600",
-              WAITLISTED: "text-blue-600",
+              WAITLISTED: "text-[#001d6e]",
               REJECTED: "text-slate-400",
             };
             const statusLabels: Record<string, string> = {

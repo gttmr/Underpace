@@ -61,18 +61,18 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
   const displayDate = `${parseInt(month, 10)}월 ${parseInt(day, 10)}일 (${dayName})`;
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
+    <div className="min-h-screen bg-[#f5f8ff] pb-24">
       <header className="bg-hero-gradient text-white">
         <div className="max-w-xl mx-auto px-4 py-5 flex items-center gap-3">
-          <Link href="/" className="text-blue-200 hover:text-white transition-colors text-xl leading-none">←</Link>
+          <Link href="/" className="text-[#c4ddff] hover:text-white transition-colors text-xl leading-none">←</Link>
           <h1 className="font-bold text-lg">모임 신청</h1>
         </div>
       </header>
 
       <main className="max-w-xl mx-auto px-4 py-6 space-y-6">
         {/* 모임 정보 카드 */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h2 className="text-xl font-extrabold text-slate-900 mb-4">
+        <div className="bg-white rounded-xl border border-[#7fb5ff] shadow-sm p-5">
+          <h2 className="text-xl font-extrabold text-brand-text mb-4">
             주간 {dayName}요일 모임
           </h2>
           <div className="space-y-2 text-sm text-slate-600 mb-5">
@@ -98,8 +98,8 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* 신청 폼 카드 */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
-          <h3 className="text-base font-bold text-slate-800 mb-4">참가 신청</h3>
+        <div className="bg-white rounded-xl border border-[#7fb5ff] shadow-sm p-5">
+          <h3 className="text-base font-bold text-brand-text mb-4">참가 신청</h3>
           <SignupForm meeting={meeting} />
         </div>
 
@@ -107,7 +107,7 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
         <div>
           <div className="flex items-center justify-between mb-4 px-1">
             <h2 className="text-lg font-bold text-slate-800">참석 및 대기 현황</h2>
-            <span className="bg-blue-100 text-blue-700 text-sm font-semibold px-2.5 py-0.5 rounded-full">
+            <span className="bg-brand-soft text-brand-primary text-sm font-semibold px-2.5 py-0.5 rounded-full">
               {meeting.participantsList.length}명
             </span>
           </div>

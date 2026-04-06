@@ -120,10 +120,10 @@ export default function CalendarView({
           const isSignupReady = isSignupAvailable(meeting);
           const isPast = ds < today;
           const color = isPast || isClosed
-            ? "bg-slate-300"
+            ? "bg-[rgba(0,29,110,0.2)]"
             : !isSignupReady
             ? "bg-amber-400"
-            : "bg-blue-500";
+            : "bg-brand-primary";
 
           return <span key={`meet-${meeting.id}`} className={`w-1.5 h-1.5 rounded-full ${color}`} />;
         })}
@@ -136,7 +136,7 @@ export default function CalendarView({
       <div className="relative flex items-center justify-between px-1">
         <button
           onClick={prevMonth}
-          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-brand-soft text-brand-text transition-colors"
         >
           ‹
         </button>
@@ -144,7 +144,7 @@ export default function CalendarView({
         <div className="relative flex-1 flex justify-center">
           <button
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center gap-1.5 font-bold text-slate-800 text-base hover:bg-slate-50 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 font-bold text-brand-text text-base hover:bg-brand-soft px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
           >
             {year}년 {month + 1}월
             <svg className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,14 +155,14 @@ export default function CalendarView({
           {isDropdownOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
-              <div className="absolute top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-lg p-3 z-50 flex gap-4 w-max animate-in fade-in slide-in-from-top-2 duration-200">
+              <div className="absolute top-full mt-1 bg-white border border-[#7fb5ff] rounded-xl shadow-lg p-3 z-50 flex gap-4 w-max animate-in fade-in slide-in-from-top-2 duration-200">
                 <div className="flex flex-col h-48 overflow-y-auto pr-2 custom-scrollbar">
                   <div className="text-xs font-semibold text-slate-400 mb-2 px-2 sticky top-0 bg-white">연도</div>
                   {Array.from({ length: 11 }, (_, index) => todayDate.getFullYear() - 5 + index).map((value) => (
                     <button
                       key={value}
                       onClick={() => setYear(value)}
-                      className={`text-sm px-3 py-1.5 rounded-md text-left transition-colors ${year === value ? "bg-blue-50 text-blue-600 font-bold" : "text-slate-600 hover:bg-slate-50"}`}
+                      className={`text-sm px-3 py-1.5 rounded-md text-left transition-colors ${year === value ? "bg-brand-soft text-brand-primary font-bold" : "text-[rgba(0,29,110,0.74)] hover:bg-brand-soft"}`}
                     >
                       {value}년
                     </button>
@@ -178,7 +178,7 @@ export default function CalendarView({
                           setMonth(value);
                           setIsDropdownOpen(false);
                         }}
-                        className={`text-sm w-12 py-2 rounded-md transition-colors ${month === value ? "bg-blue-50 text-blue-600 font-bold" : "text-slate-600 hover:bg-slate-50"}`}
+                        className={`text-sm w-12 py-2 rounded-md transition-colors ${month === value ? "bg-brand-soft text-brand-primary font-bold" : "text-[rgba(0,29,110,0.74)] hover:bg-brand-soft"}`}
                       >
                         {value + 1}월
                       </button>
@@ -192,7 +192,7 @@ export default function CalendarView({
 
         <button
           onClick={nextMonth}
-          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-brand-soft text-brand-text transition-colors"
         >
           ›
         </button>
@@ -203,7 +203,7 @@ export default function CalendarView({
           <div
             key={day}
             className={`text-xs font-semibold py-1 ${
-              index === 0 ? "text-red-500" : index === 6 ? "text-blue-500" : "text-slate-400"
+              index === 0 ? "text-red-500" : index === 6 ? "text-brand-primary" : "text-[rgba(0,29,110,0.48)]"
             }`}
           >
             {day}
@@ -228,9 +228,9 @@ export default function CalendarView({
               key={ds}
               onClick={() => setSelectedDate(isSelected ? null : ds)}
               className={`flex flex-col items-center py-1.5 rounded-lg transition-colors
-                ${isSelected ? "bg-blue-600 text-white" : isToday ? "bg-blue-50 text-blue-700" : "hover:bg-slate-50"}
+                ${isSelected ? "bg-brand-primary text-white" : isToday ? "bg-brand-soft text-brand-primary" : "hover:bg-brand-soft"}
                 ${column === 0 && !isSelected ? "text-red-500" : ""}
-                ${column === 6 && !isSelected ? "text-blue-500" : ""}
+                ${column === 6 && !isSelected ? "text-brand-primary" : ""}
               `}
             >
               <span className={`text-sm font-semibold leading-none ${isToday && !isSelected ? "underline underline-offset-2" : ""}`}>
@@ -248,11 +248,11 @@ export default function CalendarView({
       <div className="flex gap-3 text-xs text-slate-400 px-1">
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />대회</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />신청예정</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />정규신청</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-brand-primary inline-block" />정규신청</span>
       </div>
 
       {selectedDate && (
-        <div className="border-t border-slate-100 pt-4 space-y-2">
+        <div className="border-t border-[rgba(0,29,110,0.16)] pt-4 space-y-2">
           {selectedMeetings.length === 0 && selectedMarathons.length === 0 ? (
             <p className="text-sm text-slate-400 text-center py-4">이 날 일정이 없습니다</p>
           ) : (
@@ -265,7 +265,7 @@ export default function CalendarView({
                 <Link
                   key={`m-${marathon.id}`}
                   href={`/marathon/${marathon.id}`}
-                  className="block mt-3 bg-white p-4 rounded-xl border border-emerald-100 shadow-sm relative overflow-hidden transition-transform active:scale-[0.98] hover:shadow-md"
+                  className="block mt-3 bg-white p-4 rounded-xl border border-emerald-200 shadow-sm relative overflow-hidden transition-transform active:scale-[0.98] hover:shadow-md"
                 >
                   <div className="absolute top-0 left-0 w-1 h-full bg-emerald-400" />
                   <div className="flex justify-between items-center">
@@ -313,11 +313,11 @@ export default function CalendarView({
                 return (
                   <div
                     key={`meet-${meeting.id}`}
-                    className={`bg-white border border-slate-200 rounded-xl p-4 flex items-center gap-3 ${isPast || isClosed ? "opacity-60" : ""}`}
+                    className={`bg-white border border-[#7fb5ff] rounded-xl p-4 flex items-center gap-3 ${isPast || isClosed ? "opacity-60" : ""}`}
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className="text-sm font-semibold text-slate-800">
+                        <span className="text-sm font-semibold text-brand-text">
                           {meeting.startTime} – {meeting.endTime}
                         </span>
                         {isClosed && (
@@ -327,8 +327,8 @@ export default function CalendarView({
                           <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">오픈 전</span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 truncate">📍 {meeting.location}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-xs text-[rgba(0,29,110,0.6)] truncate">📍 {meeting.location}</p>
+                      <p className="text-xs text-[rgba(0,29,110,0.48)] mt-0.5">
                         정원 {meeting.approvedCount}/{meeting.maxCapacity}명
                         {meeting.waitlistedCount > 0 && (
                           <span className="ml-1.5 text-amber-600">· 대기 {meeting.waitlistedCount}명</span>
@@ -342,7 +342,7 @@ export default function CalendarView({
                       <Link
                         href={`/meeting/${meeting.id}`}
                         className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors
-                          ${isFull ? "bg-blue-400 hover:bg-blue-500" : "bg-blue-600 hover:bg-blue-700"}`}
+                          ${isFull ? "bg-brand-soft-strong hover:bg-[#6aa3f0]" : "bg-brand-primary hover:bg-[#001d6e]"}`}
                       >
                         {isFull ? "대기 신청" : "신청"}
                       </Link>

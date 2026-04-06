@@ -4,7 +4,23 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-navy-900: #001d6e;
+  --color-sky-100: #c4ddff;
+  --color-sky-300: #7fb5ff;
+  --brand-primary: #001d6e;
+  --brand-soft: #c4ddff;
+  --brand-soft-strong: #7fb5ff;
+  --brand-border: #7fb5ff;
+  --brand-text: #001d6e;
+  --brand-text-muted: rgba(0, 29, 110, 0.74);
+  --brand-text-subtle: rgba(0, 29, 110, 0.48);
+  --brand-divider: rgba(0, 29, 110, 0.16);
+  --brand-shadow: rgba(0, 29, 110, 0.1);
+  --brand-ring: rgba(127, 181, 255, 0.35);
+}
+
 body {
   font-family: "Pretendard", system-ui, -apple-system, sans-serif;
-  background-color: #F1F5F9;
+  background-color: #ffffff;
 }

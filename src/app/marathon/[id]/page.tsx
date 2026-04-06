@@ -27,7 +27,7 @@ export default async function MarathonDetailPage({
   const isPast = d < new Date(new Date().toISOString().split("T")[0] + "T00:00:00");
 
   return (
-    <main className="max-w-md mx-auto min-h-screen bg-slate-50 flex flex-col pt-safe px-4 pb-24">
+    <main className="max-w-md mx-auto min-h-screen bg-[#f5f8ff] flex flex-col pt-safe px-4 pb-24">
       <div className="flex items-center mb-6 pt-4">
         <Link href="/schedule" className="p-2 -ml-2 text-slate-400 hover:text-slate-600">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -73,10 +73,10 @@ export default async function MarathonDetailPage({
 
           {marathon.link && (
             <div className="flex items-start text-slate-600">
-              <svg className="w-5 h-5 mr-3 text-blue-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-5 h-5 mr-3 text-brand-primary shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
               </svg>
-              <a href={marathon.link} target="_blank" rel="noopener noreferrer" className="text-[15px] text-blue-500 hover:underline break-all">
+              <a href={marathon.link} target="_blank" rel="noopener noreferrer" className="text-[15px] text-brand-primary hover:underline break-all">
                 신청 링크 열기
               </a>
             </div>

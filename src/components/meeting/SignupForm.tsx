@@ -123,9 +123,9 @@ export function SignupForm({ meeting }: SignupFormProps) {
 
   if (isWaitingForOpen) {
     return (
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 text-center">
-        <p className="text-sm font-semibold text-blue-800">아직 신청 오픈 전입니다</p>
-        <p className="text-sm text-blue-700 mt-1">
+      <div className="bg-brand-soft border border-[#7fb5ff] rounded-xl p-6 text-center">
+        <p className="text-sm font-semibold text-brand-primary">아직 신청 오픈 전입니다</p>
+        <p className="text-sm text-[rgba(0,29,110,0.74)] mt-1">
           신청은 {formatSignupOpensAt(meeting.signupOpensAt)}부터 가능합니다.
         </p>
       </div>
@@ -215,7 +215,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
           placeholder="홍길동"
           disabled={submitting}
           className={`w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-colors
-            ${nameError ? "border-red-400 bg-red-50" : profileName ? "border-slate-200 bg-slate-50 text-slate-600" : "border-slate-200 focus:border-blue-500"}
+            ${nameError ? "border-red-400 bg-red-50" : profileName ? "border-slate-200 bg-slate-50 text-slate-600" : "border-slate-200 focus:border-[#001d6e]"}
             disabled:bg-slate-50 disabled:text-slate-400`}
         />
         {nameError && <p className="mt-1 text-xs text-red-500">{nameError}</p>}
@@ -232,7 +232,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
           placeholder="처음 참가합니다, 주차 문의 등..."
           rows={3}
           disabled={submitting}
-          className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors resize-none disabled:bg-slate-50 disabled:text-slate-400"
+          className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors resize-none disabled:bg-slate-50 disabled:text-slate-400"
         />
         <p className="mt-1 text-xs text-slate-400 text-right">{note.length}/100</p>
       </div>
@@ -244,8 +244,8 @@ export function SignupForm({ meeting }: SignupFormProps) {
           ${submitting || !name.trim()
             ? "bg-slate-300 cursor-not-allowed"
             : isFull
-              ? "bg-blue-500 hover:bg-blue-600 active:scale-[0.99]"
-              : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99]"
+              ? "bg-brand-soft-strong hover:bg-[#6aa3f0] active:scale-[0.99]"
+              : "bg-brand-primary hover:bg-[#001d6e] active:scale-[0.99]"
           }`}
       >
         {submitting ? (

@@ -31,11 +31,11 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   const displayDate = `${parseInt(month)}월 ${parseInt(day)}일 (${dayName})`;
 
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow p-5">
+    <div className="bg-white rounded-xl border border-[#7fb5ff] shadow-sm hover:shadow-md transition-shadow p-5">
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2 flex-wrap">
           {dateLabel && (
-            <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+            <span className="text-xs font-semibold bg-brand-soft text-brand-primary px-2 py-0.5 rounded-full">
               {dateLabel}
             </span>
           )}
@@ -52,11 +52,11 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         </div>
       </div>
 
-      <h2 className="text-xl font-bold text-slate-900 mb-3">
+      <h2 className="text-xl font-bold text-brand-text mb-3">
         {displayDate} 모임
       </h2>
 
-      <div className="space-y-1.5 mb-4 text-sm text-slate-600">
+      <div className="space-y-1.5 mb-4 text-sm text-[rgba(0,29,110,0.74)]">
         <div className="flex items-center gap-2">
           <span>📍</span>
           <span>{meeting.location}</span>
@@ -85,7 +85,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
             </button>
             <Link
               href={`/meeting/${meeting.id}`}
-              className="w-full text-center py-2.5 rounded-lg border border-blue-600 text-blue-600 font-semibold text-sm hover:bg-blue-50 transition-colors"
+              className="w-full text-center py-2.5 rounded-lg border border-brand-primary text-brand-primary font-semibold text-sm hover:bg-brand-soft transition-colors"
             >
               대기자로 신청하기
             </Link>
@@ -96,7 +96,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
             className={`w-full text-center py-2.5 rounded-lg font-semibold text-sm text-white transition-colors
               ${meeting.approvedCount / meeting.maxCapacity >= 0.85
                 ? "bg-amber-500 hover:bg-amber-600"
-                : "bg-blue-600 hover:bg-blue-700"
+                : "bg-brand-primary hover:bg-[#001d6e]"
               }`}
           >
             신청하기

@@ -22,8 +22,8 @@ const STATUS_CONFIG: Record<
   },
   WAITLISTED: {
     label: "대기자",
-    className: "bg-blue-50 text-blue-700 border border-blue-200",
-    dot: "bg-blue-500",
+    className: "bg-brand-soft text-brand-primary border border-brand-border",
+    dot: "bg-brand-primary",
   },
   REJECTED: {
     label: "거절됨",

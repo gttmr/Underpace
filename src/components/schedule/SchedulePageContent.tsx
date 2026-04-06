@@ -55,7 +55,7 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
         <div className="max-w-xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
           <div>
             <h1 className="font-bold text-lg">전체 일정</h1>
-            <p className="text-blue-200 text-xs mt-0.5">모임과 대회 일정을 한눈에 확인하세요</p>
+            <p className="text-[#c4ddff] text-xs mt-0.5">모임과 대회 일정을 한눈에 확인하세요</p>
           </div>
           {user ? (
             <div className="flex items-center gap-2">
