@@ -147,7 +147,7 @@ export default function AdminMembersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="이름, 카카오ID, 연락처로 검색..."
-          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors"
         />
       </div>
 
@@ -168,8 +168,8 @@ export default function AdminMembersPage() {
                 <button
                   key={user.id}
                   onClick={() => loadDetail(user.id)}
-                  className={`w-full p-4 flex items-center gap-3 text-left hover:bg-blue-50/50 transition-colors ${
-                    selectedUser?.id === user.id ? "bg-blue-50 border-l-4 border-l-blue-500" : ""
+                  className={`w-full p-4 flex items-center gap-3 text-left hover:bg-[#c4ddff]/50 transition-colors ${
+                    selectedUser?.id === user.id ? "bg-[#c4ddff] border-l-4 border-l-[#001d6e]" : ""
                   }`}
                 >
                   {/* 프로필 이미지 */}
@@ -226,9 +226,9 @@ export default function AdminMembersPage() {
                             value={nameInput}
                             onChange={(e) => setNameInput(e.target.value)}
                             onKeyDown={(e) => { if (e.key === "Enter") handleNameSave(); if (e.key === "Escape") setEditingName(false); }}
-                            className="flex-1 min-w-0 px-2 py-1 text-sm font-bold border border-blue-400 rounded-lg outline-none"
+                            className="flex-1 min-w-0 px-2 py-1 text-sm font-bold border border-[#7fb5ff] rounded-lg outline-none"
                           />
-                          <button onClick={handleNameSave} className="text-xs bg-blue-600 text-white px-2 py-1 rounded-lg font-bold shrink-0">저장</button>
+                          <button onClick={handleNameSave} className="text-xs bg-[#001d6e] text-white px-2 py-1 rounded-lg font-bold shrink-0">저장</button>
                           <button onClick={() => setEditingName(false)} className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-lg font-bold shrink-0">취소</button>
                         </div>
                       ) : (
@@ -236,7 +236,7 @@ export default function AdminMembersPage() {
                           <h2 className="text-lg font-extrabold text-slate-900">{selectedUser.name || "이름 없음"}</h2>
                           <button
                             onClick={() => { setNameInput(selectedUser.name || ""); setEditingName(true); }}
-                            className="text-xs text-slate-400 hover:text-blue-500 transition-colors"
+                            className="text-xs text-slate-400 hover:text-[#001d6e] transition-colors"
                             title="이름 수정"
                           >✏️</button>
                         </div>
@@ -287,7 +287,7 @@ export default function AdminMembersPage() {
                           {selectedUser.participants.map((p) => (
                             <div key={`m-${p.id}`} className="bg-slate-50 rounded-lg p-3 text-xs">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-blue-500 font-bold">정기 모임</span>
+                                <span className="text-[#001d6e] font-bold">정기 모임</span>
                                 <span className={`px-1.5 py-0.5 rounded font-bold ${
                                   p.status === "APPROVED" ? "bg-green-100 text-green-600" :
                                   p.status === "WAITLISTED" ? "bg-red-100 text-red-600" :

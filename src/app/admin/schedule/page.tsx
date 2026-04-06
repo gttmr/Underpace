@@ -89,7 +89,7 @@ function ScheduleForm({
                 signupOpenDayOfWeek: Math.min(current.signupOpenDayOfWeek, nextDayOfWeek),
               }));
             }}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
           >
             {DAY_KO.map((day, index) => (
               <option key={index} value={index}>{day}요일</option>
@@ -102,7 +102,7 @@ function ScheduleForm({
             type="number"
             value={form.maxCapacity}
             onChange={(e) => setForm((current) => ({ ...current, maxCapacity: parseInt(e.target.value, 10) }))}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
           />
         </div>
         <div>
@@ -111,7 +111,7 @@ function ScheduleForm({
             type="time"
             value={form.startTime}
             onChange={(e) => setForm((current) => ({ ...current, startTime: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
           />
         </div>
         <div>
@@ -120,7 +120,7 @@ function ScheduleForm({
             type="time"
             value={form.endTime}
             onChange={(e) => setForm((current) => ({ ...current, endTime: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
           />
         </div>
       </div>
@@ -131,7 +131,7 @@ function ScheduleForm({
           value={form.location}
           onChange={(e) => setForm((current) => ({ ...current, location: e.target.value }))}
           placeholder="강남구민체육관 3코트"
-          className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+          className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
         />
       </div>
       <div>
@@ -141,7 +141,7 @@ function ScheduleForm({
           value={form.description}
           onChange={(e) => setForm((current) => ({ ...current, description: e.target.value }))}
           placeholder="추가 안내사항"
-          className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+          className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
         />
       </div>
       <label className="flex items-center gap-2 text-sm text-slate-700">
@@ -160,7 +160,7 @@ function ScheduleForm({
             <select
               value={form.signupOpenDayOfWeek}
               onChange={(e) => setForm((current) => ({ ...current, signupOpenDayOfWeek: parseInt(e.target.value, 10) }))}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
             >
               {DAY_KO.slice(0, form.dayOfWeek + 1).map((day, index) => (
                 <option key={index} value={index}>{day}요일</option>
@@ -173,7 +173,7 @@ function ScheduleForm({
               type="time"
               value={form.signupOpenTime}
               onChange={(e) => setForm((current) => ({ ...current, signupOpenTime: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
             />
           </div>
         </div>
@@ -188,7 +188,7 @@ function ScheduleForm({
             })
           }
           disabled={!form.location}
-          className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white text-sm font-semibold transition-colors"
+          className="flex-1 py-2 rounded-lg bg-[#001d6e] hover:bg-[#001d6e] disabled:bg-slate-300 text-white text-sm font-semibold transition-colors"
         >
           저장
         </button>
@@ -237,7 +237,7 @@ function MeetingOverrideModal({
               type="time"
               value={form.startTime}
               onChange={(e) => setForm((current) => ({ ...current, startTime: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
             />
           </div>
           <div>
@@ -246,7 +246,7 @@ function MeetingOverrideModal({
               type="time"
               value={form.endTime}
               onChange={(e) => setForm((current) => ({ ...current, endTime: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
             />
           </div>
         </div>
@@ -257,7 +257,7 @@ function MeetingOverrideModal({
             type="text"
             value={form.location}
             onChange={(e) => setForm((current) => ({ ...current, location: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
           />
         </div>
 
@@ -267,7 +267,7 @@ function MeetingOverrideModal({
             type="number"
             value={form.maxCapacity}
             onChange={(e) => setForm((current) => ({ ...current, maxCapacity: parseInt(e.target.value, 10) }))}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
           />
         </div>
 
@@ -277,7 +277,7 @@ function MeetingOverrideModal({
             type="text"
             value={form.description}
             onChange={(e) => setForm((current) => ({ ...current, description: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
           />
         </div>
 
@@ -296,7 +296,7 @@ function MeetingOverrideModal({
             type="datetime-local"
             value={form.signupOpensAt}
             onChange={(e) => setForm((current) => ({ ...current, signupOpensAt: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+            className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
           />
           <p className="text-xs text-slate-400 mt-1">비워두면 언제든 신청할 수 있습니다.</p>
         </div>
@@ -320,7 +320,7 @@ function MeetingOverrideModal({
                 signupOpensAt: form.signupOpensAt ? new Date(form.signupOpensAt).toISOString() : null,
               })
             }
-            className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold transition-colors"
+            className="flex-1 py-2.5 rounded-xl bg-[#001d6e] hover:bg-[#001d6e] text-white text-sm font-bold transition-colors"
           >
             저장
           </button>
@@ -423,7 +423,7 @@ export default function AdminSchedulePage() {
         <h1 className="text-xl font-extrabold text-slate-900">일정 관리</h1>
         <button
           onClick={() => setShowForm(true)}
-          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+          className="px-4 py-2 rounded-lg bg-[#001d6e] hover:bg-[#001d6e] text-white text-sm font-semibold transition-colors"
         >
           + 새 반복 일정
         </button>
@@ -471,7 +471,7 @@ export default function AdminSchedulePage() {
                   <div className="flex gap-2 shrink-0">
                     <button
                       onClick={() => setEditingId(schedule.id)}
-                      className="text-xs text-blue-600 hover:underline"
+                      className="text-xs text-[#001d6e] hover:underline"
                     >
                       수정
                     </button>
@@ -523,7 +523,7 @@ export default function AdminSchedulePage() {
                       </div>
                       <button
                         onClick={() => setSelectedMeeting(meeting)}
-                        className="text-xs text-blue-600 hover:underline shrink-0"
+                        className="text-xs text-[#001d6e] hover:underline shrink-0"
                       >
                         수정
                       </button>

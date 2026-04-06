@@ -50,15 +50,15 @@ export default function ScheduleView({
     const [, month, day] = meeting.date.split("-");
 
     return (
-      <div className={`bg-white rounded-xl border border-slate-200 p-4 flex items-center gap-4 ${isClosed || isPast ? "opacity-60" : ""}`}>
+      <div className={`bg-white rounded-xl border border-[#7fb5ff] p-4 flex items-center gap-4 ${isClosed || isPast ? "opacity-60" : ""}`}>
         <div className="text-center min-w-[52px]">
           <p className="text-xs text-slate-500">{parseInt(month, 10)}월</p>
-          <p className="text-2xl font-extrabold text-slate-900 leading-none">{parseInt(day, 10)}</p>
-          <p className="text-xs text-slate-500">{dayName}요일</p>
+          <p className="text-2xl font-extrabold text-brand-text leading-none">{parseInt(day, 10)}</p>
+          <p className="text-xs text-[rgba(0,29,110,0.6)]">{dayName}요일</p>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1 flex-wrap">
-            <span className="text-sm font-semibold text-slate-800">
+            <span className="text-sm font-semibold text-brand-text">
               {meeting.startTime} – {meeting.endTime}
             </span>
             {isClosed && (
@@ -68,10 +68,10 @@ export default function ScheduleView({
               <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">오픈 전</span>
             )}
           </div>
-          <p className="text-xs text-slate-500 truncate">📍 {meeting.location}</p>
+          <p className="text-xs text-[rgba(0,29,110,0.6)] truncate">📍 {meeting.location}</p>
           <div className="mt-2">
             <CapacityBar current={meeting.approvedCount} max={meeting.maxCapacity} showLabel={false} />
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[rgba(0,29,110,0.48)] mt-0.5">
               정원 {meeting.approvedCount}/{meeting.maxCapacity}명
               {meeting.waitlistedCount > 0 && (
                 <span className="ml-1.5 text-amber-600">· 대기 {meeting.waitlistedCount}명</span>
@@ -86,7 +86,7 @@ export default function ScheduleView({
           <Link
             href={`/meeting/${meeting.id}`}
             className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-colors
-              ${isFull ? "bg-blue-400 hover:bg-blue-500" : "bg-blue-600 hover:bg-blue-700"}`}
+              ${isFull ? "bg-brand-soft-strong hover:bg-[#6aa3f0]" : "bg-brand-primary hover:bg-[#001d6e]"}`}
           >
             {isFull ? "대기 신청" : "신청"}
           </Link>
@@ -106,19 +106,19 @@ export default function ScheduleView({
 
   return (
     <>
-      <div className="flex bg-slate-100 rounded-lg p-1 gap-1">
+      <div className="flex bg-brand-soft rounded-lg p-1 gap-1">
         <div className="flex flex-1 gap-1">
           <button
             onClick={() => setView("calendar")}
             className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors
-              ${view === "calendar" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              ${view === "calendar" ? "bg-white text-brand-text shadow-sm" : "text-[rgba(0,29,110,0.6)] hover:text-brand-text"}`}
           >
             <span>📅</span> 달력
           </button>
           <button
             onClick={() => setView("list")}
             className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-sm font-medium transition-colors
-              ${view === "list" ? "bg-white text-slate-800 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              ${view === "list" ? "bg-white text-brand-text shadow-sm" : "text-[rgba(0,29,110,0.6)] hover:text-brand-text"}`}
           >
             <span>☰</span> 목록
           </button>
@@ -137,7 +137,7 @@ export default function ScheduleView({
         <div className="space-y-8">
           {upcoming.length > 0 && (
             <section>
-              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">예정된 모임</h2>
+              <h2 className="text-sm font-semibold text-[rgba(0,29,110,0.6)] uppercase tracking-wide mb-3">예정된 모임</h2>
               <div className="space-y-3">
                 {upcoming.map((meeting) => <MeetingRow key={meeting.id} meeting={meeting} />)}
               </div>
@@ -145,14 +145,14 @@ export default function ScheduleView({
           )}
           {past.length > 0 && (
             <section>
-              <h2 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-3">지난 모임</h2>
+              <h2 className="text-sm font-semibold text-[rgba(0,29,110,0.6)] uppercase tracking-wide mb-3">지난 모임</h2>
               <div className="space-y-3">
                 {past.map((meeting) => <MeetingRow key={meeting.id} meeting={meeting} />)}
               </div>
             </section>
           )}
           {meetings.length === 0 && (
-            <div className="text-center py-16 text-slate-400">
+            <div className="text-center py-16 text-[rgba(0,29,110,0.48)]">
               <p className="text-4xl mb-3">📅</p>
               <p className="font-medium">등록된 일정이 없습니다</p>
             </div>

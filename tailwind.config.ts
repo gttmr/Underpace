@@ -9,17 +9,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: "#2563EB",
-          hover: "#1D4ED8",
-          dark: "#1E40AF",
+        brand: {
+          primary: "#001d6e",
+          soft: "#c4ddff",
+          "soft-strong": "#7fb5ff",
+          border: "#7fb5ff",
+          text: "#001d6e",
         },
       },
       fontFamily: {
         sans: ["Pretendard", "system-ui", "-apple-system", "sans-serif"],
       },
       backgroundImage: {
-        "hero-gradient": "linear-gradient(135deg, #1E40AF 0%, #1D4ED8 100%)",
+        "hero-gradient": "linear-gradient(135deg, #001d6e 0%, #001d6e 100%)",
       },
     },
   },

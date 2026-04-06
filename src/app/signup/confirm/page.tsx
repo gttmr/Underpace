@@ -42,7 +42,7 @@ export default async function ConfirmPage({
       </header>
 
       <main className="flex-1 max-w-xl mx-auto px-4 py-12 w-full">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+        <div className="bg-white rounded-2xl border border-[#7fb5ff] shadow-sm p-8 text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
             <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
@@ -74,7 +74,7 @@ export default async function ConfirmPage({
 
           <Link
             href="/"
-            className="inline-block w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-colors"
+            className="inline-block w-full py-3 rounded-xl bg-brand-primary hover:bg-[#001d6e] text-white font-bold text-sm transition-colors"
           >
             ← 홈으로 돌아가기
           </Link>

@@ -43,7 +43,7 @@ export function CapacityBar({ current, max, waitlisted = 0, showLabel = true }: 
           )}
         </div>
       )}
-      <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+      <div className="w-full h-2 bg-brand-soft rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-300 ${barColor}`}
           style={{ width: `${pct}%` }}

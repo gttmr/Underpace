@@ -52,7 +52,7 @@ function TimeInput({ value, onChange, placeholder }: { value: string; onChange: 
       value={value}
       onChange={handleChange}
       placeholder={placeholder}
-      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors"
     />
   );
 }
@@ -154,7 +154,7 @@ function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <p className="text-slate-400 text-sm">불러오는 중...</p>
       </div>
     );
@@ -162,8 +162,8 @@ function ProfilePage() {
 
   if (notLoggedIn) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6">
-        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-slate-100">
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6">
+        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-[#7fb5ff]">
           <div className="text-5xl mb-4">🏃</div>
           <h1 className="text-xl font-extrabold text-slate-900 mb-2">로그인이 필요합니다</h1>
           <p className="text-sm text-slate-500 mb-6">카카오 로그인 후 나의 프로필을 관리할 수 있습니다.</p>
@@ -183,7 +183,7 @@ function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
+    <div className="min-h-screen bg-[#f5f8ff] pb-24">
       {/* 첫 로그인 설정 모달 */}
       {showSetup && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
@@ -202,7 +202,7 @@ function ProfilePage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="동호회에서 사용할 이름"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors"
                   autoFocus
                 />
               </div>
@@ -235,7 +235,7 @@ function ProfilePage() {
               className={`w-full mt-6 py-3 rounded-xl font-bold text-white text-sm transition-all ${
                 saving || !name.trim()
                   ? "bg-slate-300 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99]"
+                  : "bg-[#001d6e] hover:bg-[#001d6e] active:scale-[0.99]"
               }`}
             >
               {saving ? "저장 중..." : "시작하기"}
@@ -245,16 +245,16 @@ function ProfilePage() {
       )}
 
       {/* 헤더 */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-500 text-white">
+      <header className="bg-[#001d6e] text-white">
         <div className="max-w-lg mx-auto px-4 py-5 flex items-center gap-3">
-          <Link href="/" className="text-blue-200 hover:text-white transition-colors text-xl leading-none">←</Link>
+          <Link href="/" className="text-[#c4ddff] hover:text-white transition-colors text-xl leading-none">←</Link>
           <h1 className="font-bold text-lg">내 프로필</h1>
         </div>
       </header>
 
       <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
         {/* 프로필 카드 */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center gap-4">
+        <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#7fb5ff] flex items-center gap-4">
           <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
             {user?.profileImage ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -269,7 +269,7 @@ function ProfilePage() {
               가입일: {user ? new Date(user.createdAt).toLocaleDateString("ko-KR") : ""}
             </p>
             <div className="flex gap-3 mt-2">
-              <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">모임 {user?._count.participants}회</span>
+              <span className="text-xs bg-brand-soft text-brand-primary px-2 py-0.5 rounded-full font-bold">모임 {user?._count.participants}회</span>
               <span className="text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-bold">대회 {user?._count.marathonParticipants}회</span>
             </div>
           </div>
@@ -277,7 +277,7 @@ function ProfilePage() {
 
         <form onSubmit={handleSave} className="space-y-6">
           {/* 기본 정보 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#7fb5ff]">
             <h3 className="text-base font-extrabold text-slate-800 mb-4 flex items-center gap-2">
               <span className="text-lg">📝</span> 기본 정보
             </h3>
@@ -289,7 +289,7 @@ function ProfilePage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="동호회에서 사용할 이름"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors"
                 />
               </div>
               <div>
@@ -299,14 +299,14 @@ function ProfilePage() {
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="010-0000-0000"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors"
                 />
               </div>
             </div>
           </div>
 
           {/* 마라톤 PB 기록 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#7fb5ff]">
             <h3 className="text-base font-extrabold text-slate-800 mb-1 flex items-center gap-2">
               <span className="text-lg">🏅</span> 마라톤 PB 기록
             </h3>
@@ -333,7 +333,7 @@ function ProfilePage() {
           </div>
 
           {/* 강습 관련 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-[#7fb5ff]">
             <h3 className="text-base font-extrabold text-slate-800 mb-1 flex items-center gap-2">
               <span className="text-lg">💬</span> 강습 시 바라는 점
             </h3>
@@ -343,7 +343,7 @@ function ProfilePage() {
               onChange={(e) => setCoachingNote(e.target.value.slice(0, 500))}
               placeholder="예: 페이스 유지하는 법을 배우고 싶습니다, 호흡법이 궁금합니다..."
               rows={4}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors resize-none"
+              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors resize-none"
             />
             <p className="mt-1 text-xs text-slate-400 text-right">{coachingNote.length}/500</p>
           </div>
@@ -357,7 +357,7 @@ function ProfilePage() {
                 ? "bg-slate-300 cursor-not-allowed"
                 : saved
                 ? "bg-green-500"
-                : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99]"
+                : "bg-[#001d6e] hover:bg-[#001d6e] active:scale-[0.99]"
             }`}
           >
             {saving ? "저장 중..." : saved ? "✓ 저장 완료!" : "프로필 저장하기"}

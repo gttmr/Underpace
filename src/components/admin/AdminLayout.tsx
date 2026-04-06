@@ -36,13 +36,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       <header className="bg-hero-gradient text-white sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-blue-200 hover:text-white text-sm transition-colors">← 사이트</Link>
-            <span className="text-blue-300">|</span>
+            <Link href="/" className="text-[#c4ddff] hover:text-white text-sm transition-colors">← 사이트</Link>
+            <span className="text-[#7fb5ff]">|</span>
             <span className="font-bold">관리자</span>
           </div>
           <button
             onClick={handleLogout}
-            className="text-blue-200 hover:text-white text-sm transition-colors"
+            className="text-[#c4ddff] hover:text-white text-sm transition-colors"
           >
             로그아웃
           </button>
@@ -59,7 +59,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 href={item.href}
                 className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                   ${isActive(item)
-                    ? "bg-blue-600 text-white"
+                    ? "bg-brand-primary text-white"
                     : "text-slate-600 hover:bg-white hover:text-slate-900"
                   }`}
               >
@@ -84,7 +84,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
               key={item.href}
               href={item.href}
               className={`flex-1 flex flex-col items-center py-2 text-xs font-medium transition-colors
-                ${isActive(item) ? "text-blue-600" : "text-slate-400"}`}
+                ${isActive(item) ? "text-brand-primary" : "text-slate-400"}`}
             >
               <span className="text-xl">{item.icon}</span>
               {item.label}

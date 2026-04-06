@@ -79,7 +79,7 @@ export default function AdminNoticesPage() {
         <h1 className="text-xl font-extrabold text-slate-900">공지사항 관리</h1>
         <button
           onClick={() => openForm()}
-          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+          className="px-4 py-2 rounded-lg bg-[#001d6e] hover:bg-[#001d6e] text-white text-sm font-semibold transition-colors"
         >
           + 새 공지
         </button>
@@ -96,7 +96,7 @@ export default function AdminNoticesPage() {
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
               placeholder="공지 제목"
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e]"
               autoFocus
             />
           </div>
@@ -107,7 +107,7 @@ export default function AdminNoticesPage() {
               onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
               placeholder="공지 내용을 입력하세요"
               rows={4}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500 resize-none"
+              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e] resize-none"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -125,7 +125,7 @@ export default function AdminNoticesPage() {
             <button
               onClick={handleSubmit}
               disabled={!form.title.trim()}
-              className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white text-sm font-bold transition-colors"
+              className="flex-1 py-2.5 rounded-xl bg-[#001d6e] hover:bg-[#001d6e] disabled:bg-slate-300 text-white text-sm font-bold transition-colors"
             >
               {editingNotice ? "수정 저장" : "공지 등록"}
             </button>
@@ -164,7 +164,7 @@ export default function AdminNoticesPage() {
                 <div className="flex flex-col gap-1.5 shrink-0">
                   <button
                     onClick={() => openForm(n)}
-                    className="text-xs text-blue-600 hover:underline"
+                    className="text-xs text-[#001d6e] hover:underline"
                   >
                     수정
                   </button>

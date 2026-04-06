@@ -70,7 +70,7 @@ export default function AdminLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="관리자 비밀번호"
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors"
                 autoFocus
               />
               {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || !password}
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold text-sm transition-colors"
+              className="w-full py-3 rounded-xl bg-[#001d6e] hover:bg-[#001d6e] disabled:bg-slate-300 text-white font-bold text-sm transition-colors"
             >
               {loading ? "로그인 중..." : "로그인"}
             </button>
