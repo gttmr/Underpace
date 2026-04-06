@@ -101,7 +101,7 @@ export default async function AdminDashboard() {
                   </Link>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-1.5 bg-[#c4ddff] rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full ${pct >= 100 ? "bg-red-500" : pct >= 85 ? "bg-amber-400" : "bg-green-500"}`}
                       style={{ width: `${pct}%` }}
