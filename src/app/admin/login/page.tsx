@@ -48,38 +48,45 @@ export default function AdminLoginPage() {
   if (autoLogging) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-400 text-sm">확인 중...</p>
+        <p className="text-[rgba(0,29,110,0.35)] text-sm font-medium">확인 중...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f5f8ff] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8">
-          <div className="text-center mb-6">
-            <div className="text-4xl mb-2">🔐</div>
-            <h1 className="text-xl font-extrabold text-slate-900">관리자 로그인</h1>
+        <div className="bg-white rounded-2xl border border-[#7fb5ff] shadow-sm overflow-hidden animate-scale-in">
+          <div className="bg-[#001d6e] px-6 py-5 text-center relative overflow-hidden">
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                backgroundImage: "radial-gradient(rgba(196,221,255,0.4) 1px, transparent 1px)",
+                backgroundSize: "20px 20px",
+              }}
+            />
+            <p className="relative text-[10px] font-black tracking-[0.2em] text-[rgba(196,221,255,0.65)] uppercase mb-1">UNDERPACE</p>
+            <h1 className="relative text-lg font-black text-white">관리자 로그인</h1>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">비밀번호</label>
+              <label className="block text-[10px] font-black text-[rgba(0,29,110,0.5)] mb-1.5 uppercase tracking-widest">비밀번호</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="관리자 비밀번호"
-                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors"
+                className="w-full px-4 py-2.5 rounded-xl border border-[#7fb5ff] text-sm outline-none focus:border-[#001d6e] focus:ring-2 focus:ring-[rgba(127,181,255,0.25)] transition-all text-[#001d6e] font-semibold"
                 autoFocus
               />
-              {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
+              {error && <p className="mt-1.5 text-xs text-red-500 font-medium">{error}</p>}
             </div>
 
             <button
               type="submit"
               disabled={loading || !password}
-              className="w-full py-3 rounded-xl bg-[#001d6e] hover:bg-[#001d6e] disabled:bg-slate-300 text-white font-bold text-sm transition-colors"
+              className="w-full py-3.5 rounded-xl bg-[#001d6e] hover:bg-[#00277a] disabled:bg-[#e5e7eb] disabled:text-[#9ca3af] text-white font-black text-sm transition-all active:scale-[0.98]"
             >
               {loading ? "로그인 중..." : "로그인"}
             </button>

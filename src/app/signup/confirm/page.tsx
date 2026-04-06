@@ -27,57 +27,69 @@ export default async function ConfirmPage({
   const waitlistPos = waitlist ? parseInt(waitlist) : null;
 
   const statusMessages: Record<ParticipantStatus, string> = {
-    PENDING: "관리자 검토 후 연락드립니다.",
-    APPROVED: "모임 참가가 확정되었습니다.",
+    PENDING:    "관리자 검토 후 연락드립니다.",
+    APPROVED:   "모임 참가가 확정되었습니다.",
     WAITLISTED: `정원 초과로 대기자 ${waitlistPos}번째로 등록되었습니다.`,
-    REJECTED: "이번 모임 참가가 어렵습니다.",
+    REJECTED:   "이번 모임 참가가 어렵습니다.",
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-hero-gradient text-white">
-        <div className="max-w-xl mx-auto px-4 py-5">
-          <h1 className="font-bold text-lg">신청 완료</h1>
+    <div className="min-h-screen bg-[#f5f8ff] flex flex-col">
+      <header className="bg-[#001d6e] text-white relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(rgba(196,221,255,0.4) 1px, transparent 1px)",
+            backgroundSize: "22px 22px",
+          }}
+        />
+        <div className="relative max-w-xl mx-auto px-4 py-5">
+          <p className="text-[10px] font-black tracking-[0.18em] text-[rgba(196,221,255,0.65)] uppercase">신청 완료</p>
+          <h1 className="font-black text-lg leading-tight">접수가 완료되었습니다</h1>
         </div>
       </header>
 
-      <main className="flex-1 max-w-xl mx-auto px-4 py-12 w-full">
-        <div className="bg-white rounded-2xl border border-[#7fb5ff] shadow-sm p-8 text-center">
-          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-            <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-            </svg>
+      <main className="flex-1 max-w-xl mx-auto px-4 py-8 w-full">
+        <div className="bg-white rounded-2xl border border-[#7fb5ff] shadow-sm overflow-hidden animate-scale-in">
+          {/* success indicator */}
+          <div className="bg-[#c4ddff] p-6 flex flex-col items-center">
+            <div className="w-14 h-14 bg-[#001d6e] rounded-full flex items-center justify-center mb-3 shadow-lg shadow-[rgba(0,29,110,0.3)]">
+              <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-lg font-black text-[#001d6e]">신청 완료!</h2>
+            <p className="text-xs text-[rgba(0,29,110,0.6)] mt-1 font-medium">{statusMessages[participantStatus]}</p>
           </div>
 
-          <h2 className="text-xl font-extrabold text-slate-900 mb-2">신청이 완료되었습니다!</h2>
-          <p className="text-sm text-slate-500 mb-6">{statusMessages[participantStatus]}</p>
-
-          {/* 신청 정보 카드 */}
-          <div className="bg-slate-50 rounded-xl p-4 text-left space-y-3 mb-6">
+          {/* details */}
+          <div className="p-5 space-y-0">
             {name && (
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">이름</span>
-                <span className="font-semibold text-slate-800">{decodeURIComponent(name)}</span>
+              <div className="flex justify-between items-center py-3 border-b border-[rgba(0,29,110,0.08)]">
+                <span className="text-xs font-black text-[rgba(0,29,110,0.45)] uppercase tracking-wider">이름</span>
+                <span className="font-black text-[#001d6e] text-sm">{decodeURIComponent(name)}</span>
               </div>
             )}
             {meetingDisplay && (
-              <div className="flex justify-between text-sm">
-                <span className="text-slate-500">모임</span>
-                <span className="font-semibold text-slate-800">{meetingDisplay}</span>
+              <div className="flex justify-between items-center py-3 border-b border-[rgba(0,29,110,0.08)]">
+                <span className="text-xs font-black text-[rgba(0,29,110,0.45)] uppercase tracking-wider">모임</span>
+                <span className="font-bold text-[#001d6e] text-sm">{meetingDisplay}</span>
               </div>
             )}
-            <div className="flex justify-between text-sm">
-              <span className="text-slate-500">상태</span>
+            <div className="flex justify-between items-center py-3">
+              <span className="text-xs font-black text-[rgba(0,29,110,0.45)] uppercase tracking-wider">상태</span>
               <StatusBadge status={participantStatus} waitlistPosition={waitlistPos} size="sm" />
             </div>
           </div>
 
-          <Link
-            href="/"
-            className="inline-block w-full py-3 rounded-xl bg-brand-primary hover:bg-[#001d6e] text-white font-bold text-sm transition-colors"
-          >
-            ← 홈으로 돌아가기
-          </Link>
+          <div className="px-5 pb-5">
+            <Link
+              href="/"
+              className="block w-full py-3.5 rounded-xl bg-[#001d6e] hover:bg-[#00277a] text-white font-black text-sm text-center transition-all active:scale-[0.98]"
+            >
+              ← 홈으로 돌아가기
+            </Link>
+          </div>
         </div>
       </main>
     </div>

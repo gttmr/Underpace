@@ -113,98 +113,91 @@ export function SignupForm({ meeting }: SignupFormProps) {
     }
   }
 
+  const baseInput = "w-full px-4 py-2.5 rounded-xl border text-sm outline-none transition-all text-[#001d6e] font-semibold placeholder:font-normal placeholder:text-[rgba(0,29,110,0.3)]";
+
   if (isClosed) {
     return (
-      <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 text-center text-slate-500">
-        이 모임의 신청이 마감되었습니다.
+      <div className="bg-[#f0f5ff] border border-[#7fb5ff] rounded-xl p-6 text-center">
+        <p className="text-sm font-bold text-[rgba(0,29,110,0.55)]">이 모임의 신청이 마감되었습니다.</p>
       </div>
     );
   }
 
   if (isWaitingForOpen) {
     return (
-      <div className="bg-brand-soft border border-[#7fb5ff] rounded-xl p-6 text-center">
-        <p className="text-sm font-semibold text-brand-primary">아직 신청 오픈 전입니다</p>
-        <p className="text-sm text-[rgba(0,29,110,0.74)] mt-1">
+      <div className="bg-[#c4ddff] border border-[#7fb5ff] rounded-xl p-5 text-center">
+        <p className="text-sm font-black text-[#001d6e]">아직 신청 오픈 전입니다</p>
+        <p className="text-xs text-[rgba(0,29,110,0.65)] mt-1.5">
           신청은 {formatSignupOpensAt(meeting.signupOpensAt)}부터 가능합니다.
         </p>
       </div>
     );
   }
 
-  // 로딩 중
   if (user === undefined) {
-    return <div className="py-8 text-center text-slate-400 text-sm">불러오는 중...</div>;
+    return <div className="py-8 text-center text-[rgba(0,29,110,0.35)] text-sm font-medium">불러오는 중...</div>;
   }
 
-  // 비로그인 상태
   if (!user) {
     const returnTo = `/meeting/${meeting.id}`;
     return (
-      <div className="space-y-4">
+      <div className="space-y-3">
         {isFull && (
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-            <span className="text-amber-500 text-lg mt-0.5">⚠️</span>
+            <span className="text-amber-500 text-base shrink-0 mt-0.5">⚠️</span>
             <div>
-              <p className="font-semibold text-amber-800 text-sm">정원이 마감되었습니다</p>
-              <p className="text-amber-700 text-sm mt-0.5">
+              <p className="font-black text-amber-800 text-sm">정원이 마감되었습니다</p>
+              <p className="text-amber-700 text-xs mt-0.5">
                 대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.
               </p>
             </div>
           </div>
         )}
-        <div className="bg-slate-50 border border-slate-100 rounded-xl p-5 text-center space-y-3">
-          <p className="text-sm text-slate-600">카카오 계정으로 간편하게 신청할 수 있습니다</p>
-          <div className="pt-2">
-            <button
-              type="button"
-              onClick={() => kakaoLogin(returnTo)}
-              className="w-full h-12 inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-bold rounded-xl transition-colors justify-center text-sm"
-            >
-              <KakaoIcon />
-              카카오로 로그인하여 신청하기
-            </button>
-          </div>
+        <div className="bg-[#f5f8ff] border border-[#7fb5ff] rounded-xl p-5 text-center space-y-3">
+          <p className="text-sm text-[rgba(0,29,110,0.6)] font-medium">카카오 계정으로 간편하게 신청할 수 있습니다</p>
+          <button
+            type="button"
+            onClick={() => kakaoLogin(returnTo)}
+            className="w-full h-12 inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-black rounded-xl transition-colors justify-center text-sm active:scale-[0.98]"
+          >
+            <KakaoIcon />
+            카카오로 로그인하여 신청하기
+          </button>
         </div>
       </div>
     );
   }
 
-  // 로그인 상태
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-4">
       {isFull && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-          <span className="text-amber-500 text-lg mt-0.5">⚠️</span>
+          <span className="text-amber-500 text-base shrink-0 mt-0.5">⚠️</span>
           <div>
-            <p className="font-semibold text-amber-800 text-sm">정원이 마감되었습니다</p>
-            <p className="text-amber-700 text-sm mt-0.5">
-              대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.
-            </p>
+            <p className="font-black text-amber-800 text-sm">정원이 마감되었습니다</p>
+            <p className="text-amber-700 text-xs mt-0.5">대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.</p>
           </div>
         </div>
       )}
 
       {duplicate && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-800">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm font-bold text-amber-800">
           이 모임에 이미 신청하셨습니다.
         </div>
       )}
 
       {serverError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-700">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm font-bold text-red-700">
           {serverError}
         </div>
       )}
 
       {/* 이름 */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          이름 <span className="text-red-500">*</span>
-          {profileName ? (
-            <span className="font-normal text-slate-400 ml-1 text-xs">(프로필에서 변경 가능)</span>
-          ) : (
-            <span className="font-normal text-amber-500 ml-1 text-xs">(프로필에서 이름을 설정해 주세요)</span>
+        <label className="block text-[10px] font-black text-[rgba(0,29,110,0.5)] mb-1.5 uppercase tracking-widest">
+          이름 <span className="text-red-400 normal-case">*</span>
+          {!profileName && (
+            <span className="ml-1.5 text-amber-500 normal-case font-semibold tracking-normal text-[10px]">프로필에서 이름을 설정해 주세요</span>
           )}
         </label>
         <input
@@ -214,17 +207,21 @@ export function SignupForm({ meeting }: SignupFormProps) {
           onChange={profileName ? undefined : (e) => { setName(e.target.value); setNameError(""); }}
           placeholder="홍길동"
           disabled={submitting}
-          className={`w-full px-4 py-2.5 rounded-lg border text-sm outline-none transition-colors
-            ${nameError ? "border-red-400 bg-red-50" : profileName ? "border-slate-200 bg-slate-50 text-slate-600" : "border-slate-200 focus:border-[#001d6e]"}
-            disabled:bg-slate-50 disabled:text-slate-400`}
+          className={`${baseInput}
+            ${nameError
+              ? "border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200"
+              : profileName
+              ? "border-[rgba(0,29,110,0.15)] bg-[#f0f5ff] text-[rgba(0,29,110,0.55)]"
+              : "border-[#7fb5ff] bg-white focus:border-[#001d6e] focus:ring-2 focus:ring-[rgba(127,181,255,0.25)]"}
+            disabled:opacity-60`}
         />
-        {nameError && <p className="mt-1 text-xs text-red-500">{nameError}</p>}
+        {nameError && <p className="mt-1 text-xs text-red-500 font-medium">{nameError}</p>}
       </div>
 
       {/* 메모 */}
       <div>
-        <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-          메모 <span className="text-slate-400 font-normal">(선택)</span>
+        <label className="block text-[10px] font-black text-[rgba(0,29,110,0.5)] mb-1.5 uppercase tracking-widest">
+          메모 <span className="ml-1 normal-case font-semibold text-[rgba(0,29,110,0.35)] tracking-normal">(선택)</span>
         </label>
         <textarea
           value={note}
@@ -232,20 +229,20 @@ export function SignupForm({ meeting }: SignupFormProps) {
           placeholder="처음 참가합니다, 주차 문의 등..."
           rows={3}
           disabled={submitting}
-          className="w-full px-4 py-2.5 rounded-lg border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors resize-none disabled:bg-slate-50 disabled:text-slate-400"
+          className="w-full px-4 py-2.5 rounded-xl border border-[#7fb5ff] bg-white text-sm outline-none focus:border-[#001d6e] focus:ring-2 focus:ring-[rgba(127,181,255,0.25)] transition-all resize-none disabled:opacity-60 text-[rgba(0,29,110,0.74)] placeholder:text-[rgba(0,29,110,0.3)]"
         />
-        <p className="mt-1 text-xs text-slate-400 text-right">{note.length}/100</p>
+        <p className="mt-1 text-[10px] text-[rgba(0,29,110,0.35)] text-right font-medium">{note.length}/100</p>
       </div>
 
       <button
         type="submit"
         disabled={submitting || !name.trim()}
-        className={`w-full py-3 rounded-xl font-bold text-white text-sm transition-all
+        className={`w-full py-3.5 rounded-xl font-black text-white text-sm transition-all active:scale-[0.98]
           ${submitting || !name.trim()
-            ? "bg-slate-300 cursor-not-allowed"
+            ? "bg-[#e5e7eb] cursor-not-allowed text-[#9ca3af]"
             : isFull
-              ? "bg-brand-soft-strong hover:bg-[#6aa3f0] active:scale-[0.99]"
-              : "bg-brand-primary hover:bg-[#001d6e] active:scale-[0.99]"
+            ? "bg-[#7fb5ff] hover:bg-[#6aa3f0]"
+            : "bg-[#001d6e] hover:bg-[#00277a]"
           }`}
       >
         {submitting ? (
@@ -259,7 +256,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
         ) : isFull ? "대기자로 신청하기" : "신청하기"}
       </button>
 
-      <p className="text-xs text-slate-400 text-center">ⓘ 관리자 승인 후 확정됩니다</p>
+      <p className="text-[10px] text-[rgba(0,29,110,0.35)] text-center font-medium">관리자 승인 후 확정됩니다</p>
     </form>
   );
 }

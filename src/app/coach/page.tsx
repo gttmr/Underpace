@@ -130,7 +130,7 @@ export default function CoachDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-[#f5f8ff] flex items-center justify-center">
         <p className="text-slate-400 text-sm">불러오는 중...</p>
       </div>
     );
@@ -138,7 +138,7 @@ export default function CoachDashboardPage() {
 
   if (error === "login") {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-[#f5f8ff] flex flex-col items-center justify-center px-6">
         <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-slate-100">
           <div className="text-5xl mb-4">🔐</div>
           <h1 className="text-xl font-extrabold text-slate-900 mb-2">로그인이 필요합니다</h1>
@@ -156,7 +156,7 @@ export default function CoachDashboardPage() {
 
   if (error === "forbidden") {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-[#f5f8ff] flex flex-col items-center justify-center px-6">
         <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-slate-100">
           <div className="text-5xl mb-4">🚫</div>
           <h1 className="text-xl font-extrabold text-slate-900 mb-2">접근 권한이 없습니다</h1>
@@ -168,7 +168,7 @@ export default function CoachDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
+    <div className="min-h-screen bg-[#f5f8ff] pb-24">
       {/* 헤더 */}
       <header className="bg-gradient-to-r from-teal-600 to-teal-500 text-white sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
