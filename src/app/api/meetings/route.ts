@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
       location: m.location,
       maxCapacity: m.maxCapacity,
       description: m.description,
+      classType: m.classType,
       signupOpensAt: m.signupOpensAt?.toISOString() ?? null,
       isOpen: m.isOpen,
       scheduleId: m.scheduleId,

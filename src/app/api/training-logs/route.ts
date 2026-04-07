@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
 
   const logs = await prisma.trainingLog.findMany({
     where: { meeting: { date: { startsWith: prefix } } },
-    include: { meeting: { select: { date: true, startTime: true, endTime: true } } },
+    include: { meeting: { select: { date: true, startTime: true, endTime: true, classType: true } } },
     orderBy: { meeting: { date: "desc" } },
   });
 
