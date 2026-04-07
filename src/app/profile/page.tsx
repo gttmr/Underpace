@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 interface UserProfile {
   id: number;
@@ -253,20 +254,22 @@ function ProfilePage() {
       )}
 
       {/* header */}
-      <header className="bg-brand-primary text-white relative overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(rgba(196,221,255,0.4) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-          }}
-        />
-        <div className="relative max-w-lg mx-auto px-4 py-5 flex items-center gap-3">
-          <Link href="/" className="text-[#c4ddff] hover:text-white transition-colors font-black text-xl leading-none">←</Link>
-          <div>
-            <p className="text-[10px] font-black tracking-[0.18em] text-[rgba(196,221,255,0.65)] uppercase">UNDERPACE</p>
-            <h1 className="font-black text-lg leading-tight">내 프로필</h1>
-          </div>
+      <header className="bg-white shadow-[0_1px_12px_rgba(0,0,0,0.07)] sticky top-0 z-30">
+        <div className="max-w-lg mx-auto px-4 h-14 grid grid-cols-[1fr_auto_1fr] items-center">
+          <Link href="/" className="text-brand-text-subtle hover:text-brand-text transition-colors text-sm font-bold">
+            ←
+          </Link>
+          <Link href="/">
+            <Image
+              src="/logo.svg"
+              alt="Underpace"
+              width={140}
+              height={40}
+              className="object-contain"
+              priority
+            />
+          </Link>
+          <div />
         </div>
       </header>
 
