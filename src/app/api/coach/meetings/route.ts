@@ -25,13 +25,22 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const monthPrefix = `${year}-${month}`;
+  // 이번 달 전체 + 향후 8주 모임 표시 (훈련 일지 입력을 위해 지난 모임도 포함)
+  const eightWeeksLater = new Date(now.getTime() + 56 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
 
   // 다가오는 모임 목록 + 참가자 + 참가자의 User 프로필
   const meetings = await prisma.meeting.findMany({
-    where: { date: { gte: today } },
+    where: {
+      OR: [
+        { date: { startsWith: monthPrefix } },   // 이번 달 전체
+        { date: { lte: eightWeeksLater } },       // 향후 8주
+      ],
+    },
     orderBy: { date: "asc" },
-    take: 10,
     include: {
       participants: {
         where: { status: { in: ["APPROVED", "PENDING"] } },
