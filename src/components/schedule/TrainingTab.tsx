@@ -20,7 +20,7 @@ const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 function formatDate(dateStr: string) {
   const [, m, d] = dateStr.split("-");
   const day = DAY_KO[new Date(dateStr + "T00:00:00").getDay()];
-  return `${parseInt(m)}/${parseInt(d)} (${day})`;
+  return `${parseInt(m)}월 ${parseInt(d)}일 (${day})`;
 }
 
 export default function TrainingTab() {
@@ -61,7 +61,7 @@ export default function TrainingTab() {
     : null;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* 월 네비게이터 */}
       <div className="flex items-center justify-between px-1">
         <button
@@ -86,40 +86,36 @@ export default function TrainingTab() {
           {/* 월간 훈련 계획 */}
           <div className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
             <div className="bg-brand-surface px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-[3px] h-4 bg-brand-primary rounded-full" />
-                <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">이번 달 훈련 계획</p>
-              </div>
+              <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">이번 달 훈련 계획</p>
               {/* 반 토글 */}
-              <div className="flex items-center bg-white rounded-lg p-0.5 border border-brand-primary-border gap-0.5">
+              <div className="flex rounded-lg border border-brand-primary-border overflow-hidden">
                 <button
                   onClick={() => setClassTab("beginner")}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-black transition-all ${
+                  className={`px-3 py-1.5 text-xs font-black transition-all ${
                     classTab === "beginner"
-                      ? "bg-brand-primary text-white shadow-sm"
-                      : "text-brand-text-muted hover:text-brand-text"
+                      ? "bg-brand-primary text-white"
+                      : "bg-white text-brand-text-muted hover:text-brand-text"
                   }`}
                 >
                   초중급
                 </button>
                 <button
                   onClick={() => setClassTab("advanced")}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-black transition-all ${
+                  className={`px-3 py-1.5 text-xs font-black transition-all border-l border-brand-primary-border ${
                     classTab === "advanced"
-                      ? "bg-brand-primary text-white shadow-sm"
-                      : "text-brand-text-muted hover:text-brand-text"
+                      ? "bg-brand-primary text-white"
+                      : "bg-white text-brand-text-muted hover:text-brand-text"
                   }`}
                 >
                   고급
                 </button>
               </div>
             </div>
-
             <div className="px-4 py-4">
               {planContent ? (
                 <p className="text-sm text-brand-text leading-relaxed whitespace-pre-wrap">{planContent}</p>
               ) : (
-                <p className="text-sm text-brand-text-subtle text-center py-4 font-medium">
+                <p className="text-sm text-brand-text-subtle text-center py-3 font-medium">
                   이번 달 훈련 계획이 아직 등록되지 않았습니다
                 </p>
               )}
@@ -127,50 +123,47 @@ export default function TrainingTab() {
           </div>
 
           {/* 훈련 일지 */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 px-0.5">
-              <div className="w-[3px] h-4 bg-brand-primary rounded-full" />
-              <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">훈련 일지</p>
+          {logs.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
+              <div className="bg-brand-surface px-4 py-3">
+                <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">훈련 일지</p>
+              </div>
+              <div className="px-4 py-4">
+                <p className="text-sm text-brand-text-subtle text-center py-3 font-medium">이번 달 훈련 일지가 없습니다</p>
+              </div>
             </div>
-
-            {logs.length === 0 ? (
-              <div className="bg-white rounded-2xl border border-brand-primary-border p-8 text-center">
-                <p className="text-sm text-brand-text-subtle font-medium">이번 달 훈련 일지가 없습니다</p>
-              </div>
-            ) : (
-              <div className="bg-white rounded-2xl border border-brand-primary-border divide-y divide-brand-divider overflow-hidden">
-                {logs.map((log) => (
-                  <button
-                    key={log.id}
-                    onClick={() => setExpandedId(expandedId === log.id ? null : log.id)}
-                    className="w-full text-left px-4 py-3.5 transition-colors hover:bg-brand-surface"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span className="shrink-0 text-xs font-black text-brand-text-subtle">
-                          {formatDate(log.meeting.date)}
-                        </span>
-                        <span className="text-xs text-brand-text-muted truncate">
-                          {log.content.split("\n")[0]}
-                        </span>
-                      </div>
-                      <svg
-                        className={`shrink-0 w-4 h-4 text-brand-text-subtle transition-transform ${expandedId === log.id ? "rotate-180" : ""}`}
-                        fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
+          ) : (
+            logs.map((log) => (
+              <div key={log.id} className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
+                <button
+                  onClick={() => setExpandedId(expandedId === log.id ? null : log.id)}
+                  className="w-full"
+                >
+                  <div className="bg-brand-surface px-4 py-3 flex items-center justify-between">
+                    <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">
+                      {formatDate(log.meeting.date)} 훈련 일지
+                    </p>
+                    <svg
+                      className={`w-4 h-4 text-brand-text-subtle transition-transform ${expandedId === log.id ? "rotate-180" : ""}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </div>
+                  {expandedId !== log.id && (
+                    <div className="px-4 py-3">
+                      <p className="text-sm text-brand-text-muted truncate">{log.content.split("\n")[0]}</p>
                     </div>
-                    {expandedId === log.id && (
-                      <p className="mt-3 text-sm text-brand-text leading-relaxed whitespace-pre-wrap border-t border-brand-divider pt-3">
-                        {log.content}
-                      </p>
-                    )}
-                  </button>
-                ))}
+                  )}
+                </button>
+                {expandedId === log.id && (
+                  <div className="px-4 py-4">
+                    <p className="text-sm text-brand-text leading-relaxed whitespace-pre-wrap">{log.content}</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            ))
+          )}
         </>
       )}
     </div>
