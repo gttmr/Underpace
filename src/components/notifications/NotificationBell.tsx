@@ -38,7 +38,7 @@ function relativeTime(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("ko-KR", { month: "long", day: "numeric" });
 }
 
-export default function NotificationBell() {
+export default function NotificationBell({ light = false }: { light?: boolean }) {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [readIds, setReadIds] = useState<Set<number>>(new Set());
   const [open, setOpen] = useState(false);
@@ -98,7 +98,11 @@ export default function NotificationBell() {
         ref={buttonRef}
         onClick={handleOpen}
         aria-label={`알림 ${unreadCount > 0 ? `(${unreadCount}개 새 알림)` : ""}`}
-        className="relative w-10 h-10 flex items-center justify-center rounded-xl bg-[rgba(196,221,255,0.18)] hover:bg-[rgba(196,221,255,0.28)] border border-[rgba(196,221,255,0.25)] transition-all active:scale-95"
+        className={`relative w-10 h-10 flex items-center justify-center rounded-xl transition-all active:scale-95 ${
+          light
+            ? "bg-brand-surface hover:bg-brand-surface-strong border border-brand-primary-border"
+            : "bg-[rgba(196,221,255,0.18)] hover:bg-[rgba(196,221,255,0.28)] border border-[rgba(196,221,255,0.25)]"
+        }`}
       >
         {/* Bell SVG */}
         <svg
@@ -108,7 +112,7 @@ export default function NotificationBell() {
           strokeWidth={2}
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="w-5 h-5 text-white"
+          className={`w-5 h-5 ${light ? "text-brand-text" : "text-white"}`}
         >
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
           <path d="M13.73 21a2 2 0 0 1-3.46 0" />

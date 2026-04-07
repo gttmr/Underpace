@@ -46,43 +46,51 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
   return (
     <div className="min-h-screen bg-white">
       {/* ── header ── */}
-      <header className="bg-[#001d6e] text-white overflow-hidden">
-        <div className="max-w-xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
+      <header className="bg-white shadow-[0_1px_12px_rgba(0,0,0,0.07)] sticky top-0 z-30">
+        <div className="max-w-xl mx-auto px-4 h-14 grid grid-cols-[1fr_auto_1fr] items-center">
+          {/* left — 오른쪽 버튼 너비와 균형 맞추기 위한 빈 영역 */}
+          <div />
+
+          {/* center — 로고 */}
           <Image
             src="/logo.png"
             alt="Underpace"
-            width={110}
-            height={46}
+            width={120}
+            height={48}
             className="object-contain"
-            style={{ filter: "invert(1)", mixBlendMode: "screen" }}
+            style={{ mixBlendMode: "multiply" }}
+            priority
           />
 
-          {user ? (
-            <div className="flex items-center gap-2">
-              {isCoachOrAdmin && (
+          {/* right — 액션 버튼 */}
+          <div className="flex items-center gap-1.5 justify-end">
+            {user ? (
+              <>
+                {isCoachOrAdmin && (
+                  <Link
+                    href="/coach"
+                    className="px-2.5 py-1.5 rounded-lg bg-brand-surface hover:bg-brand-surface-strong text-brand-text text-xs font-bold transition-colors border border-brand-primary-border whitespace-nowrap"
+                  >
+                    코치
+                  </Link>
+                )}
+                <NotificationBell light />
                 <Link
-                  href="/coach"
-                  className="px-3 py-2 rounded-xl bg-[rgba(196,221,255,0.18)] hover:bg-[rgba(196,221,255,0.28)] text-white text-sm font-bold transition-colors border border-[rgba(196,221,255,0.25)] whitespace-nowrap"
+                  href="/profile"
+                  className="px-2.5 py-1.5 rounded-lg bg-brand-surface hover:bg-brand-surface-strong text-brand-text text-xs font-bold transition-colors border border-brand-primary-border whitespace-nowrap"
                 >
-                  코치
+                  프로필
                 </Link>
-              )}
-              <NotificationBell />
+              </>
+            ) : (
               <Link
-                href="/profile"
-                className="px-3 py-2 rounded-xl bg-[rgba(255,255,255,0.12)] hover:bg-[rgba(255,255,255,0.2)] text-white text-sm font-bold transition-colors border border-[rgba(255,255,255,0.15)] whitespace-nowrap"
+                href={`/api/auth/kakao?returnTo=${encodeURIComponent(returnTo)}`}
+                className="px-3 py-1.5 rounded-lg bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] text-xs font-black transition-colors whitespace-nowrap active:scale-[0.97]"
               >
-                내 프로필
+                로그인
               </Link>
-            </div>
-          ) : (
-            <Link
-              href={`/api/auth/kakao?returnTo=${encodeURIComponent(returnTo)}`}
-              className="px-3 py-2 rounded-xl bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] text-sm font-black transition-colors whitespace-nowrap active:scale-[0.97]"
-            >
-              로그인
-            </Link>
-          )}
+            )}
+          </div>
         </div>
       </header>
 
