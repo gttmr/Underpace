@@ -40,6 +40,8 @@ export function SignupForm({ meeting }: SignupFormProps) {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
   const [duplicate, setDuplicate] = useState(false);
+  const [myParticipant, setMyParticipant] = useState<{ id: number; status: string; waitlistPosition: number | null } | null | undefined>(undefined);
+  const [cancelling, setCancelling] = useState(false);
 
   useEffect(() => {
     fetch("/api/auth/me")
@@ -47,23 +49,42 @@ export function SignupForm({ meeting }: SignupFormProps) {
       .then((data) => {
         setUser(data);
         if (data?.kakaoId) {
-          fetch("/api/profile")
-            .then((r) => r.ok ? r.json() : null)
-            .then((profile) => {
-              if (profile?.name) {
-                setName(profile.name);
-                setProfileName(profile.name);
-              } else if (data?.nickname) {
-                setName(data.nickname);
-              }
-            })
-            .catch(() => {
-              if (data?.nickname) setName(data.nickname);
-            });
+          Promise.all([
+            fetch("/api/profile").then((r) => r.ok ? r.json() : null).catch(() => null),
+            fetch(`/api/participants/me?meetingId=${meeting.id}`).then((r) => r.json()).catch(() => null),
+          ]).then(([profile, participant]) => {
+            if (profile?.name) {
+              setName(profile.name);
+              setProfileName(profile.name);
+            } else if (data?.nickname) {
+              setName(data.nickname);
+            }
+            setMyParticipant(participant);
+          });
         }
       })
       .catch(() => setUser(null));
-  }, []);
+  }, [meeting.id]);
+
+  async function handleCancel() {
+    if (!confirm("신청을 취소하시겠습니까?")) return;
+    setCancelling(true);
+    try {
+      const res = await fetch(`/api/participants/me?meetingId=${meeting.id}`, { method: "DELETE" });
+      if (res.ok) {
+        router.refresh();
+        setMyParticipant(null);
+        setDuplicate(false);
+      } else {
+        const data = await res.json();
+        setServerError(data.error ?? "취소 중 오류가 발생했습니다.");
+      }
+    } catch {
+      setServerError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   useEffect(() => {
     const authError = searchParams.get("auth_error");
@@ -131,8 +152,42 @@ export function SignupForm({ meeting }: SignupFormProps) {
     );
   }
 
-  if (user === undefined) {
+  if (user === undefined || myParticipant === undefined) {
     return <div className="py-8 text-center text-brand-text-subtle text-sm font-medium">불러오는 중...</div>;
+  }
+
+  // 이미 신청한 경우: 상태 표시 + 취소 버튼
+  if (myParticipant) {
+    const statusLabel =
+      myParticipant.status === "APPROVED" ? "참가 확정"
+      : myParticipant.status === "WAITLISTED" ? `대기 ${myParticipant.waitlistPosition}번째`
+      : myParticipant.status === "PENDING" ? "검토 중"
+      : "신청 완료";
+    const statusColor =
+      myParticipant.status === "APPROVED" ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+      : myParticipant.status === "WAITLISTED" ? "text-brand-text bg-brand-surface border-brand-primary-border"
+      : "text-amber-700 bg-amber-50 border-amber-200";
+
+    return (
+      <div className="space-y-3">
+        {serverError && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-sm font-bold text-red-700">{serverError}</div>
+        )}
+        <div className={`rounded-xl border p-4 flex items-center justify-between gap-3 ${statusColor}`}>
+          <div>
+            <p className="text-xs font-black uppercase tracking-widest opacity-60 mb-0.5">신청 상태</p>
+            <p className="font-black text-sm">{statusLabel}</p>
+          </div>
+          <button
+            onClick={handleCancel}
+            disabled={cancelling}
+            className="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-white border border-current opacity-70 hover:opacity-100 transition-opacity disabled:cursor-not-allowed"
+          >
+            {cancelling ? "취소 중..." : "신청 취소"}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   if (!user) {
@@ -253,7 +308,6 @@ export function SignupForm({ meeting }: SignupFormProps) {
         ) : isFull ? "대기자로 신청하기" : "신청하기"}
       </button>
 
-      <p className="text-[10px] text-brand-text-subtle text-center font-medium">관리자 승인 후 확정됩니다</p>
     </form>
   );
 }
