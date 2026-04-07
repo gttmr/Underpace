@@ -42,7 +42,7 @@ function TimeInput({ value, onChange, placeholder }: { value: string; onChange: 
       value={value}
       onChange={handleChange}
       placeholder={placeholder}
-      className="w-full px-3 py-2.5 rounded-xl border border-[#7fb5ff] bg-white text-sm outline-none focus:border-[#001d6e] focus:ring-2 focus:ring-[rgba(127,181,255,0.25)] transition-all text-[#001d6e] font-semibold placeholder:font-normal placeholder:text-[rgba(0,29,110,0.3)]"
+      className="w-full px-3 py-2.5 rounded-xl border border-brand-primary-border bg-white text-sm outline-none focus:border-brand-primary-border-strong focus:ring-2 focus:ring-brand-ring transition-all text-brand-text font-semibold placeholder:font-normal placeholder:text-brand-text-subtle"
     />
   );
 }
@@ -57,7 +57,7 @@ function KakaoIcon() {
 
 export default function ProfilePageWrapper() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-[rgba(0,29,110,0.35)] text-sm">불러오는 중...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-brand-text-subtle text-sm">불러오는 중...</p></div>}>
       <ProfilePage />
     </Suspense>
   );
@@ -65,7 +65,7 @@ export default function ProfilePageWrapper() {
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-[#7fb5ff] shadow-sm overflow-hidden">
+    <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden">
       {children}
     </div>
   );
@@ -76,9 +76,9 @@ function SectionHeader({ icon, title, sub }: { icon: string; title: string; sub?
     <div className="px-5 py-4 border-b border-[rgba(0,29,110,0.08)]">
       <div className="flex items-center gap-2 mb-0.5">
         <span>{icon}</span>
-        <h3 className="text-sm font-black text-[#001d6e]">{title}</h3>
+        <h3 className="text-sm font-black text-brand-text">{title}</h3>
       </div>
-      {sub && <p className="text-xs text-[rgba(0,29,110,0.45)] ml-6">{sub}</p>}
+      {sub && <p className="text-xs text-brand-text-subtle ml-6">{sub}</p>}
     </div>
   );
 }
@@ -86,7 +86,7 @@ function SectionHeader({ icon, title, sub }: { icon: string; title: string; sub?
 function FormInput({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-xs font-black text-[rgba(0,29,110,0.55)] mb-1.5 uppercase tracking-wider">
+      <label className="block text-xs font-black text-brand-text-subtle mb-1.5 uppercase tracking-wider">
         {label} {required && <span className="text-red-400 normal-case">*</span>}
       </label>
       {children}
@@ -170,23 +170,23 @@ function ProfilePage() {
     setSaving(false);
   }
 
-  const inputClass = "w-full px-4 py-2.5 rounded-xl border border-[#7fb5ff] bg-white text-sm outline-none focus:border-[#001d6e] focus:ring-2 focus:ring-[rgba(127,181,255,0.25)] transition-all text-[#001d6e] font-semibold placeholder:font-normal placeholder:text-[rgba(0,29,110,0.3)]";
+  const inputClass = "w-full px-4 py-2.5 rounded-xl border border-brand-primary-border bg-white text-sm outline-none focus:border-brand-primary-border-strong focus:ring-2 focus:ring-brand-ring transition-all text-brand-text font-semibold placeholder:font-normal placeholder:text-brand-text-subtle";
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[rgba(0,29,110,0.35)] text-sm">불러오는 중...</p>
+        <p className="text-brand-text-subtle text-sm">불러오는 중...</p>
       </div>
     );
   }
 
   if (notLoggedIn) {
     return (
-      <div className="min-h-screen bg-[#f5f8ff] flex flex-col items-center justify-center px-6">
-        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-[#7fb5ff]">
+      <div className="min-h-screen bg-brand-page flex flex-col items-center justify-center px-6">
+        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-brand-primary-border">
           <div className="text-5xl mb-4">🏃</div>
-          <h1 className="text-xl font-black text-[#001d6e] mb-2">로그인이 필요합니다</h1>
-          <p className="text-sm text-[rgba(0,29,110,0.55)] mb-6">카카오 로그인 후 나의 프로필을 관리할 수 있습니다.</p>
+          <h1 className="text-xl font-black text-brand-text mb-2">로그인이 필요합니다</h1>
+          <p className="text-sm text-brand-text-subtle mb-6">카카오 로그인 후 나의 프로필을 관리할 수 있습니다.</p>
           <button
             onClick={() => window.location.href = `/api/auth/kakao?returnTo=/profile`}
             className="w-full h-12 inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-black rounded-xl transition-colors justify-center text-sm active:scale-[0.97]"
@@ -194,7 +194,7 @@ function ProfilePage() {
             <KakaoIcon />
             카카오로 로그인
           </button>
-          <Link href="/" className="block mt-4 text-xs text-[rgba(0,29,110,0.4)] hover:text-[#001d6e] transition-colors font-semibold">
+          <Link href="/" className="block mt-4 text-xs text-[rgba(0,29,110,0.4)] hover:text-brand-text transition-colors font-semibold">
             ← 홈으로 돌아가기
           </Link>
         </div>
@@ -203,15 +203,15 @@ function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] pb-24">
+    <div className="min-h-screen bg-brand-page pb-24">
       {/* setup modal */}
       {showSetup && (
-        <div className="fixed inset-0 bg-[#001d6e]/60 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+        <div className="fixed inset-0 bg-[rgba(0,29,110,0.6)] backdrop-blur-sm z-50 flex items-center justify-center px-4">
           <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-scale-in">
             <div className="text-center mb-6">
               <div className="text-4xl mb-2">🏃‍♂️</div>
-              <h2 className="text-xl font-black text-[#001d6e]">환영합니다!</h2>
-              <p className="text-sm text-[rgba(0,29,110,0.55)] mt-1">이름과 기록을 입력해주세요</p>
+              <h2 className="text-xl font-black text-brand-text">환영합니다!</h2>
+              <p className="text-sm text-brand-text-subtle mt-1">이름과 기록을 입력해주세요</p>
             </div>
             <div className="space-y-4">
               <FormInput label="이름(닉네임)" required>
@@ -243,7 +243,7 @@ function ProfilePage() {
               onClick={handleSetupSave}
               disabled={saving || !name.trim()}
               className={`w-full mt-6 py-3.5 rounded-xl font-black text-white text-sm transition-all active:scale-[0.98] ${
-                saving || !name.trim() ? "bg-[#e5e7eb] cursor-not-allowed text-[#9ca3af]" : "bg-[#001d6e] hover:bg-[#00277a]"
+                saving || !name.trim() ? "bg-[#e5e7eb] cursor-not-allowed text-[#9ca3af]" : "bg-brand-primary hover:bg-[#00277a]"
               }`}
             >
               {saving ? "저장 중..." : "시작하기"}
@@ -253,7 +253,7 @@ function ProfilePage() {
       )}
 
       {/* header */}
-      <header className="bg-[#001d6e] text-white relative overflow-hidden">
+      <header className="bg-brand-primary text-white relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -284,12 +284,12 @@ function ProfilePage() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-black text-[#001d6e] leading-tight">{user?.name || "이름 없음"}</h2>
+              <h2 className="text-lg font-black text-brand-text leading-tight">{user?.name || "이름 없음"}</h2>
               <p className="text-xs text-[rgba(0,29,110,0.4)] mt-0.5 font-medium">
                 가입일: {user ? new Date(user.createdAt).toLocaleDateString("ko-KR") : ""}
               </p>
               <div className="flex gap-2 mt-2">
-                <span className="text-xs bg-[#c4ddff] text-[#001d6e] px-2 py-0.5 rounded-full font-black">
+                <span className="text-xs bg-[#c4ddff] text-brand-text px-2 py-0.5 rounded-full font-black">
                   모임 {user?._count.participants}회
                 </span>
                 <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full font-black">
@@ -354,7 +354,7 @@ function ProfilePage() {
                 onChange={(e) => setCoachingNote(e.target.value.slice(0, 500))}
                 placeholder="예: 페이스 유지하는 법을 배우고 싶습니다..."
                 rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-[#7fb5ff] text-sm outline-none focus:border-[#001d6e] focus:ring-2 focus:ring-[rgba(127,181,255,0.25)] transition-all resize-none text-[rgba(0,29,110,0.74)] placeholder:text-[rgba(0,29,110,0.3)]"
+                className="w-full px-4 py-3 rounded-xl border border-brand-primary-border text-sm outline-none focus:border-brand-primary-border-strong focus:ring-2 focus:ring-brand-ring transition-all resize-none text-brand-text-muted placeholder:text-brand-text-subtle"
               />
               <p className="mt-1 text-[10px] text-[rgba(0,29,110,0.4)] text-right font-medium">{coachingNote.length}/500</p>
             </div>
@@ -369,7 +369,7 @@ function ProfilePage() {
                 ? "bg-[#e5e7eb] cursor-not-allowed text-[#9ca3af]"
                 : saved
                 ? "bg-emerald-500"
-                : "bg-[#001d6e] hover:bg-[#00277a]"
+                : "bg-brand-primary hover:bg-[#00277a]"
             }`}
           >
             {saving ? "저장 중..." : saved ? "✓ 저장 완료!" : "프로필 저장하기"}

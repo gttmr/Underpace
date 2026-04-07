@@ -28,31 +28,31 @@ export default async function AdminMeetingsPage() {
     return (
       <Link
         href={`/admin/meetings/${m.id}`}
-        className="block bg-white rounded-xl border border-slate-200 p-4 hover:border-[#7fb5ff] transition-colors"
+        className="block bg-white rounded-xl border border-brand-primary-border p-4 hover:border-brand-primary-border-strong transition-colors"
       >
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>
-            <p className="font-semibold text-slate-800 text-sm">
+            <p className="font-semibold text-brand-text text-sm">
               {parseInt(month)}월 {parseInt(day)}일 ({DAY_KO[d.getDay()]})
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-brand-text-subtle mt-0.5">
               {m.startTime}–{m.endTime} · {m.location}
             </p>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
-            {!m.isOpen && <span className="text-xs bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded-full">마감</span>}
+            {!m.isOpen && <span className="text-xs bg-brand-dimmed text-brand-dimmed-text px-1.5 py-0.5 rounded-full">마감</span>}
             {pending > 0 && <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">대기 {pending}</span>}
-            {waitlisted > 0 && <span className="text-xs bg-[#c4ddff] text-[#001d6e] px-1.5 py-0.5 rounded-full">대기자 {waitlisted}</span>}
+            {waitlisted > 0 && <span className="text-xs brand-chip-soft px-1.5 py-0.5 rounded-full">대기자 {waitlisted}</span>}
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex-1 h-1.5 bg-[#c4ddff] rounded-full overflow-hidden">
+          <div className="flex-1 h-1.5 bg-brand-surface rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full ${pct >= 100 ? "bg-red-500" : pct >= 85 ? "bg-amber-400" : "bg-green-500"}`}
               style={{ width: `${pct}%` }}
             />
           </div>
-          <span className="text-xs text-slate-500 shrink-0">{approved}/{m.maxCapacity}명</span>
+          <span className="text-xs text-brand-text-subtle shrink-0">{approved}/{m.maxCapacity}명</span>
         </div>
       </Link>
     );
@@ -60,19 +60,19 @@ export default async function AdminMeetingsPage() {
 
   return (
     <AdminLayout>
-      <h1 className="text-xl font-extrabold text-slate-900 mb-6">모임 관리</h1>
+      <h1 className="text-xl font-extrabold text-brand-text mb-6">모임 관리</h1>
 
       <section className="mb-8">
-        <h2 className="text-sm font-bold text-slate-700 mb-3">예정된 모임 ({upcoming.length})</h2>
+        <h2 className="text-sm font-bold text-brand-text-muted mb-3">예정된 모임 ({upcoming.length})</h2>
         <div className="space-y-3">
           {upcoming.map((m) => <MeetingRow key={m.id} m={m} />)}
-          {upcoming.length === 0 && <p className="text-sm text-slate-400 text-center py-6">예정된 모임이 없습니다</p>}
+          {upcoming.length === 0 && <p className="text-sm text-brand-text-subtle text-center py-6">예정된 모임이 없습니다</p>}
         </div>
       </section>
 
       {past.length > 0 && (
         <section>
-          <h2 className="text-sm font-bold text-slate-700 mb-3">지난 모임 ({past.length})</h2>
+          <h2 className="text-sm font-bold text-brand-text-muted mb-3">지난 모임 ({past.length})</h2>
           <div className="space-y-3 opacity-70">
             {past.map((m) => <MeetingRow key={m.id} m={m} />)}
           </div>

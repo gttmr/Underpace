@@ -21,9 +21,9 @@ const STATUS_CONFIG: Record<ParticipantStatus, { label: string; bg: string; text
   },
   WAITLISTED: {
     label: "대기자",
-    bg: "bg-[#c4ddff]",
-    text: "text-[#001d6e]",
-    dot: "bg-[#001d6e]",
+    bg: "bg-brand-surface",
+    text: "text-brand-text",
+    dot: "bg-brand-primary",
   },
   REJECTED: {
     label: "거절됨",
