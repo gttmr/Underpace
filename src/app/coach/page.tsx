@@ -101,6 +101,20 @@ export default function CoachDashboardPage() {
   const [memberLoading, setMemberLoading] = useState(false);
   const [showMemberModal, setShowMemberModal] = useState(false);
 
+  // 월간 플랜
+  const now = new Date();
+  const [planYear] = useState(now.getFullYear());
+  const [planMonth] = useState(now.getMonth() + 1);
+  const [beginnerContent, setBeginnerContent] = useState("");
+  const [advancedContent, setAdvancedContent] = useState("");
+  const [planSaving, setPlanSaving] = useState(false);
+  const [planSaved, setPlanSaved] = useState(false);
+
+  // 훈련 일지 (meetingId → content)
+  const [trainingContents, setTrainingContents] = useState<Record<number, string>>({});
+  const [trainingSaving, setTrainingSaving] = useState<Record<number, boolean>>({});
+  const [trainingSaved, setTrainingSaved] = useState<Record<number, boolean>>({});
+
   useEffect(() => {
     fetch("/api/coach/meetings")
       .then((r) => {
@@ -114,6 +128,57 @@ export default function CoachDashboardPage() {
       })
       .catch(() => { setError("network"); setLoading(false); });
   }, []);
+
+  // 월간 플랜 로드
+  useEffect(() => {
+    fetch(`/api/monthly-plans?year=${planYear}&month=${planMonth}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data) {
+          setBeginnerContent(data.beginnerContent ?? "");
+          setAdvancedContent(data.advancedContent ?? "");
+        }
+      })
+      .catch(() => {});
+  }, [planYear, planMonth]);
+
+  // 훈련 일지 로드 (이번 달)
+  useEffect(() => {
+    fetch(`/api/training-logs?year=${planYear}&month=${planMonth}`)
+      .then((r) => r.json())
+      .then((logs: { meetingId: number; content: string }[]) => {
+        if (Array.isArray(logs)) {
+          const map: Record<number, string> = {};
+          logs.forEach((l) => { map[l.meetingId] = l.content; });
+          setTrainingContents(map);
+        }
+      })
+      .catch(() => {});
+  }, [planYear, planMonth]);
+
+  async function savePlan() {
+    setPlanSaving(true);
+    await fetch("/api/monthly-plans", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ year: planYear, month: planMonth, beginnerContent, advancedContent }),
+    });
+    setPlanSaving(false);
+    setPlanSaved(true);
+    setTimeout(() => setPlanSaved(false), 2000);
+  }
+
+  async function saveTrainingLog(meetingId: number) {
+    setTrainingSaving((p) => ({ ...p, [meetingId]: true }));
+    await fetch("/api/training-logs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ meetingId, content: trainingContents[meetingId] ?? "" }),
+    });
+    setTrainingSaving((p) => ({ ...p, [meetingId]: false }));
+    setTrainingSaved((p) => ({ ...p, [meetingId]: true }));
+    setTimeout(() => setTrainingSaved((p) => ({ ...p, [meetingId]: false })), 2000);
+  }
 
   function openMemberRecord(kakaoId: string) {
     setMemberLoading(true);
@@ -181,7 +246,49 @@ export default function CoachDashboardPage() {
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-6 space-y-4">
+      <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        {/* 월간 훈련 계획 에디터 */}
+        <div className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
+          <div className="bg-brand-surface px-5 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-[3px] h-4 bg-brand-primary rounded-full" />
+              <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">
+                {planYear}년 {planMonth}월 훈련 계획
+              </p>
+            </div>
+            <button
+              onClick={savePlan}
+              disabled={planSaving}
+              className="px-3 py-1.5 rounded-lg text-xs font-black bg-brand-primary text-white hover:bg-brand-primary-hover transition-colors disabled:opacity-50"
+            >
+              {planSaved ? "저장됨 ✓" : planSaving ? "저장 중..." : "저장"}
+            </button>
+          </div>
+          <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-black text-brand-text-subtle uppercase tracking-widest mb-1.5">초중급반</label>
+              <textarea
+                value={beginnerContent}
+                onChange={(e) => setBeginnerContent(e.target.value)}
+                rows={5}
+                placeholder={"1주차: 페이스 런 5K\n2주차: 인터벌 4×1K\n3주차: LSD 10K\n4주차: 템포 런"}
+                className="brand-input w-full px-3 py-2.5 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-black text-brand-text-subtle uppercase tracking-widest mb-1.5">고급반</label>
+              <textarea
+                value={advancedContent}
+                onChange={(e) => setAdvancedContent(e.target.value)}
+                rows={5}
+                placeholder={"1주차: 스피드워크 6×800m\n2주차: 마라톤 페이스 런\n3주차: LSD 20K\n4주차: 레이스 시뮬레이션"}
+                className="brand-input w-full px-3 py-2.5 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* 모임 목록 */}
         {meetings.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 text-center border border-slate-100">
             <div className="text-5xl mb-3">📅</div>
@@ -214,6 +321,27 @@ export default function CoachDashboardPage() {
                     <span className={`text-slate-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}>▾</span>
                   </div>
                 </button>
+
+                {/* 훈련 일지 (항상 표시) */}
+                <div className="border-t border-slate-100 px-5 py-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">훈련 일지</p>
+                    <button
+                      onClick={() => saveTrainingLog(m.id)}
+                      disabled={trainingSaving[m.id]}
+                      className="px-3 py-1 rounded-lg text-xs font-black bg-brand-primary text-white hover:bg-brand-primary-hover transition-colors disabled:opacity-50"
+                    >
+                      {trainingSaved[m.id] ? "저장됨 ✓" : trainingSaving[m.id] ? "저장 중..." : "저장"}
+                    </button>
+                  </div>
+                  <textarea
+                    value={trainingContents[m.id] ?? ""}
+                    onChange={(e) => setTrainingContents((p) => ({ ...p, [m.id]: e.target.value }))}
+                    rows={3}
+                    placeholder="오늘 훈련 내용을 입력하세요 (예: 인터벌 5×1K @ 4:30/km, 총 8K)"
+                    className="brand-input w-full px-3 py-2.5 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
+                  />
+                </div>
 
                 {/* 참가자 리스트 (확장 시) */}
                 {isExpanded && (

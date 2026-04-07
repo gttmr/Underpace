@@ -5,13 +5,13 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { CapacityBar } from "@/components/ui/CapacityBar";
 import CalendarView, { type MeetingForCalendar, type MarathonForCalendar } from "./CalendarView";
-import MarathonRegistrationModal from "@/components/marathon/MarathonRegistrationModal";
+import TrainingTab from "./TrainingTab";
 import type { SessionUser } from "@/lib/session";
 import { formatSignupOpensAtCompact, isSignupAvailable } from "@/lib/meetingSignup";
 
 const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 
-type View = "calendar" | "list";
+type View = "calendar" | "list" | "training";
 
 export default function ScheduleView({
   meetings,
@@ -23,7 +23,6 @@ export default function ScheduleView({
   user: SessionUser | null;
 }) {
   const [view, setView] = useState<View>("calendar");
-  const [isMarathonModalOpen, setIsMarathonModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const pathname = usePathname();
 
@@ -146,35 +145,23 @@ export default function ScheduleView({
     <>
       {/* tab bar */}
       <div className="flex bg-brand-surface rounded-xl p-1 gap-1">
-        <div className="flex flex-1 gap-1">
+        {(["calendar", "list", "training"] as const).map((v) => (
           <button
-            onClick={() => setView("calendar")}
+            key={v}
+            onClick={() => setView(v)}
             className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-bold transition-all duration-150
-              ${view === "calendar"
+              ${view === v
                 ? "bg-white text-brand-text shadow-sm"
                 : "text-brand-text-muted hover:text-brand-text"}`}
           >
-            달력
+            {v === "calendar" ? "달력" : v === "list" ? "목록" : "훈련"}
           </button>
-          <button
-            onClick={() => setView("list")}
-            className={`flex-1 flex items-center justify-center py-2 rounded-lg text-sm font-bold transition-all duration-150
-              ${view === "list"
-                ? "bg-white text-brand-text shadow-sm"
-                : "text-brand-text-muted hover:text-brand-text"}`}
-          >
-            목록
-          </button>
-        </div>
-        <button
-          onClick={() => setIsMarathonModalOpen(true)}
-          className="px-3 flex items-center justify-center py-2 rounded-lg text-sm font-black bg-emerald-500 text-white hover:bg-emerald-600 transition-colors ml-1 active:scale-95"
-        >
-          대회 등록
-        </button>
+        ))}
       </div>
 
       {view === "calendar" && <CalendarView meetings={meetings} marathons={marathons} />}
+
+      {view === "training" && <TrainingTab />}
 
       {view === "list" && (
         <div className="space-y-8 animate-fade-in">
@@ -207,12 +194,6 @@ export default function ScheduleView({
         </div>
       )}
 
-      <MarathonRegistrationModal
-        isOpen={isMarathonModalOpen}
-        onClose={() => setIsMarathonModalOpen(false)}
-        user={user}
-        returnTo={pathname || "/"}
-      />
     </>
   );
 }
