@@ -11,7 +11,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const { dayOfWeek, startTime, endTime, location, maxCapacity, description, isActive, signupOpenDayOfWeek, signupOpenTime } = body;
+  const { dayOfWeek, startTime, endTime, location, maxCapacity, description, classType, isActive, signupOpenDayOfWeek, signupOpenTime } = body;
   const scheduleId = parseInt(id);
 
   const existing = await prisma.recurringSchedule.findUnique({
@@ -53,6 +53,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(signupOpenDayOfWeek !== undefined && { signupOpenDayOfWeek: nextSignupOpenDayOfWeek }),
       ...(signupOpenTime !== undefined && { signupOpenTime: nextSignupOpenTime }),
       ...(isActive !== undefined && { isActive }),
+      ...(classType !== undefined && { classType: classType || null }),
     },
   });
 

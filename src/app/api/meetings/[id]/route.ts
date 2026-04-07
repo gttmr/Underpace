@@ -29,7 +29,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const { id } = await params;
   const body = await req.json();
-  const { date, startTime, endTime, location, maxCapacity, description, isOpen, signupOpensAt } = body;
+  const { date, startTime, endTime, location, maxCapacity, description, isOpen, signupOpensAt, classType } = body;
 
   const meeting = await prisma.meeting.update({
     where: { id: parseInt(id) },
@@ -42,6 +42,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ...(description !== undefined && { description: description || null }),
       ...(signupOpensAt !== undefined && { signupOpensAt: signupOpensAt ? new Date(signupOpensAt) : null }),
       ...(isOpen !== undefined && { isOpen }),
+      ...(classType !== undefined && { classType: classType || null }),
       isOverridden: true,
     },
   });

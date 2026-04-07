@@ -15,6 +15,7 @@ interface Schedule {
   location: string;
   maxCapacity: number;
   description: string | null;
+  classType: string | null;
   signupOpenDayOfWeek: number | null;
   signupOpenTime: string | null;
   isActive: boolean;
@@ -28,6 +29,7 @@ interface Meeting {
   location: string;
   maxCapacity: number;
   description: string | null;
+  classType: string | null;
   isOpen: boolean;
   isOverridden: boolean;
   signupOpensAt: string | null;
@@ -70,6 +72,7 @@ function ScheduleForm({
     location: initial?.location ?? "",
     maxCapacity: initial?.maxCapacity ?? 20,
     description: initial?.description ?? "",
+    classType: initial?.classType ?? "",
     signupOpenDayOfWeek: initial?.signupOpenDayOfWeek ?? initial?.dayOfWeek ?? 6,
     signupOpenTime: initial?.signupOpenTime ?? "00:00",
   });
@@ -144,6 +147,18 @@ function ScheduleForm({
           className="w-full px-3 py-2 rounded-lg border border-brand-primary-border text-sm outline-none focus:border-brand-primary-border-strong"
         />
       </div>
+      <div>
+        <label className="text-xs font-semibold text-brand-text-muted block mb-1">반 구분 (선택)</label>
+        <select
+          value={form.classType}
+          onChange={(e) => setForm((current) => ({ ...current, classType: e.target.value }))}
+          className="w-full px-3 py-2 rounded-lg border border-brand-primary-border text-sm outline-none focus:border-brand-primary-border-strong"
+        >
+          <option value="">미지정</option>
+          <option value="BEGINNER">초중급반</option>
+          <option value="ADVANCED">고급반</option>
+        </select>
+      </div>
       <label className="flex items-center gap-2 text-sm text-brand-text-muted">
         <input
           type="checkbox"
@@ -183,6 +198,7 @@ function ScheduleForm({
           onClick={() =>
             onSave({
               ...form,
+              classType: form.classType || null,
               signupOpenDayOfWeek: useSignupWindow ? form.signupOpenDayOfWeek : null,
               signupOpenTime: useSignupWindow ? form.signupOpenTime : null,
             })
@@ -218,6 +234,7 @@ function MeetingOverrideModal({
     location: meeting.location,
     maxCapacity: meeting.maxCapacity,
     description: meeting.description ?? "",
+    classType: meeting.classType ?? "",
     isOpen: meeting.isOpen,
     signupOpensAt: toDateTimeLocalValue(meeting.signupOpensAt),
   });
@@ -282,6 +299,19 @@ function MeetingOverrideModal({
         </div>
 
         <div>
+          <label className="text-xs font-semibold text-brand-text-muted block mb-1">반 구분</label>
+          <select
+            value={form.classType}
+            onChange={(e) => setForm((current) => ({ ...current, classType: e.target.value }))}
+            className="w-full px-3 py-2 rounded-lg border border-brand-primary-border text-sm outline-none focus:border-brand-primary-border-strong"
+          >
+            <option value="">미지정</option>
+            <option value="BEGINNER">초중급반</option>
+            <option value="ADVANCED">고급반</option>
+          </select>
+        </div>
+
+        <div>
           <div className="flex items-center justify-between mb-1">
             <label className="text-xs font-semibold text-brand-text-muted">신청 시작 시각</label>
             <button
@@ -317,6 +347,7 @@ function MeetingOverrideModal({
             onClick={() =>
               onSave({
                 ...form,
+                classType: form.classType || null,
                 signupOpensAt: form.signupOpensAt ? new Date(form.signupOpensAt).toISOString() : null,
               })
             }
@@ -454,6 +485,12 @@ export default function AdminSchedulePage() {
                       <span className="font-semibold text-brand-text text-sm">
                         매주 {DAY_KO[schedule.dayOfWeek]}요일
                       </span>
+                      {schedule.classType === "BEGINNER" && (
+                        <span className="text-xs bg-sky-100 text-sky-700 px-1.5 py-0.5 rounded-full font-bold">초중급</span>
+                      )}
+                      {schedule.classType === "ADVANCED" && (
+                        <span className="text-xs bg-brand-primary text-white px-1.5 py-0.5 rounded-full font-bold">고급</span>
+                      )}
                       {!schedule.isActive && (
                         <span className="text-xs bg-brand-page text-brand-text-subtle px-1.5 py-0.5 rounded-full">비활성</span>
                       )}

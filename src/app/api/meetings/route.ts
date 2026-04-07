@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { date, startTime, endTime, location, maxCapacity, description, scheduleId, isOpen, signupOpensAt } = body;
+  const { date, startTime, endTime, location, maxCapacity, description, scheduleId, isOpen, signupOpensAt, classType } = body;
 
   const meeting = await prisma.meeting.create({
     data: {
@@ -64,6 +64,7 @@ export async function POST(req: NextRequest) {
       location,
       maxCapacity: parseInt(maxCapacity),
       description: description || null,
+      classType: classType || null,
       scheduleId: scheduleId ? parseInt(scheduleId) : null,
       signupOpensAt: signupOpensAt ? new Date(signupOpensAt) : null,
       isOpen: isOpen !== false,

@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { dayOfWeek, startTime, endTime, location, maxCapacity, description, signupOpenDayOfWeek, signupOpenTime } = body;
+  const { dayOfWeek, startTime, endTime, location, maxCapacity, description, classType, signupOpenDayOfWeek, signupOpenTime } = body;
 
   const parsedDayOfWeek = parseInt(dayOfWeek);
   const normalizedSignupOpenDayOfWeek =
@@ -43,6 +43,7 @@ export async function POST(req: NextRequest) {
       location,
       maxCapacity: parseInt(maxCapacity),
       description: description || null,
+      classType: classType || null,
       signupOpenDayOfWeek: normalizedSignupOpenDayOfWeek,
       signupOpenTime: normalizedSignupOpenTime,
     },
