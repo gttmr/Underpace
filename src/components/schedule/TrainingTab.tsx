@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import type { SessionUser } from "@/lib/session";
 
 interface TrainingLog {
   id: number;
@@ -32,8 +31,7 @@ function formatDate(dateStr: string) {
   return `${parseInt(m)}월 ${parseInt(d)}일 (${day})`;
 }
 
-export default function TrainingTab({ user }: { user: SessionUser | null }) {
-  const isCoach = user?.role === "COACH" || user?.role === "ADMIN";
+export default function TrainingTab({ isCoach = false }: { isCoach?: boolean }) {
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth() + 1);
