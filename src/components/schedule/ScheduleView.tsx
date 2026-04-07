@@ -150,7 +150,7 @@ export default function ScheduleView({
 
       {view === "calendar" && <CalendarView meetings={meetings} marathons={marathons} />}
 
-      {view === "training" && <TrainingTab />}
+      {view === "training" && <TrainingTab user={user} />}
 
       {view === "list" && (
         <div className="space-y-3 animate-fade-in">
