@@ -51,15 +51,12 @@ export default function ScheduleView({
 
     return (
       <div
-        className={`animate-fade-up relative bg-white rounded-2xl border border-brand-primary-border overflow-hidden
+        className={`animate-fade-up bg-white rounded-2xl border border-brand-primary-border overflow-hidden
                     transition-all duration-200
                     ${isDisabled ? "opacity-50" : "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[rgba(0,29,110,0.08)]"}`}
         style={{ animationDelay: `${index * 55}ms` }}
       >
-        {/* left accent bar */}
-        <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${isDisabled ? "bg-brand-divider" : "bg-brand-primary"}`} />
-
-        <div className="flex items-stretch pl-5 pr-4 py-4 gap-4">
+        <div className="flex items-stretch px-4 py-4 gap-4">
           {/* date column — race-bib style */}
           <div className="flex flex-col justify-center text-center min-w-[46px] shrink-0">
             <span className="text-[10px] font-black text-brand-text-subtle tracking-widest uppercase leading-none">
@@ -132,14 +129,6 @@ export default function ScheduleView({
     );
   }
 
-  function SectionLabel({ children }: { children: React.ReactNode }) {
-    return (
-      <div className="flex items-center gap-2 mb-3">
-        <div className="w-1 h-4 bg-brand-primary rounded-full shrink-0" />
-        <h2 className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">{children}</h2>
-      </div>
-    );
-  }
 
   return (
     <>
@@ -164,27 +153,13 @@ export default function ScheduleView({
       {view === "training" && <TrainingTab />}
 
       {view === "list" && (
-        <div className="space-y-8 animate-fade-in">
-          {upcoming.length > 0 && (
-            <section>
-              <SectionLabel>예정된 모임</SectionLabel>
-              <div className="space-y-3">
-                {upcoming.map((meeting, i) => (
-                  <MeetingRow key={meeting.id} meeting={meeting} index={i} />
-                ))}
-              </div>
-            </section>
-          )}
-          {past.length > 0 && (
-            <section>
-              <SectionLabel>지난 모임</SectionLabel>
-              <div className="space-y-3">
-                {past.map((meeting, i) => (
-                  <MeetingRow key={meeting.id} meeting={meeting} index={i} />
-                ))}
-              </div>
-            </section>
-          )}
+        <div className="space-y-3 animate-fade-in">
+          {upcoming.map((meeting, i) => (
+            <MeetingRow key={meeting.id} meeting={meeting} index={i} />
+          ))}
+          {past.map((meeting, i) => (
+            <MeetingRow key={meeting.id} meeting={meeting} index={i} />
+          ))}
           {meetings.length === 0 && (
             <div className="text-center py-20 text-brand-text-subtle">
               <p className="text-4xl mb-3">📅</p>
