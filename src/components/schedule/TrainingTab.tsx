@@ -41,6 +41,7 @@ export default function TrainingTab({ isCoach = false }: { isCoach?: boolean }) 
   const [meetings, setMeetings] = useState<Meeting[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [classTab, setClassTab] = useState<"BEGINNER" | "ADVANCED">("BEGINNER");
 
   // 코치 편집 상태
   const [beginnerEdit, setBeginnerEdit] = useState("");
@@ -123,10 +124,11 @@ export default function TrainingTab({ isCoach = false }: { isCoach?: boolean }) 
 
   const logMap = new Map(logs.map((l) => [l.meetingId, l]));
 
-  // 코치: 이번 달 전체 모임 표시 / 일반: 일지 있는 모임만
-  const logItems = isCoach
+  // 코치: 이번 달 전체 모임 표시 / 일반: 일지 있는 모임만 — classTab 필터 적용
+  const logItems = (isCoach
     ? meetings.map((m) => ({ meetingId: m.id, date: m.date, startTime: m.startTime, endTime: m.endTime, classType: m.classType, log: logMap.get(m.id) }))
-    : logs.map((l) => ({ meetingId: l.meetingId, date: l.meeting.date, startTime: l.meeting.startTime, endTime: l.meeting.endTime, classType: l.meeting.classType, log: l }));
+    : logs.map((l) => ({ meetingId: l.meetingId, date: l.meeting.date, startTime: l.meeting.startTime, endTime: l.meeting.endTime, classType: l.meeting.classType, log: l }))
+  ).filter((item) => item.classType === classTab || item.classType === null);
 
   return (
     <div className="space-y-3">
@@ -135,6 +137,22 @@ export default function TrainingTab({ isCoach = false }: { isCoach?: boolean }) 
         <button onClick={prevMonth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-brand-surface text-brand-text transition-colors text-lg font-black">‹</button>
         <span className="font-black text-brand-text text-base">{year}년 {month}월</span>
         <button onClick={nextMonth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-brand-surface text-brand-text transition-colors text-lg font-black">›</button>
+      </div>
+
+      {/* 반 탭 */}
+      <div className="flex bg-brand-surface rounded-xl p-1 gap-1">
+        {(["BEGINNER", "ADVANCED"] as const).map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setClassTab(tab)}
+            className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all duration-150
+              ${classTab === tab
+                ? "bg-white text-brand-text shadow-sm"
+                : "text-brand-text-muted hover:text-brand-text"}`}
+          >
+            {tab === "BEGINNER" ? "초중급반" : "고급반"}
+          </button>
+        ))}
       </div>
 
       {loading ? (
@@ -155,41 +173,42 @@ export default function TrainingTab({ isCoach = false }: { isCoach?: boolean }) 
                 </button>
               )}
             </div>
-            <div className="grid grid-cols-2 divide-x divide-brand-divider">
-              {/* 초중급반 */}
-              <div className="px-4 py-3 flex flex-col gap-2">
-                <p className="text-[10px] font-black text-sky-600 uppercase tracking-widest">초중급반</p>
-                {isCoach ? (
-                  <textarea
-                    value={beginnerEdit}
-                    onChange={(e) => setBeginnerEdit(e.target.value)}
-                    rows={5}
-                    placeholder={"1주차: 페이스 런 5K\n2주차: 인터벌 4×1K"}
-                    className="brand-input w-full px-3 py-2 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
-                  />
-                ) : plan?.beginnerContent ? (
-                  <p className="text-sm text-brand-text leading-relaxed whitespace-pre-wrap">{plan.beginnerContent}</p>
-                ) : (
-                  <p className="text-xs text-brand-text-subtle py-2">미등록</p>
-                )}
-              </div>
-              {/* 고급반 */}
-              <div className="px-4 py-3 flex flex-col gap-2">
-                <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest">고급반</p>
-                {isCoach ? (
-                  <textarea
-                    value={advancedEdit}
-                    onChange={(e) => setAdvancedEdit(e.target.value)}
-                    rows={5}
-                    placeholder={"1주차: 스피드워크 6×800m\n2주차: 마라톤 페이스 런"}
-                    className="brand-input w-full px-3 py-2 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
-                  />
-                ) : plan?.advancedContent ? (
-                  <p className="text-sm text-brand-text leading-relaxed whitespace-pre-wrap">{plan.advancedContent}</p>
-                ) : (
-                  <p className="text-xs text-brand-text-subtle py-2">미등록</p>
-                )}
-              </div>
+            <div className="px-4 py-3 flex flex-col gap-2">
+              {classTab === "BEGINNER" ? (
+                <>
+                  <p className="text-[10px] font-black text-sky-600 uppercase tracking-widest">초중급반</p>
+                  {isCoach ? (
+                    <textarea
+                      value={beginnerEdit}
+                      onChange={(e) => setBeginnerEdit(e.target.value)}
+                      rows={5}
+                      placeholder={"1주차: 페이스 런 5K\n2주차: 인터벌 4×1K"}
+                      className="brand-input w-full px-3 py-2 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
+                    />
+                  ) : plan?.beginnerContent ? (
+                    <p className="text-sm text-brand-text leading-relaxed whitespace-pre-wrap">{plan.beginnerContent}</p>
+                  ) : (
+                    <p className="text-xs text-brand-text-subtle py-2">미등록</p>
+                  )}
+                </>
+              ) : (
+                <>
+                  <p className="text-[10px] font-black text-brand-primary uppercase tracking-widest">고급반</p>
+                  {isCoach ? (
+                    <textarea
+                      value={advancedEdit}
+                      onChange={(e) => setAdvancedEdit(e.target.value)}
+                      rows={5}
+                      placeholder={"1주차: 스피드워크 6×800m\n2주차: 마라톤 페이스 런"}
+                      className="brand-input w-full px-3 py-2 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
+                    />
+                  ) : plan?.advancedContent ? (
+                    <p className="text-sm text-brand-text leading-relaxed whitespace-pre-wrap">{plan.advancedContent}</p>
+                  ) : (
+                    <p className="text-xs text-brand-text-subtle py-2">미등록</p>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
