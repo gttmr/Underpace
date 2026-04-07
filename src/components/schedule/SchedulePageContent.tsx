@@ -52,12 +52,11 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
 
           {/* center — 로고 */}
           <Image
-            src="/logo.png"
+            src="/logo.svg"
             alt="Underpace"
-            width={120}
-            height={48}
+            width={140}
+            height={40}
             className="object-contain"
-            style={{ mixBlendMode: "multiply" }}
             priority
           />
 
