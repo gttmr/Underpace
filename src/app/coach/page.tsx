@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 interface UserProfile {
   name: string | null;
@@ -30,6 +31,7 @@ interface MeetingWithParticipants {
   location: string;
   maxCapacity: number;
   description: string | null;
+  classType: string | null;
   participants: ParticipantDetail[];
 }
 
@@ -95,6 +97,7 @@ export default function CoachDashboardPage() {
   const [error, setError] = useState("");
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>("default");
+  const [classFilter, setClassFilter] = useState<"ALL" | "BEGINNER" | "ADVANCED">("ALL");
 
   // 개별 회원 기록 모달
   const [memberRecord, setMemberRecord] = useState<MemberRecord | null>(null);
@@ -232,21 +235,40 @@ export default function CoachDashboardPage() {
     );
   }
 
+  const filteredMeetings = classFilter === "ALL"
+    ? meetings
+    : meetings.filter((m) => m.classType === classFilter);
+
   return (
     <div className="min-h-screen bg-brand-page pb-24">
       {/* 헤더 */}
-      <header className="bg-gradient-to-r from-teal-600 to-teal-500 text-white sticky top-0 z-10">
-        <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-teal-200 hover:text-white transition-colors text-sm">← 홈</Link>
-            <span className="text-teal-300">|</span>
-            <span className="font-bold text-lg">🏃 코치 대시보드</span>
-          </div>
-          <span className="text-teal-200 text-xs">예정 모임 {meetings.length}건</span>
+      <header className="bg-white sticky top-0 z-10 shadow-[0_1px_0_0_rgba(0,29,110,0.08)]">
+        <div className="max-w-3xl mx-auto px-4 py-3 grid grid-cols-[1fr_auto_1fr] items-center">
+          <div />
+          <Link href="/">
+            <Image src="/logo.svg" alt="Underpace" width={120} height={32} style={{ mixBlendMode: "multiply" }} />
+          </Link>
+          <div />
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+      {/* 반 필터 탭 */}
+      <div className="max-w-3xl mx-auto px-4 pt-4">
+        <div className="flex bg-brand-surface rounded-xl p-1 gap-1">
+          {(["ALL", "BEGINNER", "ADVANCED"] as const).map((v) => (
+            <button
+              key={v}
+              onClick={() => setClassFilter(v)}
+              className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all duration-150
+                ${classFilter === v ? "bg-white text-brand-text shadow-sm" : "text-brand-text-muted hover:text-brand-text"}`}
+            >
+              {v === "ALL" ? "전체" : v === "BEGINNER" ? "초중급반" : "고급반"}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <main className="max-w-3xl mx-auto px-4 py-4 space-y-6">
         {/* 월간 훈련 계획 에디터 */}
         <div className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
           <div className="bg-brand-surface px-5 py-3 flex items-center justify-between">
@@ -289,13 +311,13 @@ export default function CoachDashboardPage() {
         </div>
 
         {/* 모임 목록 */}
-        {meetings.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center border border-slate-100">
+        {filteredMeetings.length === 0 ? (
+          <div className="bg-white rounded-2xl p-12 text-center border border-brand-primary-border">
             <div className="text-5xl mb-3">📅</div>
-            <p className="text-slate-500 font-medium">예정된 모임이 없습니다</p>
+            <p className="text-brand-text-subtle font-medium">예정된 모임이 없습니다</p>
           </div>
         ) : (
-          meetings.map((m) => {
+          filteredMeetings.map((m) => {
             const d = new Date(m.date + "T00:00:00");
             const [, month, day] = m.date.split("-");
             const displayDate = `${parseInt(month)}월 ${parseInt(day)}일 (${DAY_KO[d.getDay()]})`;
@@ -304,26 +326,34 @@ export default function CoachDashboardPage() {
             const sorted = sortParticipants(m.participants, sortKey);
 
             return (
-              <div key={m.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+              <div key={m.id} className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
                 {/* 모임 헤더 — 클릭으로 참가자 펼치기/접기 */}
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : m.id)}
-                  className="w-full p-5 flex items-center justify-between text-left hover:bg-slate-50 transition-colors"
+                  className="w-full p-5 flex items-center justify-between text-left hover:bg-brand-page transition-colors"
                 >
                   <div>
-                    <p className="font-extrabold text-slate-900">{displayDate}</p>
-                    <p className="text-sm text-slate-500 mt-0.5">{m.startTime}–{m.endTime} · {m.location}</p>
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <p className="font-extrabold text-brand-text">{displayDate}</p>
+                      {m.classType === "BEGINNER" && (
+                        <span className="text-[10px] font-bold bg-sky-100 text-sky-700 px-1.5 py-0.5 rounded-full">초중급</span>
+                      )}
+                      {m.classType === "ADVANCED" && (
+                        <span className="text-[10px] font-bold bg-brand-primary text-white px-1.5 py-0.5 rounded-full">고급</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-brand-text-muted mt-0.5">{m.startTime}–{m.endTime} · {m.location}</p>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="bg-teal-50 text-teal-700 text-sm font-bold px-3 py-1 rounded-full">
+                    <span className="bg-brand-surface text-brand-text text-sm font-bold px-3 py-1 rounded-full">
                       {approvedCount}/{m.maxCapacity}명
                     </span>
-                    <span className={`text-slate-400 transition-transform ${isExpanded ? "rotate-180" : ""}`}>▾</span>
+                    <span className={`text-brand-text-subtle transition-transform ${isExpanded ? "rotate-180" : ""}`}>▾</span>
                   </div>
                 </button>
 
                 {/* 훈련 일지 (항상 표시) */}
-                <div className="border-t border-slate-100 px-5 py-4">
+                <div className="border-t border-brand-divider px-5 py-4">
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">훈련 일지</p>
                     <button
@@ -345,19 +375,19 @@ export default function CoachDashboardPage() {
 
                 {/* 참가자 리스트 (확장 시) */}
                 {isExpanded && (
-                  <div className="border-t border-slate-100">
+                  <div className="border-t border-brand-divider">
                     {/* 정렬 옵션 */}
                     {m.participants.length > 0 && (
-                      <div className="px-5 py-3 bg-slate-50 border-b border-slate-100 flex items-center gap-2 overflow-x-auto">
-                        <span className="text-xs text-slate-500 shrink-0 font-medium">정렬:</span>
+                      <div className="px-5 py-3 bg-brand-page border-b border-brand-divider flex items-center gap-2 overflow-x-auto">
+                        <span className="text-xs text-brand-text-subtle shrink-0 font-medium">정렬:</span>
                         {SORT_OPTIONS.map((opt) => (
                           <button
                             key={opt.key}
                             onClick={() => setSortKey(sortKey === opt.key ? "default" : opt.key)}
                             className={`text-xs px-2.5 py-1 rounded-full font-bold transition-colors shrink-0 ${
                               sortKey === opt.key
-                                ? "bg-teal-600 text-white"
-                                : "bg-white text-slate-500 border border-slate-200 hover:border-teal-300"
+                                ? "bg-brand-primary text-white"
+                                : "bg-white text-brand-text-muted border border-brand-primary-border hover:border-brand-primary"
                             }`}
                           >
                             {opt.label}
@@ -367,14 +397,14 @@ export default function CoachDashboardPage() {
                     )}
 
                     {m.participants.length === 0 ? (
-                      <div className="p-6 text-center text-sm text-slate-400">참가 신청자가 없습니다</div>
+                      <div className="p-6 text-center text-sm text-brand-text-subtle">참가 신청자가 없습니다</div>
                     ) : (
-                      <div className="divide-y divide-slate-50">
+                      <div className="divide-y divide-brand-divider">
                         {sorted.map((p, i) => (
                           <div key={p.id} className="px-5 py-4">
                             <div className="flex items-start gap-3">
                               {/* 순번 + 프로필 */}
-                              <div className="w-8 h-8 rounded-full bg-teal-50 flex items-center justify-center text-teal-600 shrink-0 text-sm font-bold">
+                              <div className="w-8 h-8 rounded-full bg-brand-surface flex items-center justify-center text-brand-text shrink-0 text-sm font-bold">
                                 {i + 1}
                               </div>
                               <div className="flex-1 min-w-0">
@@ -382,7 +412,7 @@ export default function CoachDashboardPage() {
                                 <div className="flex items-center gap-2 mb-1">
                                   <button
                                     onClick={() => openMemberRecord(p.kakaoId)}
-                                    className="font-bold text-slate-800 hover:text-teal-600 hover:underline transition-colors"
+                                    className="font-bold text-brand-text hover:text-brand-primary hover:underline transition-colors"
                                   >
                                     {p.user?.name || p.name}
                                   </button>
@@ -443,7 +473,7 @@ export default function CoachDashboardPage() {
                 {/* 모달 헤더 */}
                 <div className="sticky top-0 bg-white border-b border-slate-100 px-5 py-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-brand-surface flex items-center justify-center overflow-hidden shrink-0">
                       {memberRecord.profileImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={memberRecord.profileImage} alt="" className="w-full h-full object-cover" />

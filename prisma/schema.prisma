@@ -15,6 +15,7 @@ model RecurringSchedule {
   location             String
   maxCapacity          Int
   description          String?
+  classType            String?   // BEGINNER | ADVANCED | null
   signupOpenDayOfWeek  Int?      // null이면 항상 오픈
   signupOpenTime       String?   // "18:00", null이면 항상 오픈
   isActive             Boolean   @default(true)
@@ -32,6 +33,7 @@ model Meeting {
   location       String
   maxCapacity    Int
   description    String?
+  classType      String?            // BEGINNER | ADVANCED | null
   signupOpensAt  DateTime?          // null이면 항상 오픈
   isOpen         Boolean            @default(true)
   isOverridden   Boolean            @default(false)
