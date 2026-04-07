@@ -117,7 +117,7 @@ export default function NotificationBell() {
         {/* Unread dot */}
         {unreadCount > 0 && (
           <span
-            className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-400 ring-2 ring-[#001d6e] animate-pulse"
+            className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-400 ring-2 ring-brand-primary animate-pulse"
             aria-hidden="true"
           />
         )}
@@ -127,10 +127,10 @@ export default function NotificationBell() {
       {open && (
         <div
           ref={panelRef}
-          className="absolute right-0 top-12 w-80 max-h-[480px] flex flex-col bg-white rounded-2xl border border-[#7fb5ff] shadow-xl shadow-[rgba(0,29,110,0.15)] overflow-hidden z-50 animate-scale-in origin-top-right"
+          className="absolute right-0 top-12 w-80 max-h-[480px] flex flex-col bg-white rounded-2xl border border-brand-primary-border shadow-xl shadow-[rgba(0,29,110,0.15)] overflow-hidden z-50 animate-scale-in origin-top-right"
         >
           {/* Header */}
-          <div className="bg-[#001d6e] px-4 py-3 flex items-center justify-between gap-2 shrink-0">
+          <div className="bg-brand-primary px-4 py-3 flex items-center justify-between gap-2 shrink-0">
             <div className="flex items-center gap-2">
               <span className="text-white font-black text-sm">알림</span>
               {unreadCount > 0 && (
@@ -153,13 +153,13 @@ export default function NotificationBell() {
           <div className="overflow-y-auto flex-1">
             {notices.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                <div className="w-12 h-12 rounded-full bg-[#f0f5ff] flex items-center justify-center mb-3">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-[rgba(0,29,110,0.35)]">
+                <div className="w-12 h-12 rounded-full bg-brand-surface flex items-center justify-center mb-3">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-brand-text-subtle">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.73 21a2 2 0 0 1-3.46 0" />
                   </svg>
                 </div>
-                <p className="text-sm font-bold text-[rgba(0,29,110,0.35)]">새 알림이 없습니다</p>
+                <p className="text-sm font-bold text-brand-text-subtle">새 알림이 없습니다</p>
               </div>
             ) : (
               notices.map((n) => {
@@ -168,22 +168,22 @@ export default function NotificationBell() {
                   <button
                     key={n.id}
                     onClick={() => markRead(n.id)}
-                    className={`w-full text-left px-4 py-3.5 border-b border-[rgba(0,29,110,0.08)] last:border-0 relative transition-colors ${
+                    className={`w-full text-left px-4 py-3.5 border-b border-brand-divider last:border-0 relative transition-colors ${
                       isRead
-                        ? "bg-white hover:bg-[#f8faff]"
-                        : "bg-[#f5f8ff] hover:bg-[#eef4ff]"
+                        ? "bg-white hover:bg-brand-page"
+                        : "bg-brand-page hover:bg-[rgba(196,221,255,0.3)]"
                     }`}
                   >
                     {/* Unread accent bar */}
                     {!isRead && (
-                      <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#001d6e] rounded-r" />
+                      <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-brand-primary rounded-r" />
                     )}
 
                     <div className="flex items-start gap-2.5">
                       {/* Status dot */}
                       <span
                         className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${
-                          isRead ? "bg-[rgba(0,29,110,0.2)]" : "bg-[#001d6e]"
+                          isRead ? "bg-brand-divider" : "bg-brand-primary"
                         }`}
                       />
 
@@ -197,8 +197,8 @@ export default function NotificationBell() {
                           <p
                             className={`text-sm leading-snug truncate ${
                               isRead
-                                ? "font-semibold text-[rgba(0,29,110,0.5)]"
-                                : "font-black text-[#001d6e]"
+                                ? "font-semibold text-brand-text-muted"
+                                : "font-black text-brand-text"
                             }`}
                           >
                             {n.title}
@@ -208,14 +208,14 @@ export default function NotificationBell() {
                           <p
                             className={`text-xs line-clamp-2 leading-relaxed ${
                               isRead
-                                ? "text-[rgba(0,29,110,0.35)]"
-                                : "text-[rgba(0,29,110,0.6)]"
+                                ? "text-brand-text-subtle"
+                                : "text-brand-text-muted"
                             }`}
                           >
                             {n.body}
                           </p>
                         )}
-                        <p className="text-[10px] text-[rgba(0,29,110,0.3)] mt-1 font-medium">
+                        <p className="text-[10px] text-brand-text-subtle mt-1 font-medium">
                           {relativeTime(n.createdAt)}
                         </p>
                       </div>

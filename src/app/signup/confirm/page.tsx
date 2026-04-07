@@ -34,8 +34,8 @@ export default async function ConfirmPage({
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] flex flex-col">
-      <header className="bg-[#001d6e] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-brand-page flex flex-col">
+      <header className="bg-brand-primary text-white relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -50,34 +50,34 @@ export default async function ConfirmPage({
       </header>
 
       <main className="flex-1 max-w-xl mx-auto px-4 py-8 w-full">
-        <div className="bg-white rounded-2xl border border-[#7fb5ff] shadow-sm overflow-hidden animate-scale-in">
+        <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden animate-scale-in">
           {/* success indicator */}
-          <div className="bg-[#c4ddff] p-6 flex flex-col items-center">
-            <div className="w-14 h-14 bg-[#001d6e] rounded-full flex items-center justify-center mb-3 shadow-lg shadow-[rgba(0,29,110,0.3)]">
+          <div className="bg-brand-surface p-6 flex flex-col items-center">
+            <div className="w-14 h-14 bg-brand-primary rounded-full flex items-center justify-center mb-3 shadow-lg shadow-[rgba(0,29,110,0.3)]">
               <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h2 className="text-lg font-black text-[#001d6e]">신청 완료!</h2>
-            <p className="text-xs text-[rgba(0,29,110,0.6)] mt-1 font-medium">{statusMessages[participantStatus]}</p>
+            <h2 className="text-lg font-black text-brand-text">신청 완료!</h2>
+            <p className="text-xs text-brand-text-muted mt-1 font-medium">{statusMessages[participantStatus]}</p>
           </div>
 
           {/* details */}
           <div className="p-5 space-y-0">
             {name && (
-              <div className="flex justify-between items-center py-3 border-b border-[rgba(0,29,110,0.08)]">
-                <span className="text-xs font-black text-[rgba(0,29,110,0.45)] uppercase tracking-wider">이름</span>
-                <span className="font-black text-[#001d6e] text-sm">{decodeURIComponent(name)}</span>
+              <div className="flex justify-between items-center py-3 border-b border-brand-divider">
+                <span className="text-xs font-black text-brand-text-subtle uppercase tracking-wider">이름</span>
+                <span className="font-black text-brand-text text-sm">{decodeURIComponent(name)}</span>
               </div>
             )}
             {meetingDisplay && (
-              <div className="flex justify-between items-center py-3 border-b border-[rgba(0,29,110,0.08)]">
-                <span className="text-xs font-black text-[rgba(0,29,110,0.45)] uppercase tracking-wider">모임</span>
-                <span className="font-bold text-[#001d6e] text-sm">{meetingDisplay}</span>
+              <div className="flex justify-between items-center py-3 border-b border-brand-divider">
+                <span className="text-xs font-black text-brand-text-subtle uppercase tracking-wider">모임</span>
+                <span className="font-bold text-brand-text text-sm">{meetingDisplay}</span>
               </div>
             )}
             <div className="flex justify-between items-center py-3">
-              <span className="text-xs font-black text-[rgba(0,29,110,0.45)] uppercase tracking-wider">상태</span>
+              <span className="text-xs font-black text-brand-text-subtle uppercase tracking-wider">상태</span>
               <StatusBadge status={participantStatus} waitlistPosition={waitlistPos} size="sm" />
             </div>
           </div>
@@ -85,7 +85,7 @@ export default async function ConfirmPage({
           <div className="px-5 pb-5">
             <Link
               href="/"
-              className="block w-full py-3.5 rounded-xl bg-[#001d6e] hover:bg-[#00277a] text-white font-black text-sm text-center transition-all active:scale-[0.98]"
+              className="brand-button-primary block w-full py-3.5 rounded-xl font-black text-sm text-center transition-all active:scale-[0.98]"
             >
               ← 홈으로 돌아가기
             </Link>

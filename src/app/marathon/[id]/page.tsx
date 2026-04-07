@@ -22,9 +22,9 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
   const dayName = DAY_KO[d.getDay()];
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] pb-24">
+    <div className="min-h-screen bg-brand-page pb-24">
       {/* header */}
-      <header className="bg-[#001d6e] text-white relative overflow-hidden">
+      <header className="bg-brand-primary text-white relative overflow-hidden">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -60,13 +60,13 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
           </div>
 
           <div className="px-5 py-4 space-y-3">
-            <div className="flex items-center gap-2.5 text-sm text-[rgba(0,29,110,0.74)]">
+            <div className="flex items-center gap-2.5 text-sm text-brand-text-muted">
               <svg className="w-3.5 h-3.5 shrink-0 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <span>{marathon.date} {marathon.startTime}</span>
             </div>
-            <div className="flex items-start gap-2.5 text-sm text-[rgba(0,29,110,0.74)]">
+            <div className="flex items-start gap-2.5 text-sm text-brand-text-muted">
               <svg className="w-3.5 h-3.5 shrink-0 text-emerald-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -82,14 +82,14 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
                   href={marathon.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-bold text-[#001d6e] hover:underline break-all"
+                  className="text-sm font-bold text-brand-text hover:underline break-all"
                 >
                   신청 링크 열기 →
                 </a>
               </div>
             )}
             {marathon.description && (
-              <p className="text-sm text-[rgba(0,29,110,0.55)] bg-[#f0f5ff] rounded-xl px-3 py-2.5 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-brand-text-subtle bg-brand-surface rounded-xl px-3 py-2.5 leading-relaxed whitespace-pre-wrap">
                 {marathon.description}
               </p>
             )}
@@ -99,15 +99,15 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
         {/* signup */}
         <div className="animate-fade-up" style={{ animationDelay: "60ms" }}>
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-[3px] h-4 bg-[#001d6e] rounded-full" />
-            <h2 className="text-xs font-black text-[rgba(0,29,110,0.55)] uppercase tracking-widest">참가 신청</h2>
+            <div className="w-[3px] h-4 bg-brand-primary rounded-full" />
+            <h2 className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">참가 신청</h2>
           </div>
           {isPast ? (
-            <div className="bg-white rounded-2xl p-6 text-center border border-[#7fb5ff]">
-              <p className="text-sm font-bold text-[rgba(0,29,110,0.45)]">이 대회의 일정이 이미 지났습니다.</p>
+            <div className="bg-white rounded-2xl p-6 text-center border border-brand-primary-border">
+              <p className="text-sm font-bold text-brand-text-subtle">이 대회의 일정이 이미 지났습니다.</p>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-[#7fb5ff] shadow-sm p-5">
+            <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm p-5">
               <MarathonSignupForm marathon={marathon} />
             </div>
           )}
@@ -118,7 +118,7 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
           <div className="flex items-center justify-between mb-3 px-0.5">
             <div className="flex items-center gap-2">
               <div className="w-[3px] h-4 bg-emerald-500 rounded-full" />
-              <h2 className="text-xs font-black text-[rgba(0,29,110,0.55)] uppercase tracking-widest">참가 예정자</h2>
+              <h2 className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">참가 예정자</h2>
             </div>
             <span className="bg-emerald-100 text-emerald-700 text-xs font-black px-2 py-0.5 rounded-full">
               {marathon.participants.length}명
@@ -126,24 +126,24 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
           </div>
 
           {marathon.participants.length > 0 ? (
-            <div className="bg-white rounded-2xl overflow-hidden border border-[#7fb5ff] divide-y divide-[rgba(0,29,110,0.08)]">
+            <div className="bg-white rounded-2xl overflow-hidden border border-brand-primary-border divide-y divide-[rgba(0,29,110,0.08)]">
               {marathon.participants.map((p, i) => (
                 <div key={p.id} className="px-4 py-3.5 flex items-center gap-3">
                   <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-black shrink-0">
                     {i + 1}
                   </div>
                   <div>
-                    <p className="font-bold text-[#001d6e] text-sm">{p.name}</p>
-                    {p.note && <p className="text-xs text-[rgba(0,29,110,0.45)] mt-0.5">{p.note}</p>}
+                    <p className="font-bold text-brand-text text-sm">{p.name}</p>
+                    {p.note && <p className="text-xs text-brand-text-subtle mt-0.5">{p.note}</p>}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-10 text-center border border-[#7fb5ff]">
+            <div className="bg-white rounded-2xl p-10 text-center border border-brand-primary-border">
               <p className="text-3xl mb-2">🏃</p>
-              <p className="font-bold text-[rgba(0,29,110,0.45)] text-sm">아직 참가 신청자가 없습니다</p>
-              <p className="text-xs text-[rgba(0,29,110,0.3)] mt-1">첫 번째로 신청해보세요!</p>
+              <p className="font-bold text-brand-text-subtle text-sm">아직 참가 신청자가 없습니다</p>
+              <p className="text-xs text-brand-text-subtle mt-1">첫 번째로 신청해보세요!</p>
             </div>
           )}
         </div>

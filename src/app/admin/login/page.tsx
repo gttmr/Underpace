@@ -48,16 +48,16 @@ export default function AdminLoginPage() {
   if (autoLogging) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-[rgba(0,29,110,0.35)] text-sm font-medium">확인 중...</p>
+        <p className="text-brand-text-subtle text-sm font-medium">확인 중...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-brand-page flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="bg-white rounded-2xl border border-[#7fb5ff] shadow-sm overflow-hidden animate-scale-in">
-          <div className="bg-[#001d6e] px-6 py-5 text-center relative overflow-hidden">
+        <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden animate-scale-in">
+          <div className="bg-brand-primary px-6 py-5 text-center relative overflow-hidden">
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -71,13 +71,13 @@ export default function AdminLoginPage() {
 
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             <div>
-              <label className="block text-[10px] font-black text-[rgba(0,29,110,0.5)] mb-1.5 uppercase tracking-widest">비밀번호</label>
+              <label className="block text-[10px] font-black text-brand-text-subtle mb-1.5 uppercase tracking-widest">비밀번호</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="관리자 비밀번호"
-                className="w-full px-4 py-2.5 rounded-xl border border-[#7fb5ff] text-sm outline-none focus:border-[#001d6e] focus:ring-2 focus:ring-[rgba(127,181,255,0.25)] transition-all text-[#001d6e] font-semibold"
+                className="brand-input w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-brand-text"
                 autoFocus
               />
               {error && <p className="mt-1.5 text-xs text-red-500 font-medium">{error}</p>}
@@ -86,7 +86,7 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={loading || !password}
-              className="w-full py-3.5 rounded-xl bg-[#001d6e] hover:bg-[#00277a] disabled:bg-[#e5e7eb] disabled:text-[#9ca3af] text-white font-black text-sm transition-all active:scale-[0.98]"
+              className="brand-button-primary w-full py-3.5 rounded-xl font-black text-sm transition-all active:scale-[0.98] disabled:cursor-not-allowed"
             >
               {loading ? "로그인 중..." : "로그인"}
             </button>

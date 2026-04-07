@@ -31,20 +31,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f5f8ff]">
+    <div className="min-h-screen flex flex-col bg-brand-page">
       {/* top header */}
-      <header className="bg-[#001d6e] text-white sticky top-0 z-10">
+      <header className="bg-brand-primary text-white sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-[#c4ddff] hover:text-white text-sm font-semibold transition-colors">
+            <Link href="/" className="text-brand-surface hover:text-white text-sm font-semibold transition-colors">
               ← 사이트
             </Link>
-            <span className="text-[#7fb5ff] font-light">|</span>
+            <span className="text-brand-primary-border font-light">|</span>
             <span className="font-black text-sm tracking-tight">관리자</span>
           </div>
           <button
             onClick={handleLogout}
-            className="text-[#c4ddff] hover:text-white text-sm font-semibold transition-colors"
+            className="text-brand-surface hover:text-white text-sm font-semibold transition-colors"
           >
             로그아웃
           </button>
@@ -61,8 +61,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 href={item.href}
                 className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
                   ${isActive(item)
-                    ? "bg-[#001d6e] text-white shadow-md shadow-[rgba(0,29,110,0.2)]"
-                    : "text-[rgba(0,29,110,0.6)] hover:bg-white hover:text-[#001d6e]"
+                    ? "bg-brand-primary text-white shadow-md shadow-[rgba(0,29,110,0.2)]"
+                    : "text-brand-text-muted hover:bg-white hover:text-brand-text"
                   }`}
               >
                 <span className="text-base">{item.icon}</span>
@@ -79,14 +79,14 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </div>
 
       {/* mobile bottom nav */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-[rgba(0,29,110,0.1)] z-10">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-brand-divider z-10">
         <div className="flex">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               className={`flex-1 flex flex-col items-center py-2.5 text-[10px] font-black transition-colors gap-0.5
-                ${isActive(item) ? "text-[#001d6e]" : "text-[rgba(0,29,110,0.35)]"}`}
+                ${isActive(item) ? "text-brand-text" : "text-brand-text-subtle"}`}
             >
               <span className="text-lg leading-none">{item.icon}</span>
               {item.label}

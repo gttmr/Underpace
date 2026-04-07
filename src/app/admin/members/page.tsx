@@ -132,9 +132,9 @@ export default function AdminMembersPage() {
   return (
     <AdminLayout>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-extrabold text-slate-900">회원 관리</h1>
+        <h1 className="text-xl font-extrabold text-brand-text">회원 관리</h1>
         <div className="flex gap-2 text-xs font-semibold">
-          <span className="bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full">전체 {totalCount}</span>
+          <span className="bg-brand-surface text-brand-text-muted px-2.5 py-1 rounded-full">전체 {totalCount}</span>
           {adminCount > 0 && <span className="bg-purple-100 text-purple-600 px-2.5 py-1 rounded-full">관리자 {adminCount}</span>}
           {bannedCount > 0 && <span className="bg-red-100 text-red-600 px-2.5 py-1 rounded-full">차단 {bannedCount}</span>}
         </div>
@@ -147,7 +147,7 @@ export default function AdminMembersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="이름, 카카오ID, 연락처로 검색..."
-          className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-[#001d6e] transition-colors"
+          className="w-full px-4 py-2.5 rounded-xl border border-brand-primary-border text-sm outline-none focus:border-brand-primary-border-strong transition-colors"
         />
       </div>
 
@@ -155,15 +155,15 @@ export default function AdminMembersPage() {
         {/* 회원 리스트 */}
         <div className="flex-1">
           {loading ? (
-            <div className="text-center py-16 text-slate-400 text-sm">불러오는 중...</div>
+            <div className="text-center py-16 text-brand-text-subtle text-sm">불러오는 중...</div>
           ) : filtered.length === 0 ? (
-            <div className="bg-white rounded-2xl p-8 text-center border border-slate-100">
+            <div className="bg-white rounded-2xl p-8 text-center border border-brand-primary-border">
               <div className="text-4xl mb-3">👤</div>
-              <p className="text-slate-500 font-medium">등록된 회원이 없습니다</p>
-              <p className="text-sm text-slate-400 mt-1">카카오 로그인을 한 사용자가 자동으로 등록됩니다</p>
+              <p className="text-brand-text-subtle font-medium">등록된 회원이 없습니다</p>
+              <p className="text-sm text-brand-text-subtle mt-1">카카오 로그인을 한 사용자가 자동으로 등록됩니다</p>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 divide-y">
+            <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-brand-primary-border divide-y">
               {filtered.map((user) => (
                 <button
                   key={user.id}
@@ -173,22 +173,22 @@ export default function AdminMembersPage() {
                   }`}
                 >
                   {/* 프로필 이미지 */}
-                  <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center shrink-0 overflow-hidden">
+                  <div className="w-10 h-10 rounded-full bg-brand-surface flex items-center justify-center shrink-0 overflow-hidden">
                     {user.profileImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={user.profileImage} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <span className="text-slate-400 text-lg">👤</span>
+                      <span className="text-brand-text-subtle text-lg">👤</span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="font-bold text-slate-800 text-sm truncate">{user.name || "이름 없음"}</span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${ROLE_COLORS[user.role] || "bg-slate-100 text-slate-500"}`}>
+                      <span className="font-bold text-brand-text text-sm truncate">{user.name || "이름 없음"}</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${ROLE_COLORS[user.role] || "bg-brand-surface text-brand-text-subtle"}`}>
                         {ROLE_LABELS[user.role] || user.role}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-brand-text-subtle">
                       모임 {user._count.participants}회 · 대회 {user._count.marathonParticipants}회
                     </p>
                   </div>
@@ -202,14 +202,14 @@ export default function AdminMembersPage() {
         {/* 회원 상세 패널 */}
         {selectedUser && (
           <div className="lg:w-96 shrink-0">
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 sticky top-20">
+            <div className="bg-white rounded-2xl shadow-sm border border-brand-primary-border p-6 sticky top-20">
               {detailLoading ? (
-                <div className="text-center py-8 text-slate-400 text-sm">불러오는 중...</div>
+                <div className="text-center py-8 text-brand-text-subtle text-sm">불러오는 중...</div>
               ) : (
                 <>
                   {/* 프로필 헤드 */}
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
+                    <div className="w-16 h-16 rounded-full bg-brand-surface flex items-center justify-center overflow-hidden shrink-0">
                       {selectedUser.profileImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={selectedUser.profileImage} alt="" className="w-full h-full object-cover" />
@@ -226,25 +226,25 @@ export default function AdminMembersPage() {
                             value={nameInput}
                             onChange={(e) => setNameInput(e.target.value)}
                             onKeyDown={(e) => { if (e.key === "Enter") handleNameSave(); if (e.key === "Escape") setEditingName(false); }}
-                            className="flex-1 min-w-0 px-2 py-1 text-sm font-bold border border-[#7fb5ff] rounded-lg outline-none"
+                            className="flex-1 min-w-0 px-2 py-1 text-sm font-bold border border-brand-primary-border rounded-lg outline-none"
                           />
-                          <button onClick={handleNameSave} className="text-xs bg-[#001d6e] text-white px-2 py-1 rounded-lg font-bold shrink-0">저장</button>
-                          <button onClick={() => setEditingName(false)} className="text-xs bg-slate-100 text-slate-500 px-2 py-1 rounded-lg font-bold shrink-0">취소</button>
+                          <button onClick={handleNameSave} className="text-xs bg-brand-primary text-white px-2 py-1 rounded-lg font-bold shrink-0">저장</button>
+                          <button onClick={() => setEditingName(false)} className="text-xs bg-brand-surface text-brand-text-subtle px-2 py-1 rounded-lg font-bold shrink-0">취소</button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1.5 mb-1">
-                          <h2 className="text-lg font-extrabold text-slate-900">{selectedUser.name || "이름 없음"}</h2>
+                          <h2 className="text-lg font-extrabold text-brand-text">{selectedUser.name || "이름 없음"}</h2>
                           <button
                             onClick={() => { setNameInput(selectedUser.name || ""); setEditingName(true); }}
-                            className="text-xs text-slate-400 hover:text-[#001d6e] transition-colors"
+                            className="text-xs text-brand-text-subtle hover:text-brand-text transition-colors"
                             title="이름 수정"
                           >✏️</button>
                         </div>
                       )}
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-brand-text-subtle">
                         카카오 ID: {selectedUser.kakaoId}
                       </p>
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-brand-text-subtle">
                         가입일: {new Date(selectedUser.createdAt).toLocaleDateString("ko-KR")}
                       </p>
                     </div>
@@ -252,7 +252,7 @@ export default function AdminMembersPage() {
 
                   {/* 권한 변경 */}
                   <div className="mb-6">
-                    <label className="block text-xs font-bold text-slate-500 mb-2">회원 등급</label>
+                    <label className="block text-xs font-bold text-brand-text-subtle mb-2">회원 등급</label>
                     <div className="flex gap-2 flex-wrap">
                       {(["MEMBER", "COACH", "ADMIN", "BANNED"] as const).map((role) => (
                         <button
@@ -267,7 +267,7 @@ export default function AdminMembersPage() {
                                 : role === "COACH"
                                 ? "bg-teal-600 text-white shadow-sm"
                                 : "bg-green-600 text-white shadow-sm"
-                              : "bg-slate-50 text-slate-500 hover:bg-slate-100 border border-slate-200"
+                              : "bg-brand-surface text-brand-text-subtle hover:bg-brand-surface border border-brand-primary-border"
                           }`}
                         >
                           {ROLE_LABELS[role]}
@@ -278,16 +278,16 @@ export default function AdminMembersPage() {
 
                   {/* 활동 이력 */}
                   <div>
-                    <h3 className="text-xs font-bold text-slate-500 mb-3">활동 이력</h3>
+                    <h3 className="text-xs font-bold text-brand-text-subtle mb-3">활동 이력</h3>
                     <div className="space-y-2 max-h-72 overflow-y-auto">
                       {selectedUser.participants.length === 0 && selectedUser.marathonParticipants.length === 0 ? (
-                        <p className="text-xs text-slate-400 text-center py-4">활동 내역이 없습니다</p>
+                        <p className="text-xs text-brand-text-subtle text-center py-4">활동 내역이 없습니다</p>
                       ) : (
                         <>
                           {selectedUser.participants.map((p) => (
-                            <div key={`m-${p.id}`} className="bg-slate-50 rounded-lg p-3 text-xs">
+                            <div key={`m-${p.id}`} className="bg-brand-surface rounded-lg p-3 text-xs">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-[#001d6e] font-bold">정기 모임</span>
+                                <span className="text-brand-text font-bold">정기 모임</span>
                                 <span className={`px-1.5 py-0.5 rounded font-bold ${
                                   p.status === "APPROVED" ? "bg-green-100 text-green-600" :
                                   p.status === "WAITLISTED" ? "bg-red-100 text-red-600" :
@@ -301,7 +301,7 @@ export default function AdminMembersPage() {
                                   title="신청 내역 삭제"
                                 >✕</button>
                               </div>
-                              <p className="text-slate-600">{p.meeting.date} · {p.meeting.startTime} · {p.meeting.location}</p>
+                              <p className="text-brand-text-muted">{p.meeting.date} · {p.meeting.startTime} · {p.meeting.location}</p>
                             </div>
                           ))}
                           {selectedUser.marathonParticipants.map((p) => (
@@ -310,7 +310,7 @@ export default function AdminMembersPage() {
                                 <span className="text-orange-500 font-bold">마라톤</span>
                                 <span className="px-1.5 py-0.5 rounded font-bold bg-green-100 text-green-600">참가</span>
                               </div>
-                              <p className="text-slate-600">{p.marathon.date} · {p.marathon.title}</p>
+                              <p className="text-brand-text-muted">{p.marathon.date} · {p.marathon.title}</p>
                             </div>
                           ))}
                         </>

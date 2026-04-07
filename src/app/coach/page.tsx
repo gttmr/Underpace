@@ -58,7 +58,7 @@ const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 function PbBadge({ label, value }: { label: string; value: string | null }) {
   if (!value) return null;
   return (
-    <span className="inline-flex items-center gap-1 text-[10px] bg-[#c4ddff] text-[#001d6e] px-1.5 py-0.5 rounded font-bold">
+    <span className="inline-flex items-center gap-1 text-[10px] bg-[#c4ddff] text-brand-text px-1.5 py-0.5 rounded font-bold">
       {label} {value}
     </span>
   );
@@ -130,7 +130,7 @@ export default function CoachDashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#f5f8ff] flex items-center justify-center">
+      <div className="min-h-screen bg-brand-page flex items-center justify-center">
         <p className="text-slate-400 text-sm">불러오는 중...</p>
       </div>
     );
@@ -138,7 +138,7 @@ export default function CoachDashboardPage() {
 
   if (error === "login") {
     return (
-      <div className="min-h-screen bg-[#f5f8ff] flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-brand-page flex flex-col items-center justify-center px-6">
         <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-slate-100">
           <div className="text-5xl mb-4">🔐</div>
           <h1 className="text-xl font-extrabold text-slate-900 mb-2">로그인이 필요합니다</h1>
@@ -156,19 +156,19 @@ export default function CoachDashboardPage() {
 
   if (error === "forbidden") {
     return (
-      <div className="min-h-screen bg-[#f5f8ff] flex flex-col items-center justify-center px-6">
+      <div className="min-h-screen bg-brand-page flex flex-col items-center justify-center px-6">
         <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-slate-100">
           <div className="text-5xl mb-4">🚫</div>
           <h1 className="text-xl font-extrabold text-slate-900 mb-2">접근 권한이 없습니다</h1>
           <p className="text-sm text-slate-500 mb-6">코치 또는 관리자 권한이 필요합니다.</p>
-          <Link href="/" className="text-sm text-[#001d6e] hover:underline">← 홈으로 돌아가기</Link>
+          <Link href="/" className="text-sm text-brand-text hover:underline">← 홈으로 돌아가기</Link>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] pb-24">
+    <div className="min-h-screen bg-brand-page pb-24">
       {/* 헤더 */}
       <header className="bg-gradient-to-r from-teal-600 to-teal-500 text-white sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -336,26 +336,26 @@ export default function CoachDashboardPage() {
                       <div className="grid grid-cols-2 gap-2">
                         {memberRecord.pbFull && (
                           <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
-                            <p className="text-[10px] text-[#001d6e] font-bold">풀마라톤</p>
-                            <p className="text-sm font-extrabold text-[#001d6e]">{memberRecord.pbFull}</p>
+                            <p className="text-[10px] text-brand-text font-bold">풀마라톤</p>
+                            <p className="text-sm font-extrabold text-brand-text">{memberRecord.pbFull}</p>
                           </div>
                         )}
                         {memberRecord.pbHalf && (
                           <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
-                            <p className="text-[10px] text-[#001d6e] font-bold">하프마라톤</p>
-                            <p className="text-sm font-extrabold text-[#001d6e]">{memberRecord.pbHalf}</p>
+                            <p className="text-[10px] text-brand-text font-bold">하프마라톤</p>
+                            <p className="text-sm font-extrabold text-brand-text">{memberRecord.pbHalf}</p>
                           </div>
                         )}
                         {memberRecord.pb10k && (
                           <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
-                            <p className="text-[10px] text-[#001d6e] font-bold">10K</p>
-                            <p className="text-sm font-extrabold text-[#001d6e]">{memberRecord.pb10k}</p>
+                            <p className="text-[10px] text-brand-text font-bold">10K</p>
+                            <p className="text-sm font-extrabold text-brand-text">{memberRecord.pb10k}</p>
                           </div>
                         )}
                         {memberRecord.pb5k && (
                           <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
-                            <p className="text-[10px] text-[#001d6e] font-bold">5K</p>
-                            <p className="text-sm font-extrabold text-[#001d6e]">{memberRecord.pb5k}</p>
+                            <p className="text-[10px] text-brand-text font-bold">5K</p>
+                            <p className="text-sm font-extrabold text-brand-text">{memberRecord.pb5k}</p>
                           </div>
                         )}
                       </div>
