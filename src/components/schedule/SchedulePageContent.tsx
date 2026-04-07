@@ -46,27 +46,16 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
   return (
     <div className="min-h-screen bg-white">
       {/* ── header ── */}
-      <header className="bg-[#001d6e] text-white relative overflow-hidden">
-        {/* dot-grid texture */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(rgba(196,221,255,0.45) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-          }}
-        />
-        <div className="relative max-w-xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <Image
-              src="/logo.png"
-              alt="Underpace"
-              width={96}
-              height={40}
-              className="object-contain"
-              style={{ filter: "brightness(0) invert(1)" }}
-            />
-            <h1 className="font-black text-xl tracking-tight leading-none">전체 일정</h1>
-          </div>
+      <header className="bg-[#001d6e] text-white overflow-hidden">
+        <div className="max-w-xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
+          <Image
+            src="/logo.png"
+            alt="Underpace"
+            width={110}
+            height={46}
+            className="object-contain"
+            style={{ filter: "invert(1)", mixBlendMode: "screen" }}
+          />
 
           {user ? (
             <div className="flex items-center gap-2">
