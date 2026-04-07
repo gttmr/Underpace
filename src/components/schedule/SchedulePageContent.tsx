@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import ScheduleView from "./ScheduleView";
@@ -55,10 +56,15 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
           }}
         />
         <div className="relative max-w-xl mx-auto px-4 py-5 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-black tracking-[0.2em] text-[rgba(196,221,255,0.7)] uppercase mb-0.5">
-              UNDERPACE
-            </p>
+          <div className="flex flex-col gap-1">
+            <Image
+              src="/logo.png"
+              alt="Underpace"
+              width={96}
+              height={40}
+              className="object-contain"
+              style={{ filter: "brightness(0) invert(1)" }}
+            />
             <h1 className="font-black text-xl tracking-tight leading-none">전체 일정</h1>
           </div>
 
