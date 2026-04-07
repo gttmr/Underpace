@@ -86,7 +86,7 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
       </header>
 
       <main className="max-w-xl mx-auto px-4 py-5 space-y-4 pb-28">
-        <ScheduleView meetings={meetingsForClient} marathons={marathonsForClient} user={user} />
+        <ScheduleView meetings={meetingsForClient} marathons={marathonsForClient} user={user} isCoachOrAdmin={isCoachOrAdmin} />
       </main>
 
       <footer className="max-w-xl mx-auto px-4 py-8 text-center border-t border-[rgba(0,29,110,0.1)]">

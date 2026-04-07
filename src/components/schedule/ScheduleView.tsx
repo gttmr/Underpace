@@ -17,10 +17,12 @@ export default function ScheduleView({
   meetings,
   marathons = [],
   user,
+  isCoachOrAdmin = false,
 }: {
   meetings: MeetingForCalendar[];
   marathons?: MarathonForCalendar[];
   user: SessionUser | null;
+  isCoachOrAdmin?: boolean;
 }) {
   const [view, setView] = useState<View>("calendar");
   const searchParams = useSearchParams();
@@ -150,7 +152,7 @@ export default function ScheduleView({
 
       {view === "calendar" && <CalendarView meetings={meetings} marathons={marathons} />}
 
-      {view === "training" && <TrainingTab user={user} />}
+      {view === "training" && <TrainingTab isCoach={isCoachOrAdmin} />}
 
       {view === "list" && (
         <div className="space-y-3 animate-fade-in">
