@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { KakaoIcon } from "@/components/ui/KakaoIcon";
 
 interface UserProfile {
   id: number;
@@ -48,13 +49,6 @@ function TimeInput({ value, onChange, placeholder }: { value: string; onChange: 
   );
 }
 
-function KakaoIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-      <path d="M12 3C6.477 3 2 6.477 2 10.857c0 2.713 1.584 5.1 3.988 6.577L5 21l4.29-2.287C10.145 18.9 11.058 19 12 19c5.523 0 10-3.477 10-7.143C22 6.477 17.523 3 12 3z" />
-    </svg>
-  );
-}
 
 export default function ProfilePageWrapper() {
   return (
@@ -66,7 +60,7 @@ export default function ProfilePageWrapper() {
 
 function SectionCard({ children }: { children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden">
+    <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden">
       {children}
     </div>
   );
@@ -74,7 +68,7 @@ function SectionCard({ children }: { children: React.ReactNode }) {
 
 function SectionHeader({ icon, title, sub }: { icon: string; title: string; sub?: string }) {
   return (
-    <div className="px-5 py-4 border-b border-[rgba(0,29,110,0.08)]">
+    <div className="px-5 py-4 border-b border-brand-primary-border">
       <div className="flex items-center gap-2 mb-0.5">
         <span>{icon}</span>
         <h3 className="text-sm font-black text-brand-text">{title}</h3>
@@ -183,19 +177,19 @@ function ProfilePage() {
 
   if (notLoggedIn) {
     return (
-      <div className="min-h-screen bg-brand-page flex flex-col items-center justify-center px-6">
-        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-brand-primary-border">
+      <div className="min-h-screen bg-brand-page flex flex-col items-center px-6 pt-[20vh]">
+        <div className="bg-brand-surface-elevated rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-brand-primary-border">
           <div className="text-5xl mb-4">🏃</div>
           <h1 className="text-xl font-black text-brand-text mb-2">로그인이 필요합니다</h1>
           <p className="text-sm text-brand-text-subtle mb-6">카카오 로그인 후 나의 프로필을 관리할 수 있습니다.</p>
           <button
             onClick={() => window.location.href = `/api/auth/kakao?returnTo=/profile`}
-            className="w-full h-12 inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-black rounded-xl transition-colors justify-center text-sm active:scale-[0.97]"
+            className="w-full h-12 inline-flex items-center gap-2 bg-kakao hover:bg-kakao-hover text-kakao-text font-black rounded-xl transition-colors justify-center text-sm active:scale-[0.97]"
           >
             <KakaoIcon />
             카카오로 로그인
           </button>
-          <Link href="/" className="block mt-4 text-xs text-[rgba(0,29,110,0.4)] hover:text-brand-text transition-colors font-semibold">
+          <Link href="/" className="block mt-4 text-xs text-brand-text-subtle hover:text-brand-text transition-colors font-semibold">
             ← 홈으로 돌아가기
           </Link>
         </div>
@@ -207,8 +201,8 @@ function ProfilePage() {
     <div className="min-h-screen bg-brand-page pb-24">
       {/* setup modal */}
       {showSetup && (
-        <div className="fixed inset-0 bg-[rgba(0,29,110,0.6)] backdrop-blur-sm z-50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-scale-in">
+        <div className="fixed inset-0 bg-brand-text/60 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+          <div className="bg-brand-surface-elevated rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-scale-in">
             <div className="text-center mb-6">
               <div className="text-4xl mb-2">🏃‍♂️</div>
               <h2 className="text-xl font-black text-brand-text">환영합니다!</h2>
@@ -244,7 +238,7 @@ function ProfilePage() {
               onClick={handleSetupSave}
               disabled={saving || !name.trim()}
               className={`w-full mt-6 py-3.5 rounded-xl font-black text-white text-sm transition-all active:scale-[0.98] ${
-                saving || !name.trim() ? "bg-[#e5e7eb] cursor-not-allowed text-[#9ca3af]" : "bg-brand-primary hover:bg-[#00277a]"
+                saving || !name.trim() ? "bg-brand-dimmed cursor-not-allowed text-brand-dimmed-text" : "bg-brand-primary hover:bg-brand-primary-hover"
               }`}
             >
               {saving ? "저장 중..." : "시작하기"}
@@ -278,7 +272,7 @@ function ProfilePage() {
         <SectionCard>
           <div className="p-5 flex items-center gap-4">
             {/* avatar */}
-            <div className="w-16 h-16 rounded-full ring-2 ring-[#7fb5ff] ring-offset-2 bg-[#c4ddff] flex items-center justify-center overflow-hidden shrink-0">
+            <div className="w-16 h-16 rounded-full ring-2 ring-brand-primary-border ring-offset-2 bg-brand-surface flex items-center justify-center overflow-hidden shrink-0">
               {user?.profileImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={user.profileImage} alt="" className="w-full h-full object-cover" />
@@ -288,11 +282,11 @@ function ProfilePage() {
             </div>
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-black text-brand-text leading-tight">{user?.name || "이름 없음"}</h2>
-              <p className="text-xs text-[rgba(0,29,110,0.4)] mt-0.5 font-medium">
+              <p className="text-xs text-brand-text-subtle mt-0.5 font-medium">
                 가입일: {user ? new Date(user.createdAt).toLocaleDateString("ko-KR") : ""}
               </p>
               <div className="flex gap-2 mt-2">
-                <span className="text-xs bg-[#c4ddff] text-brand-text px-2 py-0.5 rounded-full font-black">
+                <span className="text-xs bg-brand-surface text-brand-text px-2 py-0.5 rounded-full font-black">
                   모임 {user?._count.participants}회
                 </span>
                 <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full font-black">
@@ -359,7 +353,7 @@ function ProfilePage() {
                 rows={4}
                 className="w-full px-4 py-3 rounded-xl border border-brand-primary-border text-sm outline-none focus:border-brand-primary-border-strong focus:ring-2 focus:ring-brand-ring transition-all resize-none text-brand-text-muted placeholder:text-brand-text-subtle"
               />
-              <p className="mt-1 text-[10px] text-[rgba(0,29,110,0.4)] text-right font-medium">{coachingNote.length}/500</p>
+              <p className="mt-1 text-[10px] text-brand-text-subtle text-right font-medium">{coachingNote.length}/500</p>
             </div>
           </SectionCard>
 
@@ -369,10 +363,10 @@ function ProfilePage() {
             disabled={saving}
             className={`w-full py-4 rounded-2xl font-black text-white text-sm transition-all active:scale-[0.98] ${
               saving
-                ? "bg-[#e5e7eb] cursor-not-allowed text-[#9ca3af]"
+                ? "bg-brand-dimmed cursor-not-allowed text-brand-dimmed-text"
                 : saved
                 ? "bg-emerald-500"
-                : "bg-brand-primary hover:bg-[#00277a]"
+                : "bg-brand-primary hover:bg-brand-primary-hover"
             }`}
           >
             {saving ? "저장 중..." : saved ? "✓ 저장 완료!" : "프로필 저장하기"}

@@ -29,7 +29,10 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
   const [, month, day] = meeting.date.split("-");
 
   return (
-    <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[rgba(0,29,110,0.08)] transition-all duration-200 overflow-hidden">
+    <Link
+      href={`/meeting/${meeting.id}`}
+      className="block bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-sm hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[rgba(0,29,110,0.08)] transition-all duration-200 overflow-hidden active:scale-[0.99]"
+    >
       {/* date header */}
       <div className="bg-brand-surface px-5 pt-4 pb-4 flex items-end justify-between">
         <div>
@@ -48,12 +51,12 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
 
         <div className="flex flex-col items-end gap-1.5">
           {isClosed && (
-            <span className="text-[10px] font-black bg-[rgba(0,0,0,0.08)] text-brand-text-muted px-2 py-1 rounded-lg tracking-wide">
+            <span className="text-[10px] font-black bg-brand-dimmed text-brand-dimmed-text px-2 py-1 rounded-lg tracking-wide">
               마감
             </span>
           )}
           {!isClosed && isFull && (
-            <span className="text-[10px] font-black bg-red-500 text-white px-2 py-1 rounded-lg tracking-wide">
+            <span className="text-[10px] font-black bg-brand-dimmed text-brand-dimmed-text px-2 py-1 rounded-lg tracking-wide">
               정원 마감
             </span>
           )}
@@ -85,38 +88,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         )}
 
         <CapacityBar current={meeting.approvedCount} max={meeting.maxCapacity} waitlisted={meeting.waitlistedCount} />
-
-        <div className="mt-4 flex flex-col gap-2">
-          {isClosed ? (
-            <button disabled className="w-full py-3 rounded-xl bg-brand-dimmed text-brand-dimmed-text font-bold text-sm cursor-not-allowed">
-              신청 마감됨
-            </button>
-          ) : isFull ? (
-            <>
-              <button disabled className="w-full py-3 rounded-xl bg-brand-dimmed text-brand-dimmed-text font-bold text-sm cursor-not-allowed">
-                정원 마감
-              </button>
-              <Link
-                href={`/meeting/${meeting.id}`}
-                className="w-full text-center py-3 rounded-xl border-2 border-brand-primary text-brand-text font-black text-sm hover:bg-brand-surface transition-colors active:scale-[0.98]"
-              >
-                대기자로 신청하기
-              </Link>
-            </>
-          ) : (
-            <Link
-              href={`/meeting/${meeting.id}`}
-              className={`w-full text-center py-3 rounded-xl font-black text-sm text-white transition-all active:scale-[0.98]
-                ${meeting.approvedCount / meeting.maxCapacity >= 0.85
-                  ? "bg-amber-500 hover:bg-amber-600"
-                  : "bg-brand-primary hover:bg-brand-primary-hover"
-                }`}
-            >
-              신청하기
-            </Link>
-          )}
-        </div>
       </div>
-    </div>
+    </Link>
   );
 }

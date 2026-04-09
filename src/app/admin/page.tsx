@@ -63,7 +63,7 @@ export default async function AdminDashboard() {
           { label: "대기 승인", value: totalPending, color: "text-amber-600" },
           { label: "대기자", value: totalWaitlisted, color: "text-brand-primary" },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-brand-primary-border p-4 text-center">
+          <div key={stat.label} className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-4 text-center">
             <p className={`text-2xl font-extrabold ${stat.color}`}>{stat.value}</p>
             <p className="text-xs text-brand-text-subtle mt-0.5">{stat.label}</p>
           </div>
@@ -85,7 +85,7 @@ export default async function AdminDashboard() {
             const pct = Math.min((approved / m.maxCapacity) * 100, 100);
 
             return (
-              <div key={m.id} className="bg-white rounded-xl border border-brand-primary-border p-4">
+              <div key={m.id} className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
                     <p className="font-semibold text-brand-text text-sm">
@@ -145,7 +145,7 @@ export default async function AdminDashboard() {
             );
           })}
           {upcomingMarathons.length === 0 && (
-            <div className="bg-white rounded-xl border border-brand-primary-border p-6 text-center shadow-sm">
+            <div className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-6 text-center shadow-sm">
               <p className="text-sm text-brand-text-subtle">예정된 대회가 없습니다</p>
             </div>
           )}
@@ -155,7 +155,7 @@ export default async function AdminDashboard() {
       {/* 최근 활동 */}
       <section>
         <h2 className="text-sm font-bold text-brand-text-muted mb-3">최근 신청</h2>
-        <div className="bg-white rounded-xl border border-brand-primary-border divide-y divide-brand-divider">
+        <div className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border divide-y divide-brand-divider">
           {recentParticipants.map((p) => {
             const statusColors: Record<string, string> = {
               PENDING: "text-amber-600",

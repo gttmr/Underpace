@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { CapacityBar } from "@/components/ui/CapacityBar";
 import { SignupForm } from "@/components/meeting/SignupForm";
@@ -9,13 +10,12 @@ export const dynamic = "force-dynamic";
 
 const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 
+type Participant = { id: number; name: string; note: string | null; status: string; waitlistPosition: number | null };
+
 type DetailedMeeting = MeetingWithCounts & {
-  participantsList: {
-    id: number;
-    name: string;
-    note: string | null;
-    status: string;
-  }[];
+  approved: Participant[];
+  waitlisted: Participant[];
+  rejected: Participant[];
 };
 
 async function getMeeting(id: number): Promise<DetailedMeeting | null> {
@@ -23,12 +23,15 @@ async function getMeeting(id: number): Promise<DetailedMeeting | null> {
     where: { id },
     include: {
       participants: {
-        select: { id: true, name: true, note: true, status: true },
+        select: { id: true, name: true, note: true, status: true, waitlistPosition: true },
         orderBy: { submittedAt: "asc" },
       },
     },
   });
   if (!meeting) return null;
+  const approved   = meeting.participants.filter((p) => p.status === "APPROVED");
+  const waitlisted = meeting.participants.filter((p) => p.status === "WAITLISTED").sort((a, b) => (a.waitlistPosition ?? 0) - (b.waitlistPosition ?? 0));
+  const rejected   = meeting.participants.filter((p) => p.status === "REJECTED");
   return {
     id: meeting.id,
     date: meeting.date,
@@ -40,10 +43,12 @@ async function getMeeting(id: number): Promise<DetailedMeeting | null> {
     signupOpensAt: meeting.signupOpensAt?.toISOString() ?? null,
     isOpen: meeting.isOpen,
     scheduleId: meeting.scheduleId,
-    approvedCount: meeting.participants.filter((p) => p.status === "APPROVED").length,
-    pendingCount: meeting.participants.filter((p) => p.status === "PENDING").length,
-    waitlistedCount: meeting.participants.filter((p) => p.status === "WAITLISTED").length,
-    participantsList: meeting.participants,
+    approvedCount: approved.length,
+    pendingCount: 0,
+    waitlistedCount: waitlisted.length,
+    approved,
+    waitlisted,
+    rejected,
   };
 }
 
@@ -59,28 +64,17 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
   return (
     <div className="min-h-screen bg-brand-page pb-24">
       {/* header */}
-      <header className="bg-brand-primary text-white relative overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(rgba(196,221,255,0.4) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-          }}
-        />
-        <div className="relative max-w-xl mx-auto px-4 py-5 flex items-center gap-3">
-          <Link href="/" className="text-brand-surface hover:text-white transition-colors font-black text-xl leading-none">←</Link>
-          <div>
-            <p className="text-[10px] font-black tracking-[0.18em] text-[rgba(196,221,255,0.65)] uppercase">모임 신청</p>
-            <h1 className="font-black text-base leading-tight">
-              {parseInt(month, 10)}월 {parseInt(day, 10)}일 ({dayName}) 모임
-            </h1>
-          </div>
+      <header className="bg-white shadow-[0_1px_12px_rgba(0,0,0,0.07)] sticky top-0 z-30">
+        <div className="max-w-xl mx-auto px-4 h-14 grid grid-cols-[1fr_auto_1fr] items-center">
+          <Link href="/" className="text-brand-text-muted hover:text-brand-text transition-colors font-black text-lg leading-none">←</Link>
+          <Link href="/"><Image src="/logo.svg" alt="Underpace" width={120} height={36} className="object-contain" priority /></Link>
+          <div />
         </div>
       </header>
 
       <main className="max-w-xl mx-auto px-4 py-5 space-y-4">
         {/* meeting info card */}
-        <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden animate-fade-up">
+        <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden animate-fade-up">
           <div className="bg-brand-surface px-5 py-4 flex items-end justify-between">
             <div>
               <p className="text-[10px] font-black text-brand-text-subtle tracking-widest uppercase mb-0.5">정기 모임</p>
@@ -116,59 +110,99 @@ export default async function MeetingDetailPage({ params }: { params: Promise<{ 
         </div>
 
         {/* signup form card */}
-        <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm p-5 animate-fade-up" style={{ animationDelay: "60ms" }}>
+        <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-sm p-5 animate-fade-up" style={{ animationDelay: "60ms" }}>
           <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest mb-4">참가 신청</p>
           <SignupForm meeting={meeting} />
         </div>
 
-        {/* participants */}
+        {/* 신청자 블록 */}
         <div className="animate-fade-up" style={{ animationDelay: "120ms" }}>
           <div className="flex items-center justify-between mb-3 px-0.5">
             <div className="flex items-center gap-2">
               <div className="w-[3px] h-4 bg-brand-primary rounded-full" />
-              <h2 className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">참석 및 대기 현황</h2>
+              <h2 className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">신청자</h2>
             </div>
             <span className="brand-chip-soft text-xs font-black px-2 py-0.5 rounded-full">
-              {meeting.participantsList.length}명
+              {meeting.approved.length}/{meeting.maxCapacity}명
             </span>
           </div>
-
-          {meeting.participantsList.length > 0 ? (
-            <div className="bg-white rounded-2xl overflow-hidden border border-brand-primary-border divide-y divide-brand-divider">
-              {meeting.participantsList.map((p, i) => (
+          {meeting.approved.length > 0 ? (
+            <div className="bg-brand-surface-elevated rounded-2xl overflow-hidden border border-brand-primary-border divide-y divide-brand-divider">
+              {meeting.approved.map((p, i) => (
                 <div key={p.id} className="px-4 py-3.5 flex items-center gap-3">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0
-                    ${p.status === "APPROVED" ? "brand-chip-dark" :
-                      p.status === "WAITLISTED" ? "brand-chip-soft" :
-                      "bg-brand-dimmed text-brand-dimmed-text"}`}>
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 brand-chip-dark">
                     {i + 1}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="font-bold text-brand-text text-sm">{p.name}</span>
-                      {p.status === "WAITLISTED" && (
-                        <span className="text-[10px] brand-chip-soft px-1.5 py-0.5 rounded-full font-black">대기</span>
-                      )}
-                      {p.status === "APPROVED" && (
-                        <span className="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full font-black">확정</span>
-                      )}
-                      {p.status === "PENDING" && (
-                        <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-black">검토 중</span>
-                      )}
-                    </div>
+                    <span className="font-bold text-brand-text text-sm">{p.name}</span>
                     {p.note && <p className="text-xs text-brand-text-subtle mt-0.5 line-clamp-1">{p.note}</p>}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-10 text-center border border-brand-primary-border">
+            <div className="bg-brand-surface-elevated rounded-2xl p-10 text-center border border-brand-primary-border">
               <p className="text-3xl mb-2">🏃</p>
               <p className="font-bold text-brand-text-muted text-sm">아직 참가 신청자가 없습니다</p>
               <p className="text-xs text-brand-text-subtle mt-1">가장 먼저 신청해 보세요!</p>
             </div>
           )}
         </div>
+
+        {/* 대기자 블록 */}
+        {meeting.waitlisted.length > 0 && (
+          <div className="animate-fade-up" style={{ animationDelay: "160ms" }}>
+            <div className="flex items-center justify-between mb-3 px-0.5">
+              <div className="flex items-center gap-2">
+                <div className="w-[3px] h-4 bg-brand-primary-soft-strong rounded-full" />
+                <h2 className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">대기자</h2>
+              </div>
+              <span className="brand-chip-soft text-xs font-black px-2 py-0.5 rounded-full">
+                {meeting.waitlisted.length}명
+              </span>
+            </div>
+            <div className="bg-brand-surface-elevated rounded-2xl overflow-hidden border border-brand-primary-border divide-y divide-brand-divider">
+              {meeting.waitlisted.map((p, i) => (
+                <div key={p.id} className="px-4 py-3.5 flex items-center gap-3">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 brand-chip-soft">
+                    {i + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="font-bold text-brand-text text-sm">{p.name}</span>
+                    {p.note && <p className="text-xs text-brand-text-subtle mt-0.5 line-clamp-1">{p.note}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* 취소자 블록 */}
+        {meeting.rejected.length > 0 && (
+          <div className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+            <div className="flex items-center justify-between mb-3 px-0.5">
+              <div className="flex items-center gap-2">
+                <div className="w-[3px] h-4 bg-brand-dimmed-border rounded-full" />
+                <h2 className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">취소</h2>
+              </div>
+              <span className="bg-brand-dimmed text-brand-dimmed-text text-xs font-black px-2 py-0.5 rounded-full">
+                {meeting.rejected.length}명
+              </span>
+            </div>
+            <div className="rounded-2xl overflow-hidden border border-brand-dimmed-border divide-y divide-brand-divider bg-brand-surface-elevated">
+              {meeting.rejected.map((p, i) => (
+                <div key={p.id} className="px-4 py-3.5 flex items-center gap-3">
+                  <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black shrink-0 bg-brand-dimmed text-brand-dimmed-text">
+                    {i + 1}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <span className="font-bold text-brand-dimmed-text text-sm line-through">{p.name}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

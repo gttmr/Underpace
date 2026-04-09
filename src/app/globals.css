@@ -45,6 +45,11 @@
   --brand-header-shadow:          0 8px 24px var(--brand-shadow);
   --brand-avatar-shadow:          0 18px 40px var(--brand-shadow);
 
+  /* Kakao brand */
+  --kakao-bg:                     #FEE500;
+  --kakao-bg-hover:               #f0d800;
+  --kakao-text:                   #3C1E1E;
+
   /* legacy aliases (backward compat) */
   --brand-soft:                   var(--brand-primary-soft);
   --brand-soft-strong:            var(--brand-primary-soft-strong);

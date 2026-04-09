@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { MarathonSignupForm } from "@/components/marathon/MarathonSignupForm";
 
@@ -24,26 +25,17 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
   return (
     <div className="min-h-screen bg-brand-page pb-24">
       {/* header */}
-      <header className="bg-brand-primary text-white relative overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(rgba(196,221,255,0.4) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-          }}
-        />
-        <div className="relative max-w-xl mx-auto px-4 py-5 flex items-center gap-3">
-          <Link href="/" className="text-[#c4ddff] hover:text-white transition-colors font-black text-xl leading-none">←</Link>
-          <div>
-            <p className="text-[10px] font-black tracking-[0.18em] text-[rgba(196,221,255,0.65)] uppercase">대회 정보</p>
-            <h1 className="font-black text-base leading-tight line-clamp-1">{marathon.title}</h1>
-          </div>
+      <header className="bg-white shadow-[0_1px_12px_rgba(0,0,0,0.07)] sticky top-0 z-30">
+        <div className="max-w-xl mx-auto px-4 h-14 grid grid-cols-[1fr_auto_1fr] items-center">
+          <Link href="/" className="text-brand-text-muted hover:text-brand-text transition-colors font-black text-lg leading-none">←</Link>
+          <Link href="/"><Image src="/logo.svg" alt="Underpace" width={120} height={36} className="object-contain" priority /></Link>
+          <div />
         </div>
       </header>
 
       <main className="max-w-xl mx-auto px-4 py-5 space-y-4">
         {/* info card */}
-        <div className="bg-white rounded-2xl border border-emerald-200 shadow-sm overflow-hidden animate-fade-up">
+        <div className="bg-brand-surface-elevated rounded-2xl border border-emerald-200 shadow-sm overflow-hidden animate-fade-up">
           <div className="bg-emerald-50 px-5 py-4 flex items-end justify-between">
             <div>
               <span className="text-[10px] font-black text-emerald-700 tracking-widest uppercase bg-emerald-100 px-2 py-0.5 rounded-md">
@@ -55,7 +47,7 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
               </p>
             </div>
             {isPast && (
-              <span className="text-[10px] font-black bg-[#e5e7eb] text-[#6b7280] px-2 py-1 rounded-lg">종료됨</span>
+              <span className="text-[10px] font-black bg-brand-dimmed text-brand-dimmed-text px-2 py-1 rounded-lg">종료됨</span>
             )}
           </div>
 
@@ -103,11 +95,11 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
             <h2 className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">참가 신청</h2>
           </div>
           {isPast ? (
-            <div className="bg-white rounded-2xl p-6 text-center border border-brand-primary-border">
+            <div className="bg-brand-surface-elevated rounded-2xl p-6 text-center border border-brand-primary-border">
               <p className="text-sm font-bold text-brand-text-subtle">이 대회의 일정이 이미 지났습니다.</p>
             </div>
           ) : (
-            <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm p-5">
+            <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-sm p-5">
               <MarathonSignupForm marathon={marathon} />
             </div>
           )}
@@ -126,7 +118,7 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
           </div>
 
           {marathon.participants.length > 0 ? (
-            <div className="bg-white rounded-2xl overflow-hidden border border-brand-primary-border divide-y divide-[rgba(0,29,110,0.08)]">
+            <div className="bg-brand-surface-elevated rounded-2xl overflow-hidden border border-brand-primary-border divide-y divide-[rgba(0,29,110,0.08)]">
               {marathon.participants.map((p, i) => (
                 <div key={p.id} className="px-4 py-3.5 flex items-center gap-3">
                   <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-black shrink-0">
@@ -140,7 +132,7 @@ export default async function MarathonDetailPage({ params }: { params: Promise<{
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-2xl p-10 text-center border border-brand-primary-border">
+            <div className="bg-brand-surface-elevated rounded-2xl p-10 text-center border border-brand-primary-border">
               <p className="text-3xl mb-2">🏃</p>
               <p className="font-bold text-brand-text-subtle text-sm">아직 참가 신청자가 없습니다</p>
               <p className="text-xs text-brand-text-subtle mt-1">첫 번째로 신청해보세요!</p>

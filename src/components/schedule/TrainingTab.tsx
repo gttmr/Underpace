@@ -160,7 +160,7 @@ export default function TrainingTab({ isCoach = false }: { isCoach?: boolean }) 
       ) : (
         <>
           {/* 월간 훈련 계획 */}
-          <div className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
+          <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border overflow-hidden">
             <div className="bg-brand-surface px-4 py-3 flex items-center justify-between">
               <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">이번 달 훈련 계획</p>
               {isCoach && (
@@ -213,7 +213,7 @@ export default function TrainingTab({ isCoach = false }: { isCoach?: boolean }) 
           </div>
 
           {/* 훈련 일지 */}
-          <div className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
+          <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border overflow-hidden">
             <div className="bg-brand-surface px-4 py-3">
               <p className="text-xs font-black text-brand-text-subtle uppercase tracking-widest">훈련 일지</p>
             </div>

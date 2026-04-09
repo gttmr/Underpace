@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { prisma } from "@/lib/db";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import type { ParticipantStatus } from "@/lib/types";
@@ -35,22 +36,16 @@ export default async function ConfirmPage({
 
   return (
     <div className="min-h-screen bg-brand-page flex flex-col">
-      <header className="bg-brand-primary text-white relative overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "radial-gradient(rgba(196,221,255,0.4) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-          }}
-        />
-        <div className="relative max-w-xl mx-auto px-4 py-5">
-          <p className="text-[10px] font-black tracking-[0.18em] text-[rgba(196,221,255,0.65)] uppercase">신청 완료</p>
-          <h1 className="font-black text-lg leading-tight">접수가 완료되었습니다</h1>
+      <header className="bg-white shadow-[0_1px_12px_rgba(0,0,0,0.07)] sticky top-0 z-30">
+        <div className="max-w-xl mx-auto px-4 h-14 grid grid-cols-[1fr_auto_1fr] items-center">
+          <Link href="/" className="text-brand-text-muted hover:text-brand-text transition-colors font-black text-lg leading-none">←</Link>
+          <Link href="/"><Image src="/logo.svg" alt="Underpace" width={120} height={36} className="object-contain" priority /></Link>
+          <div />
         </div>
       </header>
 
       <main className="flex-1 max-w-xl mx-auto px-4 py-8 w-full">
-        <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden animate-scale-in">
+        <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden animate-scale-in">
           {/* success indicator */}
           <div className="bg-brand-surface p-6 flex flex-col items-center">
             <div className="w-14 h-14 bg-brand-primary rounded-full flex items-center justify-center mb-3 shadow-lg shadow-[rgba(0,29,110,0.3)]">

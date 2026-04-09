@@ -1,15 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
+import { apiError, apiOk } from "@/lib/api-response";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const { id } = await params;
-  const body = await req.json();
-  const { title, body: bodyText, isPinned } = body;
+  const { title, body: bodyText, isPinned } = await req.json();
 
   if (isPinned) {
     await prisma.notice.updateMany({ where: { isPinned: true, id: { not: parseInt(id) } }, data: { isPinned: false } });
@@ -24,15 +23,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     },
   });
 
-  return NextResponse.json(notice);
+  return apiOk(notice);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const { id } = await params;
   await prisma.notice.delete({ where: { id: parseInt(id) } });
-  return NextResponse.json({ ok: true });
+  return apiOk({ ok: true });
 }

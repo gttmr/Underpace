@@ -140,10 +140,10 @@ export default function CalendarView({
           {isDropdownOpen && (
             <>
               <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
-              <div className="absolute top-full mt-1 bg-white border border-brand-primary-border rounded-2xl shadow-xl shadow-[rgba(0,29,110,0.12)] p-3 z-50 flex gap-4 w-max">
+              <div className="absolute top-full mt-1 bg-brand-surface-elevated border border-brand-primary-border rounded-2xl shadow-xl shadow-[rgba(0,29,110,0.12)] p-3 z-50 flex gap-4 w-max">
                 {/* year */}
                 <div className="flex flex-col h-48 overflow-y-auto pr-1">
-                  <div className="text-[10px] font-black text-brand-text-subtle mb-2 px-2 uppercase tracking-widest sticky top-0 bg-white">연도</div>
+                  <div className="text-[10px] font-black text-brand-text-subtle mb-2 px-2 uppercase tracking-widest sticky top-0 bg-brand-surface-elevated">연도</div>
                   {Array.from({ length: 11 }, (_, i) => todayDate.getFullYear() - 5 + i).map((v) => (
                     <button
                       key={v}
@@ -280,7 +280,7 @@ export default function CalendarView({
                 <Link
                   key={`m-${marathon.id}`}
                   href={`/marathon/${marathon.id}`}
-                  className="block bg-white rounded-xl border border-emerald-200 p-4 relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
+                  className="block bg-brand-surface-elevated rounded-xl border border-emerald-200 p-4 relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98]"
                 >
                   <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-emerald-400" />
                   <div className="pl-2 flex justify-between items-center">
@@ -302,19 +302,19 @@ export default function CalendarView({
               ))}
 
               {selectedMeetings.map((meeting) => {
-                const isFull = meeting.approvedCount >= meeting.maxCapacity;
                 const isClosed = !meeting.isOpen;
                 const isPast = selectedDate < today;
                 const isSignupReady = isSignupAvailable(meeting);
                 const isWaitingForOpen = !isClosed && !isSignupReady;
 
                 return (
-                  <div
+                  <Link
                     key={`meet-${meeting.id}`}
-                    className={`bg-white border border-brand-primary-border rounded-xl p-4 flex items-center gap-3 relative overflow-hidden ${isPast || isClosed ? "opacity-50" : ""}`}
+                    href={`/meeting/${meeting.id}`}
+                    className={`block bg-brand-surface-elevated border border-brand-primary-border rounded-xl p-4 relative overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.98] ${isPast || isClosed ? "opacity-50" : ""}`}
                   >
                     <div className={`absolute left-0 top-0 bottom-0 w-[3px] ${isPast || isClosed ? "bg-brand-divider" : "bg-brand-primary"}`} />
-                    <div className="pl-2 flex-1 min-w-0">
+                    <div className="pl-2">
                       <div className="flex items-center gap-1.5 flex-wrap mb-1">
                         <span className="text-sm font-bold text-brand-text">
                           {meeting.startTime} – {meeting.endTime}
@@ -323,38 +323,21 @@ export default function CalendarView({
                           <span className="text-[10px] font-bold bg-brand-dimmed text-brand-dimmed-text px-1.5 py-0.5 rounded-full">마감</span>
                         )}
                         {isWaitingForOpen && (
-                          <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">오픈 전</span>
+                          <span className="text-[10px] font-bold bg-brand-dimmed text-brand-dimmed-text px-1.5 py-0.5 rounded-full">오픈 전</span>
                         )}
                       </div>
                       <p className="text-xs text-brand-text-subtle truncate">📍 {meeting.location}</p>
                       <p className="text-[10px] text-brand-text-subtle mt-0.5">
                         {meeting.approvedCount}/{meeting.maxCapacity}명
                         {meeting.waitlistedCount > 0 && (
-                          <span className="ml-1.5 text-amber-600">· 대기 {meeting.waitlistedCount}명</span>
+                          <span className="ml-1.5 brand-chip-soft px-1.5 py-0.5 rounded-full">대기 {meeting.waitlistedCount}명</span>
                         )}
                       </p>
                       {isWaitingForOpen && (
-                        <p className="text-[10px] text-amber-700 mt-0.5">신청 시작: {formatSignupOpensAtCompact(meeting.signupOpensAt)}</p>
+                        <p className="text-[10px] text-brand-text-subtle mt-0.5">신청 시작: {formatSignupOpensAtCompact(meeting.signupOpensAt)}</p>
                       )}
                     </div>
-                    {!isPast && !isClosed && !isWaitingForOpen && (
-                      <Link
-                        href={`/meeting/${meeting.id}`}
-                        className={`shrink-0 px-3.5 py-2 rounded-xl text-xs font-black text-white transition-all active:scale-95
-                          ${isFull ? "bg-brand-primary-soft-strong hover:opacity-90" : "bg-brand-primary hover:bg-brand-primary-hover"}`}
-                      >
-                        {isFull ? "대기" : "신청"}
-                      </Link>
-                    )}
-                    {!isPast && !isClosed && isWaitingForOpen && (
-                      <button
-                        disabled
-                        className="shrink-0 px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-dimmed text-brand-dimmed-text cursor-not-allowed"
-                      >
-                        오픈 전
-                      </button>
-                    )}
-                  </div>
+                  </Link>
                 );
               })}
             </>

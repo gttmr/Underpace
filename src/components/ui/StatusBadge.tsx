@@ -27,9 +27,9 @@ const STATUS_CONFIG: Record<ParticipantStatus, { label: string; bg: string; text
   },
   REJECTED: {
     label: "거절됨",
-    bg: "bg-slate-100",
-    text: "text-slate-500",
-    dot: "bg-slate-400",
+    bg: "bg-brand-dimmed",
+    text: "text-brand-dimmed-text",
+    dot: "bg-brand-dimmed-border",
   },
 };
 

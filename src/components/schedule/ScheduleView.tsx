@@ -52,10 +52,11 @@ export default function ScheduleView({
     const isDisabled = isClosed || isPast;
 
     return (
-      <div
-        className={`animate-fade-up bg-white rounded-2xl border border-brand-primary-border overflow-hidden
+      <Link
+        href={`/meeting/${meeting.id}`}
+        className={`animate-fade-up block bg-brand-surface-elevated rounded-2xl border border-brand-primary-border overflow-hidden
                     transition-all duration-200
-                    ${isDisabled ? "opacity-50" : "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[rgba(0,29,110,0.08)]"}`}
+                    ${isDisabled ? "opacity-50" : "hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[rgba(0,29,110,0.08)] active:scale-[0.99]"}`}
         style={{ animationDelay: `${index * 55}ms` }}
       >
         <div className="flex items-stretch px-4 py-4 gap-4">
@@ -85,7 +86,7 @@ export default function ScheduleView({
                 <span className="text-[10px] font-bold bg-brand-dimmed text-brand-dimmed-text px-1.5 py-0.5 rounded-full tracking-wide">마감</span>
               )}
               {isWaitingForOpen && (
-                <span className="text-[10px] font-bold bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full">오픈 전</span>
+                <span className="text-[10px] font-bold bg-brand-dimmed text-brand-dimmed-text px-1.5 py-0.5 rounded-full">오픈 전</span>
               )}
             </div>
 
@@ -96,38 +97,23 @@ export default function ScheduleView({
               <p className="text-[10px] text-brand-text-subtle mt-0.5">
                 {meeting.approvedCount}/{meeting.maxCapacity}명
                 {meeting.waitlistedCount > 0 && (
-                  <span className="ml-1.5 text-amber-600">· 대기 {meeting.waitlistedCount}명</span>
+                  <span className="ml-1.5 brand-chip-soft px-1.5 py-0.5 rounded-full">대기 {meeting.waitlistedCount}명</span>
                 )}
               </p>
               {isWaitingForOpen && (
-                <p className="text-[10px] text-amber-700 mt-0.5">신청 시작: {formatSignupOpensAtCompact(meeting.signupOpensAt)}</p>
+                <p className="text-[10px] text-brand-text-subtle mt-0.5">신청 시작: {formatSignupOpensAtCompact(meeting.signupOpensAt)}</p>
               )}
             </div>
           </div>
 
-          {/* action */}
+          {/* chevron */}
           <div className="shrink-0 flex items-center">
-            {!isPast && !isClosed && !isWaitingForOpen && (
-              <Link
-                href={`/meeting/${meeting.id}`}
-                className={`px-3.5 py-2 rounded-xl text-xs font-black text-white transition-all active:scale-95
-                  ${isFull ? "bg-brand-primary-soft-strong hover:opacity-90" : "bg-brand-primary hover:bg-brand-primary-hover"}`}
-              >
-                {isFull ? "대기" : "신청"}
-              </Link>
-            )}
-            {!isPast && !isClosed && isWaitingForOpen && (
-              <button
-                type="button"
-                disabled
-                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-brand-dimmed text-brand-dimmed-text cursor-not-allowed"
-              >
-                오픈 전
-              </button>
-            )}
+            <svg className="w-4 h-4 text-brand-text-subtle" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
           </div>
         </div>
-      </div>
+      </Link>
     );
   }
 
