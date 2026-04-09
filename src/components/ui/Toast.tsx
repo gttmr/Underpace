@@ -23,7 +23,7 @@ export function Toast({ message, type = "info", onClose, duration = 3000 }: Toas
   const colors = {
     success: "bg-green-600 text-white",
     error: "bg-red-600 text-white",
-    info: "bg-slate-800 text-white",
+    info: "bg-brand-primary text-brand-primary-foreground",
   };
 
   const icons = {

@@ -11,19 +11,15 @@ export function CapacityBar({ current, max, waitlisted = 0, showLabel = true }: 
   const ratio = max > 0 ? current / max : 0;
   const pct = Math.min(ratio * 100, 100);
 
-  const barColor =
-    ratio >= 1 ? "bg-red-500" :
-    ratio >= 0.85 ? "bg-amber-400" :
-    ratio >= 0.6 ? "bg-amber-300" :
-    "bg-brand-primary";
+  const barColor = "bg-brand-primary";
 
   const label =
     ratio >= 1 ? "정원 마감" :
     ratio >= 0.85 ? "마감 임박" : "";
 
   const labelColor =
-    ratio >= 1 ? "text-red-600" :
-    ratio >= 0.85 ? "text-amber-600" :
+    ratio >= 1 ? "text-brand-text-muted" :
+    ratio >= 0.85 ? "text-brand-text-muted" :
     "text-brand-text-subtle";
 
   return (

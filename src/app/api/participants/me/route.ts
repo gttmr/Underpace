@@ -15,7 +15,12 @@ export async function GET(req: NextRequest) {
     select: { id: true, status: true, waitlistPosition: true },
   });
 
-  return NextResponse.json(participant ?? null);
+  // REJECTED는 재신청 가능 — 없는 것으로 처리
+  if (!participant || participant.status === "REJECTED") {
+    return NextResponse.json(null);
+  }
+
+  return NextResponse.json(participant);
 }
 
 // DELETE: 신청 취소 + APPROVED였으면 대기자 자동 승격

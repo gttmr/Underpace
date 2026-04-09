@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getSession } from "@/lib/session";
 import ScheduleView from "./ScheduleView";
 import NotificationBell from "@/components/notifications/NotificationBell";
+import { countParticipantsByStatus } from "@/lib/participant-utils";
 
 export default async function SchedulePageContent({ returnTo }: { returnTo: string }) {
   const user = await getSession();
@@ -21,18 +22,21 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
     prisma.marathon.findMany({ orderBy: { date: "asc" } }),
   ]);
 
-  const meetingsForClient = meetings.map((meeting) => ({
-    id: meeting.id,
-    date: meeting.date,
-    startTime: meeting.startTime,
-    endTime: meeting.endTime,
-    location: meeting.location,
-    maxCapacity: meeting.maxCapacity,
-    isOpen: meeting.isOpen,
-    signupOpensAt: meeting.signupOpensAt?.toISOString() ?? null,
-    approvedCount: meeting.participants.filter((p) => p.status === "APPROVED").length,
-    waitlistedCount: meeting.participants.filter((p) => p.status === "WAITLISTED").length,
-  }));
+  const meetingsForClient = meetings.map((meeting) => {
+    const { approvedCount, waitlistedCount } = countParticipantsByStatus(meeting.participants);
+    return {
+      id: meeting.id,
+      date: meeting.date,
+      startTime: meeting.startTime,
+      endTime: meeting.endTime,
+      location: meeting.location,
+      maxCapacity: meeting.maxCapacity,
+      isOpen: meeting.isOpen,
+      signupOpensAt: meeting.signupOpensAt?.toISOString() ?? null,
+      approvedCount,
+      waitlistedCount,
+    };
+  });
 
   const marathonsForClient = marathons.map((m) => ({
     id: m.id,
@@ -44,7 +48,7 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
   }));
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-brand-page">
       {/* ── header ── */}
       <header className="bg-white shadow-[0_1px_12px_rgba(0,0,0,0.07)] sticky top-0 z-30">
         <div className="max-w-xl mx-auto px-4 h-14 grid grid-cols-[1fr_auto_1fr] items-center">
@@ -98,7 +102,7 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
 
       {/* ── 비로그인 하단 CTA ── */}
       {!user && (
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/80 backdrop-blur-sm border-t border-gray-100">
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/80 backdrop-blur-sm border-t border-brand-primary-border">
           <div className="max-w-xl mx-auto px-4 py-3">
             <Link
               href={`/api/auth/kakao?returnTo=${encodeURIComponent(returnTo)}`}

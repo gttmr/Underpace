@@ -1,20 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
+import { apiError, apiOk } from "@/lib/api-response";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const { id } = await params;
-  const userId = parseInt(id);
-
   const user = await prisma.user.findUnique({
-    where: { id: userId },
+    where: { id: parseInt(id) },
     include: {
       participants: {
         include: { meeting: { select: { date: true, location: true, startTime: true } } },
@@ -27,22 +22,16 @@ export async function GET(
     },
   });
 
-  if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
-
-  return NextResponse.json(user);
+  if (!user) return apiError(404, "Not found");
+  return apiOk(user);
 }
 
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const { id } = await params;
-  const body = await req.json();
-  const { role, phoneNumber, name } = body;
+  const { role, phoneNumber, name } = await req.json();
 
   const user = await prisma.user.update({
     where: { id: parseInt(id) },
@@ -53,5 +42,5 @@ export async function PUT(
     },
   });
 
-  return NextResponse.json(user);
+  return apiOk(user);
 }

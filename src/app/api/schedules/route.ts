@@ -1,23 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { generateMeetingsFromSchedule } from "@/lib/schedule";
 import { validateSignupWindowRule } from "@/lib/meetingSignup";
+import { apiError, apiOk } from "@/lib/api-response";
 
 export async function GET() {
-  const schedules = await prisma.recurringSchedule.findMany({
-    orderBy: { dayOfWeek: "asc" },
-  });
-  return NextResponse.json(schedules);
+  const schedules = await prisma.recurringSchedule.findMany({ orderBy: { dayOfWeek: "asc" } });
+  return apiOk(schedules);
 }
 
 export async function POST(req: NextRequest) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
-  const body = await req.json();
-  const { dayOfWeek, startTime, endTime, location, maxCapacity, description, classType, signupOpenDayOfWeek, signupOpenTime } = body;
+  const { dayOfWeek, startTime, endTime, location, maxCapacity, description, classType, signupOpenDayOfWeek, signupOpenTime } = await req.json();
 
   const parsedDayOfWeek = parseInt(dayOfWeek);
   const normalizedSignupOpenDayOfWeek =
@@ -25,15 +22,9 @@ export async function POST(req: NextRequest) {
       ? null
       : parseInt(signupOpenDayOfWeek);
   const normalizedSignupOpenTime = signupOpenTime ? String(signupOpenTime) : null;
-  const validationError = validateSignupWindowRule(
-    parsedDayOfWeek,
-    normalizedSignupOpenDayOfWeek,
-    normalizedSignupOpenTime,
-  );
 
-  if (validationError) {
-    return NextResponse.json({ error: validationError }, { status: 400 });
-  }
+  const validationError = validateSignupWindowRule(parsedDayOfWeek, normalizedSignupOpenDayOfWeek, normalizedSignupOpenTime);
+  if (validationError) return apiError(400, validationError);
 
   const schedule = await prisma.recurringSchedule.create({
     data: {
@@ -49,8 +40,6 @@ export async function POST(req: NextRequest) {
     },
   });
 
-  // 자동으로 8주치 모임 생성
   await generateMeetingsFromSchedule(schedule.id, 8);
-
-  return NextResponse.json(schedule, { status: 201 });
+  return apiOk(schedule, 201);
 }

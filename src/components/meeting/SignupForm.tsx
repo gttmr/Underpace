@@ -5,23 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type { MeetingWithCounts } from "@/lib/types";
 import { kakaoLogin } from "@/lib/kakao";
 import { formatSignupOpensAt, isSignupAvailable } from "@/lib/meetingSignup";
-
-interface SessionUser {
-  kakaoId: string;
-  nickname: string;
-  profileImage?: string;
-}
+import { KakaoIcon } from "@/components/ui/KakaoIcon";
+import { useUserSession } from "@/lib/hooks/useUserSession";
 
 interface SignupFormProps {
   meeting: MeetingWithCounts;
-}
-
-function KakaoIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-      <path d="M12 3C6.477 3 2 6.477 2 10.857c0 2.713 1.584 5.1 3.988 6.577L5 21l4.29-2.287C10.145 18.9 11.058 19 12 19c5.523 0 10-3.477 10-7.143C22 6.477 17.523 3 12 3z" />
-    </svg>
-  );
 }
 
 export function SignupForm({ meeting }: SignupFormProps) {
@@ -32,9 +20,8 @@ export function SignupForm({ meeting }: SignupFormProps) {
   const isSignupReady = isSignupAvailable(meeting);
   const isWaitingForOpen = !isClosed && !isSignupReady;
 
-  const [user, setUser] = useState<SessionUser | null | undefined>(undefined);
-  const [name, setName] = useState("");
-  const [profileName, setProfileName] = useState<string | null>(null);
+  const { user, name, profileName, setName } = useUserSession([meeting.id]);
+
   const [note, setNote] = useState("");
   const [nameError, setNameError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -43,48 +30,17 @@ export function SignupForm({ meeting }: SignupFormProps) {
   const [myParticipant, setMyParticipant] = useState<{ id: number; status: string; waitlistPosition: number | null } | null | undefined>(undefined);
   const [cancelling, setCancelling] = useState(false);
 
+  // 기존 신청 내역 fetch
   useEffect(() => {
-    fetch("/api/auth/me")
-      .then((r) => r.json())
-      .then((data) => {
-        setUser(data);
-        if (data?.kakaoId) {
-          Promise.all([
-            fetch("/api/profile").then((r) => r.ok ? r.json() : null).catch(() => null),
-            fetch(`/api/participants/me?meetingId=${meeting.id}`).then((r) => r.json()).catch(() => null),
-          ]).then(([profile, participant]) => {
-            if (profile?.name) {
-              setName(profile.name);
-              setProfileName(profile.name);
-            } else if (data?.nickname) {
-              setName(data.nickname);
-            }
-            setMyParticipant(participant);
-          });
-        }
-      })
-      .catch(() => setUser(null));
-  }, [meeting.id]);
-
-  async function handleCancel() {
-    if (!confirm("신청을 취소하시겠습니까?")) return;
-    setCancelling(true);
-    try {
-      const res = await fetch(`/api/participants/me?meetingId=${meeting.id}`, { method: "DELETE" });
-      if (res.ok) {
-        router.refresh();
-        setMyParticipant(null);
-        setDuplicate(false);
-      } else {
-        const data = await res.json();
-        setServerError(data.error ?? "취소 중 오류가 발생했습니다.");
-      }
-    } catch {
-      setServerError("네트워크 오류가 발생했습니다.");
-    } finally {
-      setCancelling(false);
+    if (user?.kakaoId) {
+      fetch(`/api/participants/me?meetingId=${meeting.id}`)
+        .then((r) => r.json())
+        .catch(() => null)
+        .then(setMyParticipant);
+    } else if (user === null) {
+      setMyParticipant(null);
     }
-  }
+  }, [user, meeting.id]);
 
   useEffect(() => {
     const authError = searchParams.get("auth_error");
@@ -94,10 +50,24 @@ export function SignupForm({ meeting }: SignupFormProps) {
     }
   }, [searchParams, meeting.id]);
 
-  async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    setUser(null);
-    setName("");
+  async function handleCancel() {
+    if (!confirm("신청을 취소하시겠습니까?")) return;
+    setCancelling(true);
+    try {
+      const res = await fetch(`/api/participants/me?meetingId=${meeting.id}`, { method: "DELETE" });
+      if (res.ok) {
+        setMyParticipant(null);
+        setDuplicate(false);
+        window.location.reload();
+      } else {
+        const data = await res.json();
+        setServerError(data.error ?? "취소 중 오류가 발생했습니다.");
+      }
+    } catch {
+      setServerError("네트워크 오류가 발생했습니다.");
+    } finally {
+      setCancelling(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -156,7 +126,6 @@ export function SignupForm({ meeting }: SignupFormProps) {
     return <div className="py-8 text-center text-brand-text-subtle text-sm font-medium">불러오는 중...</div>;
   }
 
-  // 이미 신청한 경우: 상태 표시 + 취소 버튼
   if (myParticipant) {
     const statusLabel =
       myParticipant.status === "APPROVED" ? "참가 확정"
@@ -199,9 +168,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
             <span className="text-amber-500 text-base shrink-0 mt-0.5">⚠️</span>
             <div>
               <p className="font-black text-amber-800 text-sm">정원이 마감되었습니다</p>
-              <p className="text-amber-700 text-xs mt-0.5">
-                대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.
-              </p>
+              <p className="text-amber-700 text-xs mt-0.5">대기자 {meeting.waitlistedCount + 1}번째로 등록됩니다.</p>
             </div>
           </div>
         )}
@@ -210,7 +177,7 @@ export function SignupForm({ meeting }: SignupFormProps) {
           <button
             type="button"
             onClick={() => kakaoLogin(returnTo)}
-            className="w-full h-12 inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-black rounded-xl transition-colors justify-center text-sm active:scale-[0.98]"
+            className="w-full h-12 inline-flex items-center gap-2 bg-kakao hover:bg-kakao-hover text-kakao-text font-black rounded-xl transition-colors justify-center text-sm active:scale-[0.98]"
           >
             <KakaoIcon />
             카카오로 로그인하여 신청하기
@@ -244,7 +211,6 @@ export function SignupForm({ meeting }: SignupFormProps) {
         </div>
       )}
 
-      {/* 이름 */}
       <div>
         <label className="block text-[10px] font-black text-brand-text-subtle mb-1.5 uppercase tracking-widest">
           이름 <span className="text-red-400 normal-case">*</span>
@@ -270,7 +236,6 @@ export function SignupForm({ meeting }: SignupFormProps) {
         {nameError && <p className="mt-1 text-xs text-red-500 font-medium">{nameError}</p>}
       </div>
 
-      {/* 메모 */}
       <div>
         <label className="block text-[10px] font-black text-brand-text-subtle mb-1.5 uppercase tracking-widest">
           메모 <span className="ml-1 normal-case font-semibold text-brand-text-subtle tracking-normal">(선택)</span>
@@ -307,7 +272,6 @@ export function SignupForm({ meeting }: SignupFormProps) {
           </span>
         ) : isFull ? "대기자로 신청하기" : "신청하기"}
       </button>
-
     </form>
   );
 }

@@ -1,47 +1,42 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { getSessionFromRequest } from "@/lib/session";
 import { formatSignupOpensAt, isSignupAvailable } from "@/lib/meetingSignup";
+import { apiError, apiOk } from "@/lib/api-response";
+import { countParticipantsByStatus } from "@/lib/participant-utils";
 
 export async function POST(req: NextRequest) {
   const user = getSessionFromRequest(req);
-  if (!user) {
-    return NextResponse.json({ error: "카카오 로그인이 필요합니다" }, { status: 401 });
-  }
+  if (!user) return apiError(401, "카카오 로그인이 필요합니다");
 
   const body = await req.json();
   const { meetingId, name, note } = body;
 
-  if (!meetingId || !name?.trim()) {
-    return NextResponse.json({ error: "이름을 입력해주세요" }, { status: 400 });
-  }
+  if (!meetingId || !name?.trim()) return apiError(400, "이름을 입력해주세요");
 
   const meeting = await prisma.meeting.findUnique({
     where: { id: parseInt(meetingId) },
-    include: { participants: { select: { status: true, kakaoId: true } } },
+    include: { participants: { select: { id: true, status: true, kakaoId: true } } },
   });
 
-  if (!meeting) return NextResponse.json({ error: "모임을 찾을 수 없습니다" }, { status: 404 });
-  if (!meeting.isOpen) return NextResponse.json({ error: "신청이 마감된 모임입니다" }, { status: 400 });
+  if (!meeting) return apiError(404, "모임을 찾을 수 없습니다");
+  if (!meeting.isOpen) return apiError(400, "신청이 마감된 모임입니다");
   if (!isSignupAvailable(meeting)) {
-    return NextResponse.json(
-      { error: `신청은 ${formatSignupOpensAt(meeting.signupOpensAt)}부터 가능합니다` },
-      { status: 400 },
-    );
+    return apiError(400, `신청은 ${formatSignupOpensAt(meeting.signupOpensAt)}부터 가능합니다`);
   }
 
-  // 같은 카카오 계정으로 중복 신청 확인
   const duplicate = meeting.participants.find((p) => p.kakaoId === user.kakaoId);
-  if (duplicate) {
-    return NextResponse.json({ error: "이미 신청하셨습니다" }, { status: 409 });
+  if (duplicate && duplicate.status !== "REJECTED") return apiError(409, "이미 신청하셨습니다");
+
+  // REJECTED 레코드가 있으면 삭제 후 재신청
+  if (duplicate && duplicate.status === "REJECTED") {
+    await prisma.participant.delete({ where: { id: duplicate.id } });
   }
 
-  const approvedCount = meeting.participants.filter((p) => p.status === "APPROVED").length;
-  const waitlistedCount = meeting.participants.filter((p) => p.status === "WAITLISTED").length;
+  const { approvedCount, waitlistedCount } = countParticipantsByStatus(
+    meeting.participants.filter((p) => p.status !== "REJECTED")
+  );
   const isFull = approvedCount >= meeting.maxCapacity;
-
-  const status = isFull ? "WAITLISTED" : "APPROVED";
-  const waitlistPosition = isFull ? waitlistedCount + 1 : null;
 
   const participant = await prisma.participant.create({
     data: {
@@ -50,10 +45,10 @@ export async function POST(req: NextRequest) {
       kakaoId: user.kakaoId,
       kakaoNickname: user.nickname,
       note: note?.trim() || null,
-      status,
-      waitlistPosition,
+      status: isFull ? "WAITLISTED" : "APPROVED",
+      waitlistPosition: isFull ? waitlistedCount + 1 : null,
     },
   });
 
-  return NextResponse.json(participant, { status: 201 });
+  return apiOk(participant, 201);
 }

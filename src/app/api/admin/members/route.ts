@@ -1,23 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
+import { apiOk } from "@/lib/api-response";
 
 export async function GET() {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
-    include: {
-      _count: {
-        select: {
-          participants: true,
-          marathonParticipants: true,
-        },
-      },
-    },
+    include: { _count: { select: { participants: true, marathonParticipants: true } } },
   });
 
-  return NextResponse.json(users);
+  return apiOk(users);
 }

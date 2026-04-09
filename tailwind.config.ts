@@ -42,6 +42,11 @@ const config: Config = {
           "soft-strong":          "var(--brand-primary-soft-strong)",
           border:                 "var(--brand-primary-border)",
         },
+        kakao: {
+          DEFAULT:    "var(--kakao-bg)",
+          hover:      "var(--kakao-bg-hover)",
+          text:       "var(--kakao-text)",
+        },
       },
       fontFamily: {
         sans: ["Pretendard", "system-ui", "-apple-system", "sans-serif"],

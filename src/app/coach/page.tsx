@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { KakaoIcon } from "@/components/ui/KakaoIcon";
 
 interface UserProfile {
   name: string | null;
@@ -60,7 +61,7 @@ const DAY_KO = ["일", "월", "화", "수", "목", "금", "토"];
 function PbBadge({ label, value }: { label: string; value: string | null }) {
   if (!value) return null;
   return (
-    <span className="inline-flex items-center gap-1 text-[10px] bg-[#c4ddff] text-brand-text px-1.5 py-0.5 rounded font-bold">
+    <span className="inline-flex items-center gap-1 text-[10px] bg-brand-surface text-brand-text px-1.5 py-0.5 rounded font-bold">
       {label} {value}
     </span>
   );
@@ -199,22 +200,23 @@ export default function CoachDashboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-brand-page flex items-center justify-center">
-        <p className="text-slate-400 text-sm">불러오는 중...</p>
+        <p className="text-brand-text-subtle text-sm">불러오는 중...</p>
       </div>
     );
   }
 
   if (error === "login") {
     return (
-      <div className="min-h-screen bg-brand-page flex flex-col items-center justify-center px-6">
-        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-slate-100">
+      <div className="min-h-screen bg-brand-page flex flex-col items-center px-6 pt-[20vh]">
+        <div className="bg-brand-surface-elevated rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-brand-primary-border">
           <div className="text-5xl mb-4">🔐</div>
-          <h1 className="text-xl font-extrabold text-slate-900 mb-2">로그인이 필요합니다</h1>
-          <p className="text-sm text-slate-500 mb-6">코치 계정으로 로그인해 주세요.</p>
+          <h1 className="text-xl font-extrabold text-brand-text mb-2">로그인이 필요합니다</h1>
+          <p className="text-sm text-brand-text-muted mb-6">코치 계정으로 로그인해 주세요.</p>
           <button
             onClick={() => window.location.href = `/api/auth/kakao?returnTo=/coach`}
-            className="w-full h-12 inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-bold rounded-xl transition-colors justify-center text-sm"
+            className="w-full h-12 inline-flex items-center gap-2 bg-kakao hover:bg-kakao-hover text-kakao-text font-black rounded-xl transition-colors justify-center text-sm active:scale-[0.98]"
           >
+            <KakaoIcon />
             카카오로 로그인
           </button>
         </div>
@@ -224,11 +226,11 @@ export default function CoachDashboardPage() {
 
   if (error === "forbidden") {
     return (
-      <div className="min-h-screen bg-brand-page flex flex-col items-center justify-center px-6">
-        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-slate-100">
+      <div className="min-h-screen bg-brand-page flex flex-col items-center px-6 pt-[20vh]">
+        <div className="bg-brand-surface-elevated rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-brand-primary-border">
           <div className="text-5xl mb-4">🚫</div>
-          <h1 className="text-xl font-extrabold text-slate-900 mb-2">접근 권한이 없습니다</h1>
-          <p className="text-sm text-slate-500 mb-6">코치 또는 관리자 권한이 필요합니다.</p>
+          <h1 className="text-xl font-extrabold text-brand-text mb-2">접근 권한이 없습니다</h1>
+          <p className="text-sm text-brand-text-muted mb-6">코치 또는 관리자 권한이 필요합니다.</p>
           <Link href="/" className="text-sm text-brand-text hover:underline">← 홈으로 돌아가기</Link>
         </div>
       </div>
@@ -270,7 +272,7 @@ export default function CoachDashboardPage() {
 
       <main className="max-w-3xl mx-auto px-4 py-4 space-y-6">
         {/* 월간 훈련 계획 에디터 */}
-        <div className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
+        <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border overflow-hidden">
           <div className="bg-brand-surface px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div className="w-[3px] h-4 bg-brand-primary rounded-full" />
@@ -286,33 +288,41 @@ export default function CoachDashboardPage() {
               {planSaved ? "저장됨 ✓" : planSaving ? "저장 중..." : "저장"}
             </button>
           </div>
-          <div className="p-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-[10px] font-black text-brand-text-subtle uppercase tracking-widest mb-1.5">초중급반</label>
-              <textarea
-                value={beginnerContent}
-                onChange={(e) => setBeginnerContent(e.target.value)}
-                rows={5}
-                placeholder={"1주차: 페이스 런 5K\n2주차: 인터벌 4×1K\n3주차: LSD 10K\n4주차: 템포 런"}
-                className="brand-input w-full px-3 py-2.5 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-black text-brand-text-subtle uppercase tracking-widest mb-1.5">고급반</label>
-              <textarea
-                value={advancedContent}
-                onChange={(e) => setAdvancedContent(e.target.value)}
-                rows={5}
-                placeholder={"1주차: 스피드워크 6×800m\n2주차: 마라톤 페이스 런\n3주차: LSD 20K\n4주차: 레이스 시뮬레이션"}
-                className="brand-input w-full px-3 py-2.5 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
-              />
-            </div>
+          <div className="p-5">
+            {classFilter !== "ADVANCED" && (
+              <div className={classFilter === "ALL" ? "mb-4" : ""}>
+                {classFilter === "ALL" && (
+                  <label className="block text-[10px] font-black text-brand-text-subtle uppercase tracking-widest mb-1.5">초중급반</label>
+                )}
+                <textarea
+                  value={beginnerContent}
+                  onChange={(e) => setBeginnerContent(e.target.value)}
+                  rows={5}
+                  placeholder={"1주차: 페이스 런 5K\n2주차: 인터벌 4×1K\n3주차: LSD 10K\n4주차: 템포 런"}
+                  className="brand-input w-full px-3 py-2.5 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
+                />
+              </div>
+            )}
+            {classFilter !== "BEGINNER" && (
+              <div>
+                {classFilter === "ALL" && (
+                  <label className="block text-[10px] font-black text-brand-text-subtle uppercase tracking-widest mb-1.5">고급반</label>
+                )}
+                <textarea
+                  value={advancedContent}
+                  onChange={(e) => setAdvancedContent(e.target.value)}
+                  rows={5}
+                  placeholder={"1주차: 스피드워크 6×800m\n2주차: 마라톤 페이스 런\n3주차: LSD 20K\n4주차: 레이스 시뮬레이션"}
+                  className="brand-input w-full px-3 py-2.5 rounded-xl text-sm resize-none placeholder:text-brand-text-subtle"
+                />
+              </div>
+            )}
           </div>
         </div>
 
         {/* 모임 목록 */}
         {filteredMeetings.length === 0 ? (
-          <div className="bg-white rounded-2xl p-12 text-center border border-brand-primary-border">
+          <div className="bg-brand-surface-elevated rounded-2xl p-12 text-center border border-brand-primary-border">
             <div className="text-5xl mb-3">📅</div>
             <p className="text-brand-text-subtle font-medium">예정된 모임이 없습니다</p>
           </div>
@@ -326,7 +336,7 @@ export default function CoachDashboardPage() {
             const sorted = sortParticipants(m.participants, sortKey);
 
             return (
-              <div key={m.id} className="bg-white rounded-2xl border border-brand-primary-border overflow-hidden">
+              <div key={m.id} className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border overflow-hidden">
                 {/* 모임 헤더 — 클릭으로 참가자 펼치기/접기 */}
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : m.id)}
@@ -387,7 +397,7 @@ export default function CoachDashboardPage() {
                             className={`text-xs px-2.5 py-1 rounded-full font-bold transition-colors shrink-0 ${
                               sortKey === opt.key
                                 ? "bg-brand-primary text-white"
-                                : "bg-white text-brand-text-muted border border-brand-primary-border hover:border-brand-primary"
+                                : "bg-brand-surface-elevated text-brand-text-muted border border-brand-primary-border hover:border-brand-primary"
                             }`}
                           >
                             {opt.label}
@@ -443,7 +453,7 @@ export default function CoachDashboardPage() {
 
                                 {/* 신청 메모 */}
                                 {p.note && (
-                                  <p className="text-xs text-slate-400 mt-1">📝 {p.note}</p>
+                                  <p className="text-xs text-brand-text-subtle mt-1">📝 {p.note}</p>
                                 )}
                               </div>
                             </div>
@@ -463,55 +473,55 @@ export default function CoachDashboardPage() {
       {showMemberModal && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center" onClick={() => setShowMemberModal(false)}>
           <div
-            className="bg-white w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl shadow-xl"
+            className="bg-brand-surface-elevated w-full max-w-lg max-h-[85vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             {memberLoading ? (
-              <div className="p-12 text-center text-slate-400 text-sm">불러오는 중...</div>
+              <div className="p-12 text-center text-brand-text-subtle text-sm">불러오는 중...</div>
             ) : memberRecord ? (
               <>
                 {/* 모달 헤더 */}
-                <div className="sticky top-0 bg-white border-b border-slate-100 px-5 py-4 flex items-center justify-between">
+                <div className="sticky top-0 bg-brand-surface-elevated border-b border-brand-primary-border px-5 py-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-brand-surface flex items-center justify-center overflow-hidden shrink-0">
                       {memberRecord.profileImage ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={memberRecord.profileImage} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <span className="text-xl text-slate-300">👤</span>
+                        <span className="text-xl text-brand-text-subtle">👤</span>
                       )}
                     </div>
-                    <h2 className="font-extrabold text-slate-900 text-lg">{memberRecord.name || "이름 없음"}</h2>
+                    <h2 className="font-extrabold text-brand-text text-lg">{memberRecord.name || "이름 없음"}</h2>
                   </div>
-                  <button onClick={() => setShowMemberModal(false)} className="text-slate-400 hover:text-slate-600 text-xl">✕</button>
+                  <button onClick={() => setShowMemberModal(false)} className="text-brand-text-subtle hover:text-brand-text text-xl">✕</button>
                 </div>
 
                 <div className="px-5 py-4 space-y-5">
                   {/* PB 기록 */}
                   {(memberRecord.pbFull || memberRecord.pbHalf || memberRecord.pb10k || memberRecord.pb5k) && (
                     <div>
-                      <h3 className="text-sm font-extrabold text-slate-700 mb-2">🏅 마라톤 PB 기록</h3>
+                      <h3 className="text-sm font-extrabold text-brand-text mb-2">🏅 마라톤 PB 기록</h3>
                       <div className="grid grid-cols-2 gap-2">
                         {memberRecord.pbFull && (
-                          <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
+                          <div className="bg-brand-surface rounded-xl px-3 py-2.5">
                             <p className="text-[10px] text-brand-text font-bold">풀마라톤</p>
                             <p className="text-sm font-extrabold text-brand-text">{memberRecord.pbFull}</p>
                           </div>
                         )}
                         {memberRecord.pbHalf && (
-                          <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
+                          <div className="bg-brand-surface rounded-xl px-3 py-2.5">
                             <p className="text-[10px] text-brand-text font-bold">하프마라톤</p>
                             <p className="text-sm font-extrabold text-brand-text">{memberRecord.pbHalf}</p>
                           </div>
                         )}
                         {memberRecord.pb10k && (
-                          <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
+                          <div className="bg-brand-surface rounded-xl px-3 py-2.5">
                             <p className="text-[10px] text-brand-text font-bold">10K</p>
                             <p className="text-sm font-extrabold text-brand-text">{memberRecord.pb10k}</p>
                           </div>
                         )}
                         {memberRecord.pb5k && (
-                          <div className="bg-[#c4ddff] rounded-xl px-3 py-2.5">
+                          <div className="bg-brand-surface rounded-xl px-3 py-2.5">
                             <p className="text-[10px] text-brand-text font-bold">5K</p>
                             <p className="text-sm font-extrabold text-brand-text">{memberRecord.pb5k}</p>
                           </div>
@@ -523,7 +533,7 @@ export default function CoachDashboardPage() {
                   {/* 바라는 점 */}
                   {memberRecord.coachingNote && (
                     <div>
-                      <h3 className="text-sm font-extrabold text-slate-700 mb-2">💬 강습 시 바라는 점</h3>
+                      <h3 className="text-sm font-extrabold text-brand-text mb-2">💬 강습 시 바라는 점</h3>
                       <div className="bg-amber-50 rounded-xl px-4 py-3 text-sm text-amber-800">
                         {memberRecord.coachingNote}
                       </div>
@@ -532,22 +542,22 @@ export default function CoachDashboardPage() {
 
                   {/* 참가 기록 */}
                   <div>
-                    <h3 className="text-sm font-extrabold text-slate-700 mb-2">📋 최근 참가 기록 ({memberRecord.participants.length}회)</h3>
+                    <h3 className="text-sm font-extrabold text-brand-text mb-2">📋 최근 참가 기록 ({memberRecord.participants.length}회)</h3>
                     {memberRecord.participants.length === 0 ? (
-                      <p className="text-sm text-slate-400">참가 기록이 없습니다.</p>
+                      <p className="text-sm text-brand-text-subtle">참가 기록이 없습니다.</p>
                     ) : (
                       <div className="space-y-1.5">
                         {memberRecord.participants.map((rec, i) => {
                           const rd = new Date(rec.meeting.date + "T00:00:00");
                           const [, rm, rday] = rec.meeting.date.split("-");
                           return (
-                            <div key={i} className="flex items-center gap-3 bg-slate-50 rounded-lg px-3 py-2 text-sm">
-                              <span className="text-slate-400 font-mono text-xs w-6 text-right shrink-0">{i + 1}</span>
-                              <span className="font-bold text-slate-700">
+                            <div key={i} className="flex items-center gap-3 bg-brand-surface rounded-lg px-3 py-2 text-sm">
+                              <span className="text-brand-text-subtle font-mono text-xs w-6 text-right shrink-0">{i + 1}</span>
+                              <span className="font-bold text-brand-text">
                                 {parseInt(rm)}월 {parseInt(rday)}일 ({DAY_KO[rd.getDay()]})
                               </span>
-                              <span className="text-slate-500 text-xs">{rec.meeting.startTime}–{rec.meeting.endTime}</span>
-                              <span className="text-slate-400 text-xs truncate">{rec.meeting.location}</span>
+                              <span className="text-brand-text-muted text-xs">{rec.meeting.startTime}–{rec.meeting.endTime}</span>
+                              <span className="text-brand-text-subtle text-xs truncate">{rec.meeting.location}</span>
                             </div>
                           );
                         })}
@@ -557,7 +567,7 @@ export default function CoachDashboardPage() {
                 </div>
               </>
             ) : (
-              <div className="p-12 text-center text-slate-400 text-sm">회원 정보를 불러올 수 없습니다.</div>
+              <div className="p-12 text-center text-brand-text-subtle text-sm">회원 정보를 불러올 수 없습니다.</div>
             )}
           </div>
         </div>

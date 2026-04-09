@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -15,14 +14,13 @@ export default function AdminLoginPage() {
     fetch("/api/admin/auto-login", { method: "POST" })
       .then((res) => {
         if (res.ok) {
-          router.push("/admin");
-          router.refresh();
+          window.location.href = "/admin";
         } else {
           setAutoLogging(false);
         }
       })
       .catch(() => setAutoLogging(false));
-  }, [router]);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -36,8 +34,7 @@ export default function AdminLoginPage() {
     });
 
     if (res.ok) {
-      router.push("/admin");
-      router.refresh();
+      window.location.href = "/admin";
     } else {
       const data = await res.json();
       setError(data.error || "오류가 발생했습니다");
@@ -54,45 +51,46 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-brand-page flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        <div className="bg-white rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden animate-scale-in">
-          <div className="bg-brand-primary px-6 py-5 text-center relative overflow-hidden">
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                backgroundImage: "radial-gradient(rgba(196,221,255,0.4) 1px, transparent 1px)",
-                backgroundSize: "20px 20px",
-              }}
-            />
-            <p className="relative text-[10px] font-black tracking-[0.2em] text-[rgba(196,221,255,0.65)] uppercase mb-1">UNDERPACE</p>
-            <h1 className="relative text-lg font-black text-white">관리자 로그인</h1>
-          </div>
+    <div className="min-h-screen bg-brand-page">
+      <header className="bg-white shadow-[0_1px_12px_rgba(0,0,0,0.07)] sticky top-0 z-30">
+        <div className="max-w-xl mx-auto px-4 h-14 flex items-center justify-center">
+          <Image src="/logo.svg" alt="Underpace" width={140} height={40} className="object-contain" priority />
+        </div>
+      </header>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            <div>
-              <label className="block text-[10px] font-black text-brand-text-subtle mb-1.5 uppercase tracking-widest">비밀번호</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="관리자 비밀번호"
-                className="brand-input w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-brand-text"
-                autoFocus
-              />
-              {error && <p className="mt-1.5 text-xs text-red-500 font-medium">{error}</p>}
+      <main className="max-w-xl mx-auto px-4 pt-[14vh]">
+        <div className="w-full max-w-sm mx-auto">
+          <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden animate-scale-in">
+            <div className="px-6 py-5 border-b border-brand-primary-border">
+              <p className="text-[10px] font-black tracking-[0.2em] text-brand-text-subtle uppercase mb-0.5">UNDERPACE</p>
+              <h1 className="text-lg font-black text-brand-text">관리자 로그인</h1>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || !password}
-              className="brand-button-primary w-full py-3.5 rounded-xl font-black text-sm transition-all active:scale-[0.98] disabled:cursor-not-allowed"
-            >
-              {loading ? "로그인 중..." : "로그인"}
-            </button>
-          </form>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-[10px] font-black text-brand-text-subtle mb-1.5 uppercase tracking-widest">비밀번호</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="관리자 비밀번호"
+                  className="brand-input w-full px-4 py-2.5 rounded-xl text-sm font-semibold text-brand-text"
+                  autoFocus
+                />
+                {error && <p className="mt-1.5 text-xs text-red-500 font-medium">{error}</p>}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="brand-button-primary w-full py-3.5 rounded-xl font-black text-sm transition-all active:scale-[0.98] disabled:cursor-not-allowed"
+              >
+                {loading ? "로그인 중..." : "로그인"}
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

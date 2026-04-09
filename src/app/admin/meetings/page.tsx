@@ -28,7 +28,7 @@ export default async function AdminMeetingsPage() {
     return (
       <Link
         href={`/admin/meetings/${m.id}`}
-        className="block bg-white rounded-xl border border-brand-primary-border p-4 hover:border-brand-primary-border-strong transition-colors"
+        className="block bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-4 hover:border-brand-primary-border-strong transition-colors"
       >
         <div className="flex items-start justify-between gap-3 mb-3">
           <div>

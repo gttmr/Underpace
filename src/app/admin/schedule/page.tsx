@@ -241,7 +241,7 @@ function MeetingOverrideModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 z-50 flex items-end md:items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4">
+      <div className="bg-brand-surface-elevated rounded-2xl w-full max-w-md p-6 space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-bold text-brand-text">특정 날 수정</h3>
           <span className="text-sm text-brand-text-subtle">{meeting.date}</span>
@@ -479,7 +479,7 @@ export default function AdminSchedulePage() {
                   onCancel={() => setEditingId(null)}
                 />
               ) : (
-                <div className={`bg-white rounded-xl border p-4 flex items-start justify-between gap-3 ${!schedule.isActive ? "opacity-50" : "border-brand-primary-border"}`}>
+                <div className={`bg-brand-surface-elevated rounded-xl border p-4 flex items-start justify-between gap-3 ${!schedule.isActive ? "opacity-50" : "border-brand-primary-border"}`}>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-semibold text-brand-text text-sm">
@@ -536,7 +536,7 @@ export default function AdminSchedulePage() {
             const dayDate = new Date(date + "T00:00:00");
             const [, month, day] = date.split("-");
             return (
-              <div key={date} className="bg-white rounded-xl border border-brand-primary-border p-4">
+              <div key={date} className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-4">
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-sm font-bold text-brand-text">
                     {parseInt(month, 10)}월 {parseInt(day, 10)}일 ({DAY_KO[dayDate.getDay()]})

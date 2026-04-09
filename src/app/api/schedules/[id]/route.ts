@@ -1,26 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 import { generateMeetingsFromSchedule, syncUpcomingMeetingSignupWindows } from "@/lib/schedule";
 import { validateSignupWindowRule } from "@/lib/meetingSignup";
+import { apiError, apiOk } from "@/lib/api-response";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const { id } = await params;
-  const body = await req.json();
-  const { dayOfWeek, startTime, endTime, location, maxCapacity, description, classType, isActive, signupOpenDayOfWeek, signupOpenTime } = body;
   const scheduleId = parseInt(id);
+  const { dayOfWeek, startTime, endTime, location, maxCapacity, description, classType, isActive, signupOpenDayOfWeek, signupOpenTime } = await req.json();
 
-  const existing = await prisma.recurringSchedule.findUnique({
-    where: { id: scheduleId },
-  });
-
-  if (!existing) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
+  const existing = await prisma.recurringSchedule.findUnique({ where: { id: scheduleId } });
+  if (!existing) return apiError(404, "Not found");
 
   const nextDayOfWeek = dayOfWeek !== undefined ? parseInt(dayOfWeek) : existing.dayOfWeek;
   const nextSignupOpenDayOfWeek =
@@ -28,18 +22,10 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       ? (signupOpenDayOfWeek === null || signupOpenDayOfWeek === "" ? null : parseInt(signupOpenDayOfWeek))
       : existing.signupOpenDayOfWeek;
   const nextSignupOpenTime =
-    signupOpenTime !== undefined
-      ? (signupOpenTime ? String(signupOpenTime) : null)
-      : existing.signupOpenTime;
-  const validationError = validateSignupWindowRule(
-    nextDayOfWeek,
-    nextSignupOpenDayOfWeek,
-    nextSignupOpenTime,
-  );
+    signupOpenTime !== undefined ? (signupOpenTime ? String(signupOpenTime) : null) : existing.signupOpenTime;
 
-  if (validationError) {
-    return NextResponse.json({ error: validationError }, { status: 400 });
-  }
+  const validationError = validateSignupWindowRule(nextDayOfWeek, nextSignupOpenDayOfWeek, nextSignupOpenTime);
+  if (validationError) return apiError(400, validationError);
 
   const schedule = await prisma.recurringSchedule.update({
     where: { id: scheduleId },
@@ -62,15 +48,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     await syncUpcomingMeetingSignupWindows(schedule.id);
   }
 
-  return NextResponse.json(schedule);
+  return apiOk(schedule);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const { id } = await params;
   await prisma.recurringSchedule.delete({ where: { id: parseInt(id) } });
-  return NextResponse.json({ ok: true });
+  return apiOk({ ok: true });
 }
