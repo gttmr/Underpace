@@ -14,12 +14,18 @@ export default async function SchedulePageContent({ returnTo }: { returnTo: stri
     : null;
   const isCoachOrAdmin = userRole === "COACH" || userRole === "ADMIN";
 
+  const today = new Date().toISOString().split("T")[0];
+
   const [meetings, marathons] = await Promise.all([
     prisma.meeting.findMany({
+      where: { date: { gte: today } },
       orderBy: { date: "asc" },
       include: { participants: { select: { status: true } } },
     }),
-    prisma.marathon.findMany({ orderBy: { date: "asc" } }),
+    prisma.marathon.findMany({
+      where: { date: { gte: today } },
+      orderBy: { date: "asc" },
+    }),
   ]);
 
   const meetingsForClient = meetings.map((meeting) => {

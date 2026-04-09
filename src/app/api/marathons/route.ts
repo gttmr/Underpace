@@ -24,7 +24,9 @@ export async function GET(req: NextRequest) {
     ],
   });
 
-  return NextResponse.json(marathons);
+  return NextResponse.json(marathons, {
+    headers: { "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=300" },
+  });
 }
 
 export async function POST(req: NextRequest) {
