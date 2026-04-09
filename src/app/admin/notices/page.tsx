@@ -59,7 +59,7 @@ export default function AdminNoticesPage() {
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("공지를 삭제하시겠습니까?")) return;
+    if (!confirm("알림을 삭제하시겠습니까?")) return;
     await fetch(`/api/notices/${id}`, { method: "DELETE" });
     load();
   }
@@ -76,38 +76,37 @@ export default function AdminNoticesPage() {
   return (
     <AdminLayout>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-extrabold text-slate-900">공지사항 관리</h1>
+        <h1 className="text-xl font-extrabold text-brand-text">알림 관리</h1>
         <button
           onClick={() => openForm()}
-          className="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+          className="brand-button-primary px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
         >
-          + 새 공지
+          + 새 알림
         </button>
       </div>
 
-      {/* 공지 작성/수정 폼 */}
       {showForm && (
-        <div className="bg-white rounded-xl border border-slate-200 p-5 mb-6 space-y-4">
-          <h2 className="font-bold text-slate-800">{editingNotice ? "공지 수정" : "새 공지 작성"}</h2>
+        <div className="brand-panel-strong rounded-xl p-5 mb-6 space-y-4">
+          <h2 className="font-bold text-brand-text">{editingNotice ? "알림 수정" : "새 알림 작성"}</h2>
           <div>
-            <label className="text-xs font-semibold text-slate-600 block mb-1">제목 *</label>
+            <label className="text-[10px] font-black text-brand-text-subtle uppercase tracking-widest block mb-1.5">제목 *</label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-              placeholder="공지 제목"
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500"
+              placeholder="알림 제목"
+              className="brand-input w-full px-3 py-2.5 rounded-xl text-sm font-semibold"
               autoFocus
             />
           </div>
           <div>
-            <label className="text-xs font-semibold text-slate-600 block mb-1">내용</label>
+            <label className="text-[10px] font-black text-brand-text-subtle uppercase tracking-widest block mb-1.5">내용</label>
             <textarea
               value={form.body}
               onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
-              placeholder="공지 내용을 입력하세요"
+              placeholder="알림 내용을 입력하세요"
               rows={4}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-blue-500 resize-none"
+              className="brand-input w-full px-3 py-2.5 rounded-xl text-sm text-brand-text-muted resize-none"
             />
           </div>
           <div className="flex items-center gap-2">
@@ -116,22 +115,22 @@ export default function AdminNoticesPage() {
               id="isPinned"
               checked={form.isPinned}
               onChange={(e) => setForm((f) => ({ ...f, isPinned: e.target.checked }))}
-              className="w-4 h-4 accent-blue-600"
+              className="w-4 h-4 accent-brand-primary"
             />
-            <label htmlFor="isPinned" className="text-sm text-slate-700">홈 배너에 고정 표시</label>
-            <span className="text-xs text-slate-400">(1개만 고정 가능)</span>
+            <label htmlFor="isPinned" className="text-sm text-brand-text-muted font-semibold">중요 알림으로 표시</label>
+            <span className="text-xs text-brand-text-subtle">(1개만 고정 가능)</span>
           </div>
           <div className="flex gap-2">
             <button
               onClick={handleSubmit}
               disabled={!form.title.trim()}
-              className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white text-sm font-bold transition-colors"
+              className="brand-button-primary flex-1 py-2.5 rounded-xl text-sm font-bold transition-colors"
             >
-              {editingNotice ? "수정 저장" : "공지 등록"}
+              {editingNotice ? "수정 저장" : "알림 등록"}
             </button>
             <button
               onClick={() => setShowForm(false)}
-              className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 text-sm hover:bg-slate-50 transition-colors"
+              className="brand-button-secondary px-4 py-2.5 rounded-xl text-sm transition-colors"
             >
               취소
             </button>
@@ -139,45 +138,51 @@ export default function AdminNoticesPage() {
         </div>
       )}
 
-      {/* 공지 목록 */}
       {loading ? (
-        <p className="text-sm text-slate-400 text-center py-10">불러오는 중...</p>
+        <p className="text-sm text-brand-text-subtle text-center py-10">불러오는 중...</p>
       ) : notices.length === 0 ? (
-        <p className="text-sm text-slate-400 text-center py-10">등록된 공지사항이 없습니다</p>
+        <div className="text-center py-14">
+          <div className="w-12 h-12 rounded-full bg-brand-surface flex items-center justify-center mx-auto mb-3">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} className="w-6 h-6 text-brand-text-subtle">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.73 21a2 2 0 0 1-3.46 0" />
+            </svg>
+          </div>
+          <p className="text-sm text-brand-text-subtle font-semibold">등록된 알림이 없습니다</p>
+        </div>
       ) : (
         <div className="space-y-3">
           {notices.map((n) => (
-            <div key={n.id} className={`bg-white rounded-xl border p-4 ${n.isPinned ? "border-amber-300 bg-amber-50" : "border-slate-200"}`}>
+            <div
+              key={n.id}
+              className={`bg-brand-surface-elevated rounded-xl border p-4 relative overflow-hidden ${
+                n.isPinned ? "border-amber-300" : "border-brand-primary-border"
+              }`}
+            >
+              {n.isPinned && (
+                <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-amber-400 rounded-r" />
+              )}
               <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
+                <div className="flex-1 min-w-0 pl-1">
                   <div className="flex items-center gap-2 mb-1">
                     {n.isPinned && (
-                      <span className="text-xs font-bold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded-full">📌 고정</span>
+                      <span className="text-[9px] font-black text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded uppercase tracking-wide">고정</span>
                     )}
-                    <h3 className="font-semibold text-slate-900 text-sm truncate">{n.title}</h3>
+                    <h3 className="font-black text-brand-text text-sm truncate">{n.title}</h3>
                   </div>
-                  <p className="text-xs text-slate-500 line-clamp-2">{n.body}</p>
-                  <p className="text-xs text-slate-400 mt-1.5">
-                    {new Date(n.createdAt).toLocaleDateString("ko-KR")}
+                  {n.body && <p className="text-xs text-brand-text-muted line-clamp-2 leading-relaxed">{n.body}</p>}
+                  <p className="text-[10px] text-brand-text-subtle mt-1.5 font-medium">
+                    {new Date(n.createdAt).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric" })}
                   </p>
                 </div>
-                <div className="flex flex-col gap-1.5 shrink-0">
-                  <button
-                    onClick={() => openForm(n)}
-                    className="text-xs text-blue-600 hover:underline"
-                  >
+                <div className="flex flex-col gap-1.5 shrink-0 items-end">
+                  <button onClick={() => openForm(n)} className="text-xs text-brand-text font-bold hover:underline">
                     수정
                   </button>
-                  <button
-                    onClick={() => handleTogglePin(n)}
-                    className="text-xs text-amber-600 hover:underline"
-                  >
+                  <button onClick={() => handleTogglePin(n)} className="text-xs text-amber-600 font-bold hover:underline">
                     {n.isPinned ? "고정 해제" : "고정"}
                   </button>
-                  <button
-                    onClick={() => handleDelete(n.id)}
-                    className="text-xs text-red-500 hover:underline"
-                  >
+                  <button onClick={() => handleDelete(n.id)} className="text-xs text-red-500 font-bold hover:underline">
                     삭제
                   </button>
                 </div>

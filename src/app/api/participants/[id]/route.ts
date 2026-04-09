@@ -1,22 +1,21 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
+import { apiError, apiOk } from "@/lib/api-response";
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const { id } = await params;
-  const body = await req.json();
-  const { action, rejectionNote } = body; // action: "approve" | "reject" | "waitlist" | "pending"
+  const { action, rejectionNote } = await req.json();
 
   const participant = await prisma.participant.findUnique({
     where: { id: parseInt(id) },
     include: { meeting: { include: { participants: { select: { status: true } } } } },
   });
 
-  if (!participant) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!participant) return apiError(404, "Not found");
 
   let newStatus = participant.status;
   let newWaitlistPosition = participant.waitlistPosition;
@@ -46,15 +45,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     },
   });
 
-  return NextResponse.json(updated);
+  return apiOk(updated);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  if (!(await isAdminAuthenticated())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const authError = await requireAdmin();
+  if (authError) return authError;
 
   const { id } = await params;
   await prisma.participant.delete({ where: { id: parseInt(id) } });
-  return NextResponse.json({ ok: true });
+  return apiOk({ ok: true });
 }

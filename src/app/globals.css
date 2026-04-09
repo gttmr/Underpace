@@ -4,7 +4,218 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design Tokens ── */
+:root {
+  --font-sans: "Pretendard", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --color-sky-100: #c4ddff;
+  --color-sky-300: #7fb5ff;
+  --color-navy-900: #001d6e;
+  --color-peach-100: #ffffff;
+
+  --brand-primary:                var(--color-navy-900);
+  --brand-primary-hover:          var(--color-navy-900);
+  --brand-primary-foreground:     var(--color-peach-100);
+  --brand-primary-soft:           var(--color-sky-100);
+  --brand-primary-soft-strong:    var(--color-sky-300);
+  --brand-primary-soft-accent:    var(--color-peach-100);
+  --brand-primary-border:         var(--color-sky-300);
+  --brand-primary-border-strong:  var(--color-navy-900);
+  --brand-primary-text:           var(--color-navy-900);
+  --brand-primary-text-strong:    var(--color-navy-900);
+
+  --brand-page:                   var(--color-peach-100);
+  --brand-surface:                var(--color-sky-100);
+  --brand-surface-elevated:       var(--color-peach-100);
+  --brand-surface-strong:         var(--color-sky-300);
+
+  --brand-text:                   var(--color-navy-900);
+  --brand-text-muted:             rgba(0, 29, 110, 0.74);
+  --brand-text-subtle:            rgba(0, 29, 110, 0.48);
+
+  --brand-divider:                rgba(0, 29, 110, 0.16);
+  --brand-divider-strong:         rgba(0, 29, 110, 0.28);
+
+  --brand-dimmed-surface:         #e5e7eb;
+  --brand-dimmed-border:          #9ca3af;
+  --brand-dimmed-text:            #4b5563;
+
+  --brand-shadow:                 rgba(0, 29, 110, 0.1);
+  --brand-ring:                   rgba(127, 181, 255, 0.35);
+  --brand-frame-shadow:           0 10px 30px var(--brand-shadow);
+  --brand-header-shadow:          0 8px 24px var(--brand-shadow);
+  --brand-avatar-shadow:          0 18px 40px var(--brand-shadow);
+
+  /* Kakao brand */
+  --kakao-bg:                     #FEE500;
+  --kakao-bg-hover:               #f0d800;
+  --kakao-text:                   #3C1E1E;
+
+  /* legacy aliases (backward compat) */
+  --brand-soft:                   var(--brand-primary-soft);
+  --brand-soft-strong:            var(--brand-primary-soft-strong);
+  --brand-border:                 var(--brand-primary-border);
+}
+
+/* ── Animations ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-up  { animation: fadeUp  0.32s ease-out both; }
+.animate-fade-in  { animation: fadeIn  0.22s ease-out both; }
+.animate-scale-in { animation: scaleIn 0.18s ease-out both; }
+
+/* ── Base ── */
+html { scrollbar-gutter: stable; }
+
 body {
-  font-family: "Pretendard", system-ui, -apple-system, sans-serif;
-  background-color: #F1F5F9;
+  font-family: var(--font-sans);
+  background-color: var(--brand-page);
+  color: var(--brand-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar        { width: 5px; height: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: rgba(0,29,110,0.18); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,29,110,0.32); }
+
+/* ── Panels & Cards ── */
+.brand-panel {
+  background-color: var(--brand-surface);
+  border: 1px solid var(--brand-divider);
+}
+.brand-panel-white {
+  background-color: var(--brand-surface-elevated);
+  border: 1px solid var(--brand-divider);
+}
+.brand-panel-strong {
+  background-color: var(--brand-surface-elevated);
+  border: 1px solid var(--brand-primary-border);
+}
+.brand-inset-panel {
+  background-color: var(--brand-surface-elevated);
+  box-shadow: inset 0 0 0 1px var(--brand-divider);
+}
+.brand-card {
+  background-color: var(--brand-surface);
+  border: 1px solid var(--brand-divider);
+  box-shadow: var(--brand-frame-shadow);
+}
+.brand-card-soft {
+  background-color: var(--brand-surface-elevated);
+  border: 1px solid var(--brand-divider);
+  box-shadow: var(--brand-frame-shadow);
+}
+.brand-alert-info {
+  background-color: var(--brand-primary-soft);
+  border: 1px solid var(--brand-primary-border);
+  box-shadow: var(--brand-frame-shadow);
+  color: var(--brand-primary-text);
+}
+.brand-highlight-panel {
+  background-color: var(--brand-primary-soft-strong);
+  box-shadow: inset 0 0 0 1px var(--brand-ring);
+  color: var(--brand-primary-text);
+}
+
+/* ── Chips ── */
+.brand-chip-soft      { background-color: var(--brand-primary-soft);        color: var(--brand-primary-text); }
+.brand-chip-strong    { background-color: var(--brand-primary-soft-strong);  color: var(--brand-primary-text); }
+.brand-chip-accent    { background-color: var(--brand-primary-soft-accent);  color: var(--brand-primary-text); }
+.brand-chip-companion { background-color: #fee2c5;                           color: var(--brand-primary-text); }
+.brand-chip-dark      { background-color: var(--brand-primary);              color: var(--brand-primary-foreground); }
+
+/* ── Avatar ── */
+.brand-avatar-shell {
+  background-color: #ffffff;
+  border: 2px solid var(--brand-primary-border);
+}
+.brand-avatar-shell-large {
+  border-width: 4px;
+  box-shadow: var(--brand-avatar-shadow);
+}
+.brand-avatar-action {
+  border: 2px solid var(--brand-surface-elevated);
+  background-color: var(--brand-primary-border);
+  color: var(--brand-primary-foreground);
+  box-shadow: var(--brand-frame-shadow);
+}
+
+/* ── Text helpers ── */
+.brand-text-muted  { color: var(--brand-text-muted); }
+.brand-text-subtle { color: var(--brand-text-subtle); }
+.brand-divider     { border-color: var(--brand-divider); }
+
+/* ── Buttons ── */
+.brand-button-primary {
+  background-color: var(--brand-primary);
+  color: var(--brand-primary-foreground);
+  box-shadow: 0 12px 24px rgba(0, 29, 110, 0.16);
+}
+.brand-button-primary:hover {
+  background-color: var(--brand-primary-hover);
+  box-shadow: 0 14px 28px rgba(0, 29, 110, 0.2);
+}
+.brand-button-primary:disabled {
+  background-color: var(--brand-dimmed-surface);
+  color: var(--brand-dimmed-text);
+  box-shadow: none;
+}
+
+.brand-button-secondary {
+  background-color: var(--brand-surface-elevated);
+  border: 1px solid var(--brand-primary-border);
+  color: var(--brand-primary-text);
+}
+.brand-button-secondary:hover {
+  background-color: var(--brand-primary-soft);
+  border-color: var(--brand-primary-border-strong);
+}
+
+/* ── Inputs ── */
+.brand-input {
+  background-color: var(--brand-surface-elevated);
+  border: 1px solid var(--brand-primary-border);
+  color: var(--brand-text);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.brand-input:focus {
+  outline: none;
+  border-color: var(--brand-primary-border-strong);
+  box-shadow: 0 0 0 3px var(--brand-ring);
+}
+.brand-input-dimmed {
+  background-color: var(--brand-dimmed-surface);
+  border: 1px solid var(--brand-dimmed-border);
+  color: var(--brand-dimmed-text);
+}
+
+/* ── Toggle / Tabs ── */
+.brand-toggle-active {
+  background-color: var(--brand-surface-strong);
+  border-color: var(--brand-primary-border-strong);
+  color: var(--brand-primary-text);
+}
+.brand-filter-tab-active {
+  background-color: var(--brand-surface-elevated);
+  box-shadow: 0 1px 2px var(--brand-shadow);
+  color: var(--brand-text);
+}
+
+/* ── Bottom dock ── */
+.brand-bottom-dock {
+  border-top: 1px solid var(--brand-divider);
+  background-color: rgba(255, 255, 255, 0.95);
 }

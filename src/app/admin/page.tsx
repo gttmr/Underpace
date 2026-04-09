@@ -54,18 +54,18 @@ export default async function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <h1 className="text-xl font-extrabold text-slate-900 mb-6">대시보드</h1>
+      <h1 className="text-xl font-extrabold text-brand-text mb-6">대시보드</h1>
 
       {/* 통계 카드 */}
       <div className="grid grid-cols-3 gap-3 mb-8">
         {[
           { label: "이번 주 승인", value: totalApproved, color: "text-green-600" },
           { label: "대기 승인", value: totalPending, color: "text-amber-600" },
-          { label: "대기자", value: totalWaitlisted, color: "text-blue-600" },
+          { label: "대기자", value: totalWaitlisted, color: "text-brand-primary" },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-slate-200 p-4 text-center">
+          <div key={stat.label} className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-4 text-center">
             <p className={`text-2xl font-extrabold ${stat.color}`}>{stat.value}</p>
-            <p className="text-xs text-slate-500 mt-0.5">{stat.label}</p>
+            <p className="text-xs text-brand-text-subtle mt-0.5">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -73,8 +73,8 @@ export default async function AdminDashboard() {
       {/* 이번 주 모임 */}
       <section className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-bold text-slate-700">예정된 모임</h2>
-          <Link href="/admin/meetings" className="text-xs text-blue-600 hover:underline">전체 보기 →</Link>
+          <h2 className="text-sm font-bold text-brand-text-muted">예정된 모임</h2>
+          <Link href="/admin/meetings" className="text-xs text-brand-primary hover:underline">전체 보기 →</Link>
         </div>
         <div className="space-y-3">
           {upcomingMeetings.map((m) => {
@@ -85,29 +85,29 @@ export default async function AdminDashboard() {
             const pct = Math.min((approved / m.maxCapacity) * 100, 100);
 
             return (
-              <div key={m.id} className="bg-white rounded-xl border border-slate-200 p-4">
+              <div key={m.id} className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <p className="font-semibold text-slate-800 text-sm">
+                    <p className="font-semibold text-brand-text text-sm">
                       {parseInt(month)}월 {parseInt(day)}일 ({DAY_KO[d.getDay()]}) {m.startTime}
                     </p>
-                    <p className="text-xs text-slate-500 mt-0.5">{m.location}</p>
+                    <p className="text-xs text-brand-text-subtle mt-0.5">{m.location}</p>
                   </div>
                   <Link
                     href={`/admin/meetings/${m.id}`}
-                    className="text-xs text-blue-600 hover:underline shrink-0 ml-2"
+                    className="text-xs text-brand-primary hover:underline shrink-0 ml-2"
                   >
                     관리 →
                   </Link>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="flex-1 h-1.5 bg-brand-surface rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full ${pct >= 100 ? "bg-red-500" : pct >= 85 ? "bg-amber-400" : "bg-green-500"}`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
-                  <span className="text-xs text-slate-600 shrink-0">{approved}/{m.maxCapacity}명</span>
+                  <span className="text-xs text-brand-text-muted shrink-0">{approved}/{m.maxCapacity}명</span>
                   {pending > 0 && (
                     <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full shrink-0">대기 {pending}명</span>
                   )}
@@ -116,14 +116,14 @@ export default async function AdminDashboard() {
             );
           })}
           {upcomingMeetings.length === 0 && (
-            <p className="text-sm text-slate-400 text-center py-6">예정된 모임이 없습니다</p>
+            <p className="text-sm text-brand-text-subtle text-center py-6">예정된 모임이 없습니다</p>
           )}
         </div>
       </section>
 
       {/* 예정된 대회 */}
       <section className="mb-8">
-        <h2 className="text-sm font-bold text-slate-700 mb-3">예정된 대회</h2>
+        <h2 className="text-sm font-bold text-brand-text-muted mb-3">예정된 대회</h2>
         <div className="space-y-3">
           {upcomingMarathons.map((m) => {
             const d = new Date(m.date + "T00:00:00");
@@ -137,16 +137,16 @@ export default async function AdminDashboard() {
                       {parseInt(month)}월 {parseInt(day)}일 ({DAY_KO[d.getDay()]}) {m.startTime}
                     </p>
                   </div>
-                  <p className="text-sm font-extrabold text-slate-900">{m.title}</p>
-                  {m.location && <p className="text-xs text-slate-500 mt-1">📍 {m.location}</p>}
+                  <p className="text-sm font-extrabold text-brand-text">{m.title}</p>
+                  {m.location && <p className="text-xs text-brand-text-subtle mt-1">📍 {m.location}</p>}
                 </div>
                 <DeleteMarathonButton id={m.id} />
               </div>
             );
           })}
           {upcomingMarathons.length === 0 && (
-            <div className="bg-white rounded-xl border border-slate-200 p-6 text-center shadow-sm">
-              <p className="text-sm text-slate-400">예정된 대회가 없습니다</p>
+            <div className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-6 text-center shadow-sm">
+              <p className="text-sm text-brand-text-subtle">예정된 대회가 없습니다</p>
             </div>
           )}
         </div>
@@ -154,14 +154,14 @@ export default async function AdminDashboard() {
 
       {/* 최근 활동 */}
       <section>
-        <h2 className="text-sm font-bold text-slate-700 mb-3">최근 신청</h2>
-        <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
+        <h2 className="text-sm font-bold text-brand-text-muted mb-3">최근 신청</h2>
+        <div className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border divide-y divide-brand-divider">
           {recentParticipants.map((p) => {
             const statusColors: Record<string, string> = {
               PENDING: "text-amber-600",
               APPROVED: "text-green-600",
-              WAITLISTED: "text-blue-600",
-              REJECTED: "text-slate-400",
+              WAITLISTED: "text-brand-primary",
+              REJECTED: "text-brand-text-subtle",
             };
             const statusLabels: Record<string, string> = {
               PENDING: "검토 중",
@@ -172,8 +172,8 @@ export default async function AdminDashboard() {
             return (
               <div key={p.id} className="px-4 py-3 flex items-center justify-between">
                 <div>
-                  <span className="text-sm font-medium text-slate-800">{p.name}</span>
-                  <span className="text-xs text-slate-400 ml-2">{timeAgo(p.submittedAt)}</span>
+                  <span className="text-sm font-medium text-brand-text">{p.name}</span>
+                  <span className="text-xs text-brand-text-subtle ml-2">{timeAgo(p.submittedAt)}</span>
                 </div>
                 <span className={`text-xs font-semibold ${statusColors[p.status]}`}>
                   {statusLabels[p.status]}
@@ -182,7 +182,7 @@ export default async function AdminDashboard() {
             );
           })}
           {recentParticipants.length === 0 && (
-            <p className="text-sm text-slate-400 text-center py-6">신청 내역이 없습니다</p>
+            <p className="text-sm text-brand-text-subtle text-center py-6">신청 내역이 없습니다</p>
           )}
         </div>
       </section>

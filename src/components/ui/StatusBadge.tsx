@@ -6,44 +6,43 @@ interface StatusBadgeProps {
   size?: "sm" | "md";
 }
 
-const STATUS_CONFIG: Record<
-  ParticipantStatus,
-  { label: string; className: string; dot: string }
-> = {
+const STATUS_CONFIG: Record<ParticipantStatus, { label: string; bg: string; text: string; dot: string }> = {
   PENDING: {
     label: "검토 중",
-    className: "bg-amber-50 text-amber-700 border border-amber-200",
+    bg: "bg-amber-50",
+    text: "text-amber-700",
     dot: "bg-amber-400",
   },
   APPROVED: {
     label: "승인됨",
-    className: "bg-green-50 text-green-700 border border-green-200",
-    dot: "bg-green-500",
+    bg: "bg-emerald-50",
+    text: "text-emerald-700",
+    dot: "bg-emerald-500",
   },
   WAITLISTED: {
     label: "대기자",
-    className: "bg-blue-50 text-blue-700 border border-blue-200",
-    dot: "bg-blue-500",
+    bg: "bg-brand-surface",
+    text: "text-brand-text",
+    dot: "bg-brand-primary",
   },
   REJECTED: {
     label: "거절됨",
-    className: "bg-slate-100 text-slate-500 border border-slate-200",
-    dot: "bg-slate-400",
+    bg: "bg-brand-dimmed",
+    text: "text-brand-dimmed-text",
+    dot: "bg-brand-dimmed-border",
   },
 };
 
 export function StatusBadge({ status, waitlistPosition, size = "md" }: StatusBadgeProps) {
-  const config = STATUS_CONFIG[status];
+  const c = STATUS_CONFIG[status];
   const label =
-    status === "WAITLISTED" && waitlistPosition
-      ? `대기 ${waitlistPosition}번째`
-      : config.label;
+    status === "WAITLISTED" && waitlistPosition ? `대기 ${waitlistPosition}번째` : c.label;
 
-  const sizeClass = size === "sm" ? "text-xs px-2 py-0.5" : "text-sm px-2.5 py-1";
+  const sizeClass = size === "sm" ? "text-[10px] px-1.5 py-0.5" : "text-xs px-2.5 py-1";
 
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full font-medium ${config.className} ${sizeClass}`}>
-      <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+    <span className={`inline-flex items-center gap-1 rounded-full font-bold border border-[rgba(0,0,0,0.06)] ${c.bg} ${c.text} ${sizeClass}`}>
+      <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${c.dot}`} />
       {label}
     </span>
   );

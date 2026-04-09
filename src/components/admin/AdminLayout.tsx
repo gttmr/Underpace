@@ -8,12 +8,12 @@ interface AdminLayoutProps {
 }
 
 const NAV_ITEMS = [
-  { href: "/admin", label: "대시보드", icon: "📊", exact: true },
+  { href: "/admin",          label: "대시보드", icon: "📊", exact: true },
   { href: "/admin/schedule", label: "일정관리", icon: "📅", exact: false },
   { href: "/admin/meetings", label: "모임관리", icon: "👥", exact: false },
-  { href: "/admin/members", label: "회원관리", icon: "🧑‍💼", exact: false },
-  { href: "/coach", label: "코치뷰", icon: "🏃", exact: false },
-  { href: "/admin/notices", label: "공지관리", icon: "📢", exact: false },
+  { href: "/admin/members",  label: "회원관리", icon: "🧑‍💼", exact: false },
+  { href: "/coach",          label: "코치뷰",   icon: "🏃", exact: false },
+  { href: "/admin/notices",  label: "알림관리", icon: "🔔", exact: false },
 ];
 
 export function AdminLayout({ children }: AdminLayoutProps) {
@@ -31,18 +31,20 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 상단 헤더 */}
-      <header className="bg-hero-gradient text-white sticky top-0 z-10">
+    <div className="min-h-screen flex flex-col bg-brand-page">
+      {/* top header */}
+      <header className="bg-brand-primary text-white sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-blue-200 hover:text-white text-sm transition-colors">← 사이트</Link>
-            <span className="text-blue-300">|</span>
-            <span className="font-bold">관리자</span>
+            <Link href="/" className="text-brand-surface hover:text-white text-sm font-semibold transition-colors">
+              ← 사이트
+            </Link>
+            <span className="text-brand-primary-border font-light">|</span>
+            <span className="font-black text-sm tracking-tight">관리자</span>
           </div>
           <button
             onClick={handleLogout}
-            className="text-blue-200 hover:text-white text-sm transition-colors"
+            className="text-brand-surface hover:text-white text-sm font-semibold transition-colors"
           >
             로그아웃
           </button>
@@ -50,43 +52,43 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       </header>
 
       <div className="flex-1 flex flex-col md:flex-row max-w-6xl mx-auto w-full">
-        {/* 사이드바 (데스크탑) */}
+        {/* desktop sidebar */}
         <aside className="hidden md:block w-52 shrink-0 p-4">
-          <nav className="space-y-1 sticky top-16">
+          <nav className="space-y-0.5 sticky top-16">
             {NAV_ITEMS.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
+                className={`flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm font-bold transition-all
                   ${isActive(item)
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-600 hover:bg-white hover:text-slate-900"
+                    ? "bg-brand-primary text-white shadow-md shadow-[rgba(0,29,110,0.2)]"
+                    : "text-brand-text-muted hover:bg-white hover:text-brand-text"
                   }`}
               >
-                <span>{item.icon}</span>
+                <span className="text-base">{item.icon}</span>
                 {item.label}
               </Link>
             ))}
           </nav>
         </aside>
 
-        {/* 메인 콘텐츠 */}
-        <main className="flex-1 p-4 md:p-6 pb-24 md:pb-6">
+        {/* main content */}
+        <main className="flex-1 p-4 md:p-6 pb-24 md:pb-6 min-w-0">
           {children}
         </main>
       </div>
 
-      {/* 하단 탭 (모바일) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 z-10">
+      {/* mobile bottom nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-brand-divider z-10">
         <div className="flex">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex-1 flex flex-col items-center py-2 text-xs font-medium transition-colors
-                ${isActive(item) ? "text-blue-600" : "text-slate-400"}`}
+              className={`flex-1 flex flex-col items-center py-2.5 text-[10px] font-black transition-colors gap-0.5
+                ${isActive(item) ? "text-brand-text" : "text-brand-text-subtle"}`}
             >
-              <span className="text-xl">{item.icon}</span>
+              <span className="text-lg leading-none">{item.icon}</span>
               {item.label}
             </Link>
           ))}

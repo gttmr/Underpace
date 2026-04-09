@@ -16,6 +16,7 @@ model RecurringSchedule {
   location             String
   maxCapacity          Int
   description          String?
+  classType            String?   // BEGINNER | ADVANCED | null
   signupOpenDayOfWeek  Int?      // null이면 항상 오픈
   signupOpenTime       String?   // "18:00", null이면 항상 오픈
   isActive             Boolean   @default(true)
@@ -33,11 +34,35 @@ model Meeting {
   location       String
   maxCapacity    Int
   description    String?
+  classType      String?            // BEGINNER | ADVANCED | null
   signupOpensAt  DateTime?          // null이면 항상 오픈
   isOpen         Boolean            @default(true)
   isOverridden   Boolean            @default(false)
   participants   Participant[]
+  trainingLog    TrainingLog?
   createdAt      DateTime           @default(now())
+}
+
+model TrainingLog {
+  id           Int      @id @default(autoincrement())
+  meetingId    Int      @unique
+  meeting      Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  coachKakaoId String
+  content      String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model MonthlyPlan {
+  id              Int      @id @default(autoincrement())
+  year            Int
+  month           Int
+  beginnerContent String
+  advancedContent String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([year, month])
 }
 
 model Participant {
@@ -103,13 +128,15 @@ model User {
   name         String?  // 카카오 또는 유저가 정한 이름
   profileImage String?
   phoneNumber  String?
-  role         String   @default("MEMBER") // ADMIN, MEMBER, BANNED
+  role         String   @default("MEMBER") // ADMIN, COACH, MEMBER, BANNED
   
   // 마라톤 PB 기록 (HH:MM:SS 형식)
   pbFull       String?  // 풀 마라톤 (42.195km)
   pbHalf       String?  // 하프 마라톤 (21.0975km)
   pb10k        String?  // 10km
   pb5k         String?  // 5km
+
+  region       String?  // 거주 지역 (선택)
 
   // 강습 관련
   coachingNote String?  // 강습 시 바라는 점

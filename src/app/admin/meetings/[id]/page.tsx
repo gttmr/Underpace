@@ -51,7 +51,7 @@ const TAB_LABELS: Record<Tab, string> = {
 
 function KakaoBadge({ nickname }: { nickname: string }) {
   return (
-    <span className="inline-flex items-center gap-1 text-xs bg-[#FEE500]/30 text-[#3C1E1E] px-1.5 py-0.5 rounded-full">
+    <span className="inline-flex items-center gap-1 text-xs bg-amber-100/60 text-amber-900 px-1.5 py-0.5 rounded-full">
       <svg viewBox="0 0 24 24" className="w-3 h-3" fill="currentColor">
         <path d="M12 3C6.477 3 2 6.477 2 10.857c0 2.713 1.584 5.1 3.988 6.577L5 21l4.29-2.287C10.145 18.9 11.058 19 12 19c5.523 0 10-3.477 10-7.143C22 6.477 17.523 3 12 3z" />
       </svg>
@@ -72,7 +72,7 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
 
   async function handleDelete(allFuture: boolean) {
     if (!confirm(allFuture ? "이 일정과 이후 생성된 모든 반복 일정을 완전 삭제하시겠습니까?" : "이 일정(단건)만 삭제하시겠습니까? (다른 주차의 반복 일정은 유지됩니다)")) return;
-    
+
     const res = await fetch(`/api/meetings/${meeting?.id}${allFuture ? "?allFuture=true" : ""}`, {
       method: "DELETE",
     });
@@ -126,7 +126,7 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
   if (loading || !meeting) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center py-16 text-slate-400">불러오는 중...</div>
+        <div className="flex items-center justify-center py-16 text-brand-text-subtle">불러오는 중...</div>
       </AdminLayout>
     );
   }
@@ -156,10 +156,10 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
     <AdminLayout>
       {/* 상단 정보 */}
       <div className="flex items-start gap-3 mb-4">
-        <Link href="/admin/meetings" className="text-slate-400 hover:text-slate-600 text-xl mt-0.5">←</Link>
+        <Link href="/admin/meetings" className="text-brand-text-subtle hover:text-brand-text text-xl mt-0.5 transition-colors">←</Link>
         <div className="flex-1">
-          <h1 className="text-xl font-extrabold text-slate-900">{displayDate}</h1>
-          <p className="text-sm text-slate-500 mt-0.5">
+          <h1 className="text-xl font-extrabold text-brand-text">{displayDate}</h1>
+          <p className="text-sm text-brand-text-muted mt-0.5">
             {meeting.startTime}–{meeting.endTime} · {meeting.location}
           </p>
         </div>
@@ -168,23 +168,23 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
             onClick={handleToggleOpen}
             className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors
               ${meeting.isOpen
-                ? "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                ? "bg-brand-surface text-brand-text-muted hover:bg-brand-surface-strong"
                 : "bg-green-100 text-green-700 hover:bg-green-200"
               }`}
           >
             {meeting.isOpen ? "신청 마감하기" : "신청 열기"}
           </button>
-          
+
           <div className="group relative">
             <button className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors border border-red-100">
               삭제하기 ▾
             </button>
-            <div className="absolute right-0 top-full mt-1 hidden group-hover:flex flex-col bg-white border border-slate-200 shadow-xl rounded-lg overflow-hidden w-40 z-50">
-               <button onClick={() => handleDelete(false)} className="px-4 py-3 text-xs text-left font-bold text-slate-700 hover:bg-red-50 hover:text-red-700 border-b border-slate-100 transition-colors">
+            <div className="absolute right-0 top-full mt-1 hidden group-hover:flex flex-col bg-brand-surface-elevated border border-brand-primary-border shadow-xl rounded-lg overflow-hidden w-40 z-50">
+               <button onClick={() => handleDelete(false)} className="px-4 py-3 text-xs text-left font-bold text-brand-text hover:bg-red-50 hover:text-red-700 border-b border-brand-primary-border transition-colors">
                  이 일정만 삭제
                </button>
                {meeting.scheduleId && (
-                 <button onClick={() => handleDelete(true)} className="px-4 py-3 text-xs text-left font-bold text-slate-700 hover:bg-red-50 hover:text-red-700 transition-colors">
+                 <button onClick={() => handleDelete(true)} className="px-4 py-3 text-xs text-left font-bold text-brand-text hover:bg-red-50 hover:text-red-700 transition-colors">
                    이후 모든 반복 일정 삭제
                  </button>
                )}
@@ -198,13 +198,13 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
       </div>
 
       {/* 탭 */}
-      <div className="flex gap-1 bg-slate-100 rounded-xl p-1 mb-4 overflow-x-auto">
+      <div className="flex gap-1 bg-brand-surface rounded-xl p-1 mb-4 overflow-x-auto">
         {(["pending", "approved", "waitlisted", "rejected", "all"] as Tab[]).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`flex-1 py-1.5 px-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors
-              ${activeTab === tab ? "bg-white shadow-sm text-slate-900" : "text-slate-500 hover:text-slate-700"}`}
+              ${activeTab === tab ? "bg-white shadow-sm text-brand-text" : "text-brand-text-muted hover:text-brand-text"}`}
           >
             {TAB_LABELS[tab]} {counts[tab] > 0 && `(${counts[tab]})`}
           </button>
@@ -213,7 +213,6 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
 
       {/* 신청자 목록 */}
       <div className="space-y-3">
-        {/* 대기 중 탭에서 전체 승인 버튼 */}
         {activeTab === "pending" && counts.pending > 1 && (
           <button
             onClick={async () => {
@@ -235,25 +234,24 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
         )}
 
         {filteredParticipants.length === 0 ? (
-          <p className="text-sm text-slate-400 text-center py-10">해당 상태의 신청자가 없습니다</p>
+          <p className="text-sm text-brand-text-subtle text-center py-10">해당 상태의 신청자가 없습니다</p>
         ) : (
           filteredParticipants.map((p) => (
-            <div key={p.id} className="bg-white rounded-xl border border-slate-200 p-4">
+            <div key={p.id} className="bg-brand-surface-elevated rounded-xl border border-brand-primary-border p-4">
               <div className="flex items-start justify-between gap-3 mb-2">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-semibold text-slate-900">{p.name}</span>
+                    <span className="font-semibold text-brand-text">{p.name}</span>
                     <StatusBadge status={p.status} waitlistPosition={p.waitlistPosition} size="sm" />
                   </div>
                   <KakaoBadge nickname={p.kakaoNickname} />
                   {p.note && (
-                    <p className="text-xs text-slate-500 mt-1 bg-slate-50 rounded px-2 py-1">{p.note}</p>
+                    <p className="text-xs text-brand-text-muted mt-1 bg-brand-surface rounded px-2 py-1">{p.note}</p>
                   )}
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-brand-text-subtle mt-1">
                     {new Date(p.submittedAt).toLocaleString("ko-KR", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
                   </p>
                 </div>
-                {/* 액션 버튼 */}
                 <div className="flex flex-col gap-1.5 shrink-0">
                   {p.status !== "APPROVED" && (
                     <button
@@ -274,7 +272,7 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
                   {p.status === "APPROVED" && (
                     <button
                       onClick={() => handleAction(p.id, "pending")}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50 text-xs transition-colors"
+                      className="brand-button-secondary px-3 py-1.5 rounded-lg text-xs transition-colors"
                     >
                       취소
                     </button>
@@ -282,15 +280,14 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
                 </div>
               </div>
 
-              {/* 거절 사유 입력 */}
               {rejectingId === p.id && (
-                <div className="mt-3 pt-3 border-t border-slate-100">
+                <div className="mt-3 pt-3 border-t border-brand-primary-border">
                   <input
                     type="text"
                     value={rejectNote}
                     onChange={(e) => setRejectNote(e.target.value)}
                     placeholder="거절 사유 (선택)"
-                    className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm outline-none focus:border-red-400 mb-2"
+                    className="brand-input w-full px-3 py-2 rounded-lg text-sm mb-2"
                     autoFocus
                   />
                   <div className="flex gap-2">
@@ -306,7 +303,7 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
                     </button>
                     <button
                       onClick={() => { setRejectingId(null); setRejectNote(""); }}
-                      className="px-4 py-1.5 rounded-lg border border-slate-200 text-slate-500 text-xs hover:bg-slate-50 transition-colors"
+                      className="brand-button-secondary px-4 py-1.5 rounded-lg text-xs transition-colors"
                     >
                       취소
                     </button>
@@ -318,7 +315,6 @@ export default function AdminMeetingDetailPage({ params }: { params: Promise<{ i
         )}
       </div>
 
-      {/* 토스트 */}
       {toasts.map((t) => (
         <Toast key={t.id} message={t.message} type={t.type} onClose={() => removeToast(t.id)} />
       ))}

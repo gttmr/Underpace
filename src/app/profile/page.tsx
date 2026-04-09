@@ -3,11 +3,14 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
+import { KakaoIcon } from "@/components/ui/KakaoIcon";
 
 interface UserProfile {
   id: number;
   kakaoId: string;
   name: string | null;
+  region: string | null;
   profileImage: string | null;
   phoneNumber: string | null;
   pbFull: string | null;
@@ -16,35 +19,25 @@ interface UserProfile {
   pb5k: string | null;
   coachingNote: string | null;
   createdAt: string;
-  _count: {
-    participants: number;
-    marathonParticipants: number;
-  };
+  _count: { participants: number; marathonParticipants: number };
 }
 
-// 숫자만 입력하면 자동으로 H:MM:SS 또는 MM:SS 형식으로 변환
-// 3~4자리: M:SS 또는 MM:SS, 5~6자리: H:MM:SS (앞자리 0 자동 제거)
 function formatTimeInput(digits: string): string {
   if (digits.length === 0) return "";
   if (digits.length <= 2) return digits;
   if (digits.length <= 4) {
-    // MM:SS — 앞자리 0 제거 (예: 0230 → 2:30, 4730 → 47:30)
     const mins = parseInt(digits.slice(0, -2), 10);
     return `${mins}:${digits.slice(-2)}`;
   }
-  // 5~6자리: H:MM:SS (예: 15800 → 1:58:00, 015800 → 1:58:00)
   const hours = parseInt(digits.slice(0, -4), 10);
   return `${hours}:${digits.slice(-4, -2)}:${digits.slice(-2)}`;
 }
 
 function TimeInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // 콜론 포함 여부와 무관하게 항상 숫자만 추출해서 재포맷
-    // (자동 삽입된 콜론 이후 입력 시 "1:4450" 같은 오류 방지)
     const digits = e.target.value.replace(/\D/g, "").slice(0, 6);
     onChange(formatTimeInput(digits));
   };
-
   return (
     <input
       type="text"
@@ -52,24 +45,48 @@ function TimeInput({ value, onChange, placeholder }: { value: string; onChange: 
       value={value}
       onChange={handleChange}
       placeholder={placeholder}
-      className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+      className="w-full px-3 py-2.5 rounded-xl border border-brand-primary-border bg-white text-sm outline-none focus:border-brand-primary-border-strong focus:ring-2 focus:ring-brand-ring transition-all text-brand-text font-semibold placeholder:font-normal placeholder:text-brand-text-subtle"
     />
   );
 }
 
-function KakaoIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-      <path d="M12 3C6.477 3 2 6.477 2 10.857c0 2.713 1.584 5.1 3.988 6.577L5 21l4.29-2.287C10.145 18.9 11.058 19 12 19c5.523 0 10-3.477 10-7.143C22 6.477 17.523 3 12 3z" />
-    </svg>
-  );
-}
 
 export default function ProfilePageWrapper() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><p className="text-slate-400 text-sm">불러오는 중...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><p className="text-brand-text-subtle text-sm">불러오는 중...</p></div>}>
       <ProfilePage />
     </Suspense>
+  );
+}
+
+function SectionCard({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-sm overflow-hidden">
+      {children}
+    </div>
+  );
+}
+
+function SectionHeader({ icon, title, sub }: { icon: string; title: string; sub?: string }) {
+  return (
+    <div className="px-5 py-4 border-b border-brand-primary-border">
+      <div className="flex items-center gap-2 mb-0.5">
+        <span>{icon}</span>
+        <h3 className="text-sm font-black text-brand-text">{title}</h3>
+      </div>
+      {sub && <p className="text-xs text-brand-text-subtle ml-6">{sub}</p>}
+    </div>
+  );
+}
+
+function FormInput({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
+  return (
+    <div>
+      <label className="block text-xs font-black text-brand-text-subtle mb-1.5 uppercase tracking-wider">
+        {label} {required && <span className="text-red-400 normal-case">*</span>}
+      </label>
+      {children}
+    </div>
   );
 }
 
@@ -84,8 +101,8 @@ function ProfilePage() {
   const [notLoggedIn, setNotLoggedIn] = useState(false);
   const [showSetup, setShowSetup] = useState(false);
 
-  // 폼 상태
   const [name, setName] = useState("");
+  const [region, setRegion] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [pbFull, setPbFull] = useState("");
   const [pbHalf, setPbHalf] = useState("");
@@ -103,6 +120,7 @@ function ProfilePage() {
         if (!data) return;
         setUser(data);
         setName(data.name || "");
+        setRegion(data.region || "");
         setPhoneNumber(data.phoneNumber || "");
         setPbFull(data.pbFull || "");
         setPbHalf(data.pbHalf || "");
@@ -121,7 +139,7 @@ function ProfilePage() {
     const res = await fetch("/api/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, pbFull, pbHalf, pb10k, pb5k }),
+      body: JSON.stringify({ name, region, pbFull, pbHalf, pb10k, pb5k }),
     });
     if (res.ok) {
       const updated = await res.json();
@@ -130,19 +148,17 @@ function ProfilePage() {
       router.replace("/profile");
     }
     setSaving(false);
-  }, [name, pbFull, pbHalf, pb10k, pb5k, router]);
+  }, [name, region, pbFull, pbHalf, pb10k, pb5k, router]);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setSaved(false);
-
     const res = await fetch("/api/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, phoneNumber, pbFull, pbHalf, pb10k, pb5k, coachingNote }),
+      body: JSON.stringify({ name, region, phoneNumber, pbFull, pbHalf, pb10k, pb5k, coachingNote }),
     });
-
     if (res.ok) {
       const updated = await res.json();
       setUser(updated);
@@ -152,29 +168,31 @@ function ProfilePage() {
     setSaving(false);
   }
 
+  const inputClass = "w-full px-4 py-2.5 rounded-xl border border-brand-primary-border bg-white text-sm outline-none focus:border-brand-primary-border-strong focus:ring-2 focus:ring-brand-ring transition-all text-brand-text font-semibold placeholder:font-normal placeholder:text-brand-text-subtle";
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <p className="text-slate-400 text-sm">불러오는 중...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-brand-text-subtle text-sm">불러오는 중...</p>
       </div>
     );
   }
 
   if (notLoggedIn) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6">
-        <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-slate-100">
+      <div className="min-h-screen bg-brand-page flex flex-col items-center px-6 pt-[20vh]">
+        <div className="bg-brand-surface-elevated rounded-2xl p-8 max-w-sm w-full text-center shadow-sm border border-brand-primary-border">
           <div className="text-5xl mb-4">🏃</div>
-          <h1 className="text-xl font-extrabold text-slate-900 mb-2">로그인이 필요합니다</h1>
-          <p className="text-sm text-slate-500 mb-6">카카오 로그인 후 나의 프로필을 관리할 수 있습니다.</p>
+          <h1 className="text-xl font-black text-brand-text mb-2">로그인이 필요합니다</h1>
+          <p className="text-sm text-brand-text-subtle mb-6">카카오 로그인 후 나의 프로필을 관리할 수 있습니다.</p>
           <button
             onClick={() => window.location.href = `/api/auth/kakao?returnTo=/profile`}
-            className="w-full h-12 inline-flex items-center gap-2 bg-[#FEE500] hover:bg-[#f0d800] text-[#3C1E1E] font-bold rounded-xl transition-colors justify-center text-sm"
+            className="w-full h-12 inline-flex items-center gap-2 bg-kakao hover:bg-kakao-hover text-kakao-text font-black rounded-xl transition-colors justify-center text-sm active:scale-[0.97]"
           >
             <KakaoIcon />
             카카오로 로그인
           </button>
-          <Link href="/" className="block mt-4 text-sm text-slate-400 hover:text-slate-600 transition-colors">
+          <Link href="/" className="block mt-4 text-xs text-brand-text-subtle hover:text-brand-text transition-colors font-semibold">
             ← 홈으로 돌아가기
           </Link>
         </div>
@@ -183,59 +201,56 @@ function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-24">
-      {/* 첫 로그인 설정 모달 */}
+    <div className="min-h-screen bg-brand-page pb-24">
+      {/* setup modal */}
       {showSetup && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-xl">
+        <div className="fixed inset-0 bg-brand-text/60 backdrop-blur-sm z-50 flex items-center justify-center px-4">
+          <div className="bg-brand-surface-elevated rounded-2xl max-w-sm w-full p-6 shadow-2xl animate-scale-in">
             <div className="text-center mb-6">
               <div className="text-4xl mb-2">🏃‍♂️</div>
-              <h2 className="text-xl font-extrabold text-slate-900">환영합니다!</h2>
-              <p className="text-sm text-slate-500 mt-1">이름과 기록을 입력해주세요</p>
+              <h2 className="text-xl font-black text-brand-text">환영합니다!</h2>
+              <p className="text-sm text-brand-text-subtle mt-1">이름과 기록을 입력해주세요</p>
             </div>
-
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">이름(닉네임) <span className="text-red-400">*</span></label>
+              <FormInput label="이름" required>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="동호회에서 사용할 이름"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className={inputClass}
                   autoFocus
                 />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">풀 마라톤 PB <span className="text-slate-400 font-normal">(선택)</span></label>
-                <TimeInput value={pbFull} onChange={setPbFull} placeholder="숫자만 입력 예: 34530 → 3:45:30" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">하프 마라톤 PB <span className="text-slate-400 font-normal">(선택)</span></label>
-                <TimeInput value={pbHalf} onChange={setPbHalf} placeholder="숫자만 입력 예: 14215 → 1:42:15" />
-              </div>
-
+              </FormInput>
+              <FormInput label="지역">
+                <input
+                  type="text"
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  placeholder="예: 서울, 경기"
+                  className={inputClass}
+                />
+              </FormInput>
+              <FormInput label="풀마라톤 PB">
+                <TimeInput value={pbFull} onChange={setPbFull} placeholder="예: 34530 → 3:45:30" />
+              </FormInput>
+              <FormInput label="하프마라톤 PB">
+                <TimeInput value={pbHalf} onChange={setPbHalf} placeholder="예: 14215 → 1:42:15" />
+              </FormInput>
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">10K PB</label>
+                <FormInput label="10K PB">
                   <TimeInput value={pb10k} onChange={setPb10k} placeholder="예: 4830" />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">5K PB</label>
+                </FormInput>
+                <FormInput label="5K PB">
                   <TimeInput value={pb5k} onChange={setPb5k} placeholder="예: 2200" />
-                </div>
+                </FormInput>
               </div>
             </div>
-
             <button
               onClick={handleSetupSave}
               disabled={saving || !name.trim()}
-              className={`w-full mt-6 py-3 rounded-xl font-bold text-white text-sm transition-all ${
-                saving || !name.trim()
-                  ? "bg-slate-300 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99]"
+              className={`w-full mt-6 py-3.5 rounded-xl font-black text-white text-sm transition-all active:scale-[0.98] ${
+                saving || !name.trim() ? "bg-brand-dimmed cursor-not-allowed text-brand-dimmed-text" : "bg-brand-primary hover:bg-brand-primary-hover"
               }`}
             >
               {saving ? "저장 중..." : "시작하기"}
@@ -244,120 +259,135 @@ function ProfilePage() {
         </div>
       )}
 
-      {/* 헤더 */}
-      <header className="bg-gradient-to-r from-blue-600 to-blue-500 text-white">
-        <div className="max-w-lg mx-auto px-4 py-5 flex items-center gap-3">
-          <Link href="/" className="text-blue-200 hover:text-white transition-colors text-xl leading-none">←</Link>
-          <h1 className="font-bold text-lg">내 프로필</h1>
+      {/* header */}
+      <header className="bg-white shadow-[0_1px_12px_rgba(0,0,0,0.07)] sticky top-0 z-30">
+        <div className="max-w-lg mx-auto px-4 h-14 grid grid-cols-[1fr_auto_1fr] items-center">
+          <Link href="/" className="text-brand-text-subtle hover:text-brand-text transition-colors text-sm font-bold">
+            ←
+          </Link>
+          <Link href="/">
+            <Image
+              src="/logo.svg"
+              alt="Underpace"
+              width={140}
+              height={40}
+              className="object-contain"
+              priority
+            />
+          </Link>
+          <div />
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto px-4 py-6 space-y-6">
-        {/* 프로필 카드 */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center overflow-hidden shrink-0">
-            {user?.profileImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={user.profileImage} alt="" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-3xl text-slate-300">👤</span>
-            )}
-          </div>
-          <div>
-            <h2 className="text-lg font-extrabold text-slate-900">{user?.name || "이름 없음"}</h2>
-            <p className="text-xs text-slate-400 mt-1">
-              가입일: {user ? new Date(user.createdAt).toLocaleDateString("ko-KR") : ""}
-            </p>
-            <div className="flex gap-3 mt-2">
-              <span className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">모임 {user?._count.participants}회</span>
-              <span className="text-xs bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full font-bold">대회 {user?._count.marathonParticipants}회</span>
+      <main className="max-w-lg mx-auto px-4 py-5 space-y-4">
+        {/* profile card */}
+        <SectionCard>
+          <div className="p-5 flex items-center gap-4">
+            {/* avatar */}
+            <div className="w-16 h-16 rounded-full ring-2 ring-brand-primary-border ring-offset-2 bg-brand-surface flex items-center justify-center overflow-hidden shrink-0">
+              {user?.profileImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={user.profileImage} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <span className="text-2xl">👤</span>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg font-black text-brand-text leading-tight">{user?.name || "이름 없음"}</h2>
+              <p className="text-xs text-brand-text-subtle mt-0.5 font-medium">
+                가입일: {user ? new Date(user.createdAt).toLocaleDateString("ko-KR") : ""}
+              </p>
+              <div className="flex gap-2 mt-2">
+                <span className="text-xs bg-brand-surface text-brand-text px-2 py-0.5 rounded-full font-black">
+                  모임 {user?._count.participants}회
+                </span>
+                <span className="text-xs bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full font-black">
+                  대회 {user?._count.marathonParticipants}회
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        </SectionCard>
 
-        <form onSubmit={handleSave} className="space-y-6">
-          {/* 기본 정보 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-            <h3 className="text-base font-extrabold text-slate-800 mb-4 flex items-center gap-2">
-              <span className="text-lg">📝</span> 기본 정보
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">이름(닉네임)</label>
+        <form onSubmit={handleSave} className="space-y-4">
+          {/* basic info */}
+          <SectionCard>
+            <SectionHeader icon="📝" title="기본 정보" />
+            <div className="p-5 space-y-4">
+              <FormInput label="이름" required>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="동호회에서 사용할 이름"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className={inputClass}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">연락처 <span className="text-slate-400 font-normal">(선택)</span></label>
+              </FormInput>
+              <FormInput label="지역">
+                <input
+                  type="text"
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  placeholder="예: 서울, 경기"
+                  className={inputClass}
+                />
+              </FormInput>
+              <FormInput label="연락처">
                 <input
                   type="tel"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="010-0000-0000"
-                  className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors"
+                  className={inputClass}
                 />
-              </div>
+              </FormInput>
             </div>
-          </div>
+          </SectionCard>
 
-          {/* 마라톤 PB 기록 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-            <h3 className="text-base font-extrabold text-slate-800 mb-1 flex items-center gap-2">
-              <span className="text-lg">🏅</span> 마라톤 PB 기록
-            </h3>
-            <p className="text-xs text-slate-400 mb-4">자기 최고 기록(Personal Best)을 입력해 보세요!</p>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5">풀 마라톤 (42.195km)</label>
+          {/* PB records */}
+          <SectionCard>
+            <SectionHeader icon="🏅" title="마라톤 PB 기록" sub="자기 최고 기록(Personal Best)" />
+            <div className="p-5 grid grid-cols-2 gap-3">
+              <FormInput label="풀마라톤 (42K)">
                 <TimeInput value={pbFull} onChange={setPbFull} placeholder="예: 34530" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5">하프 마라톤 (21km)</label>
+              </FormInput>
+              <FormInput label="하프마라톤 (21K)">
                 <TimeInput value={pbHalf} onChange={setPbHalf} placeholder="예: 14215" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5">10K</label>
+              </FormInput>
+              <FormInput label="10K">
                 <TimeInput value={pb10k} onChange={setPb10k} placeholder="예: 4830" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-slate-500 mb-1.5">5K</label>
+              </FormInput>
+              <FormInput label="5K">
                 <TimeInput value={pb5k} onChange={setPb5k} placeholder="예: 2200" />
-              </div>
+              </FormInput>
             </div>
-          </div>
+          </SectionCard>
 
-          {/* 강습 관련 */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-            <h3 className="text-base font-extrabold text-slate-800 mb-1 flex items-center gap-2">
-              <span className="text-lg">💬</span> 강습 시 바라는 점
-            </h3>
-            <p className="text-xs text-slate-400 mb-4">코치에게 전달될 내용이에요.</p>
-            <textarea
-              value={coachingNote}
-              onChange={(e) => setCoachingNote(e.target.value.slice(0, 500))}
-              placeholder="예: 페이스 유지하는 법을 배우고 싶습니다, 호흡법이 궁금합니다..."
-              rows={4}
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm outline-none focus:border-blue-500 transition-colors resize-none"
-            />
-            <p className="mt-1 text-xs text-slate-400 text-right">{coachingNote.length}/500</p>
-          </div>
+          {/* coaching note */}
+          <SectionCard>
+            <SectionHeader icon="💬" title="강습 시 바라는 점" sub="코치에게 전달될 내용이에요" />
+            <div className="p-5">
+              <textarea
+                value={coachingNote}
+                onChange={(e) => setCoachingNote(e.target.value.slice(0, 500))}
+                placeholder="예: 페이스 유지하는 법을 배우고 싶습니다..."
+                rows={4}
+                className="w-full px-4 py-3 rounded-xl border border-brand-primary-border text-sm outline-none focus:border-brand-primary-border-strong focus:ring-2 focus:ring-brand-ring transition-all resize-none text-brand-text-muted placeholder:text-brand-text-subtle"
+              />
+              <p className="mt-1 text-[10px] text-brand-text-subtle text-right font-medium">{coachingNote.length}/500</p>
+            </div>
+          </SectionCard>
 
-          {/* 저장 버튼 */}
+          {/* save button */}
           <button
             type="submit"
             disabled={saving}
-            className={`w-full py-3.5 rounded-xl font-bold text-white text-sm transition-all ${
+            className={`w-full py-4 rounded-2xl font-black text-white text-sm transition-all active:scale-[0.98] ${
               saving
-                ? "bg-slate-300 cursor-not-allowed"
+                ? "bg-brand-dimmed cursor-not-allowed text-brand-dimmed-text"
                 : saved
-                ? "bg-green-500"
-                : "bg-blue-600 hover:bg-blue-700 active:scale-[0.99]"
+                ? "bg-emerald-500"
+                : "bg-brand-primary hover:bg-brand-primary-hover"
             }`}
           >
             {saving ? "저장 중..." : saved ? "✓ 저장 완료!" : "프로필 저장하기"}
