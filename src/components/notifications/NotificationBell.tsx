@@ -130,7 +130,7 @@ export default function NotificationBell({ light = false }: { light?: boolean })
       {open && (
         <div
           ref={panelRef}
-          className="absolute right-0 top-11 w-80 max-h-[480px] flex flex-col bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-xl shadow-[rgba(0,29,110,0.15)] overflow-hidden z-50 animate-scale-in origin-top-right"
+          className="fixed left-1/2 -translate-x-1/2 top-[60px] w-[calc(100vw-2rem)] max-w-sm max-h-[480px] flex flex-col bg-brand-surface-elevated rounded-2xl border border-brand-primary-border shadow-xl shadow-[rgba(0,29,110,0.15)] overflow-hidden z-50 animate-scale-in origin-top"
         >
           {/* 상세 뷰 */}
           {selectedNotice ? (
