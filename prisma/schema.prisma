@@ -135,6 +135,8 @@ model User {
   pb10k        String?  // 10km
   pb5k         String?  // 5km
 
+  region       String?  // 거주 지역 (선택)
+
   // 강습 관련
   coachingNote String?  // 강습 시 바라는 점
 

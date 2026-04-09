@@ -36,7 +36,7 @@ export async function PUT(req: NextRequest) {
   }
 
   const body = await req.json();
-  const { name, phoneNumber, pbFull, pbHalf, pb10k, pb5k, coachingNote } = body;
+  const { name, region, phoneNumber, pbFull, pbHalf, pb10k, pb5k, coachingNote } = body;
 
   const trimmedName = name !== undefined ? (name.trim() || null) : undefined;
 
@@ -44,6 +44,7 @@ export async function PUT(req: NextRequest) {
     where: { kakaoId: session.kakaoId },
     data: {
       ...(trimmedName !== undefined && { name: trimmedName }),
+      ...(region !== undefined && { region: region.trim() || null }),
       ...(phoneNumber !== undefined && { phoneNumber: phoneNumber.trim() || null }),
       ...(pbFull !== undefined && { pbFull: pbFull.trim() || null }),
       ...(pbHalf !== undefined && { pbHalf: pbHalf.trim() || null }),

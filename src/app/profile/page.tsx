@@ -10,6 +10,7 @@ interface UserProfile {
   id: number;
   kakaoId: string;
   name: string | null;
+  region: string | null;
   profileImage: string | null;
   phoneNumber: string | null;
   pbFull: string | null;
@@ -101,6 +102,7 @@ function ProfilePage() {
   const [showSetup, setShowSetup] = useState(false);
 
   const [name, setName] = useState("");
+  const [region, setRegion] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [pbFull, setPbFull] = useState("");
   const [pbHalf, setPbHalf] = useState("");
@@ -118,6 +120,7 @@ function ProfilePage() {
         if (!data) return;
         setUser(data);
         setName(data.name || "");
+        setRegion(data.region || "");
         setPhoneNumber(data.phoneNumber || "");
         setPbFull(data.pbFull || "");
         setPbHalf(data.pbHalf || "");
@@ -136,7 +139,7 @@ function ProfilePage() {
     const res = await fetch("/api/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, pbFull, pbHalf, pb10k, pb5k }),
+      body: JSON.stringify({ name, region, pbFull, pbHalf, pb10k, pb5k }),
     });
     if (res.ok) {
       const updated = await res.json();
@@ -145,7 +148,7 @@ function ProfilePage() {
       router.replace("/profile");
     }
     setSaving(false);
-  }, [name, pbFull, pbHalf, pb10k, pb5k, router]);
+  }, [name, region, pbFull, pbHalf, pb10k, pb5k, router]);
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -154,7 +157,7 @@ function ProfilePage() {
     const res = await fetch("/api/profile", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, phoneNumber, pbFull, pbHalf, pb10k, pb5k, coachingNote }),
+      body: JSON.stringify({ name, region, phoneNumber, pbFull, pbHalf, pb10k, pb5k, coachingNote }),
     });
     if (res.ok) {
       const updated = await res.json();
@@ -209,7 +212,7 @@ function ProfilePage() {
               <p className="text-sm text-brand-text-subtle mt-1">이름과 기록을 입력해주세요</p>
             </div>
             <div className="space-y-4">
-              <FormInput label="이름(닉네임)" required>
+              <FormInput label="이름" required>
                 <input
                   type="text"
                   value={name}
@@ -217,6 +220,15 @@ function ProfilePage() {
                   placeholder="동호회에서 사용할 이름"
                   className={inputClass}
                   autoFocus
+                />
+              </FormInput>
+              <FormInput label="지역">
+                <input
+                  type="text"
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  placeholder="예: 서울, 경기"
+                  className={inputClass}
                 />
               </FormInput>
               <FormInput label="풀마라톤 PB">
@@ -302,12 +314,21 @@ function ProfilePage() {
           <SectionCard>
             <SectionHeader icon="📝" title="기본 정보" />
             <div className="p-5 space-y-4">
-              <FormInput label="이름(닉네임)">
+              <FormInput label="이름" required>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="동호회에서 사용할 이름"
+                  className={inputClass}
+                />
+              </FormInput>
+              <FormInput label="지역">
+                <input
+                  type="text"
+                  value={region}
+                  onChange={(e) => setRegion(e.target.value)}
+                  placeholder="예: 서울, 경기"
                   className={inputClass}
                 />
               </FormInput>
