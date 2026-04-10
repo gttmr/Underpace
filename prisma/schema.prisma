@@ -41,6 +41,9 @@ model Meeting {
   participants   Participant[]
   trainingLog    TrainingLog?
   createdAt      DateTime           @default(now())
+
+  @@index([date])
+  @@index([scheduleId])
 }
 
 model TrainingLog {
@@ -81,6 +84,9 @@ model Participant {
   reviewedAt       DateTime?
 
   @@unique([meetingId, kakaoId])
+  @@index([kakaoId])
+  @@index([status])
+  @@index([submittedAt])
 }
 
 model Notice {
@@ -120,6 +126,8 @@ model MarathonParticipant {
   submittedAt DateTime @default(now())
 
   @@unique([marathonId, kakaoId])
+  @@index([kakaoId])
+  @@index([marathonId])
 }
 
 model User {

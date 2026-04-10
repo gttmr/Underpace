@@ -133,31 +133,22 @@ export default function CoachDashboardPage() {
       .catch(() => { setError("network"); setLoading(false); });
   }, []);
 
-  // 월간 플랜 로드
+  // 월간 플랜 + 훈련 일지 병렬 로드
   useEffect(() => {
-    fetch(`/api/monthly-plans?year=${planYear}&month=${planMonth}`)
-      .then((r) => r.json())
-      .then((data) => {
-        if (data) {
-          setBeginnerContent(data.beginnerContent ?? "");
-          setAdvancedContent(data.advancedContent ?? "");
-        }
-      })
-      .catch(() => {});
-  }, [planYear, planMonth]);
-
-  // 훈련 일지 로드 (이번 달)
-  useEffect(() => {
-    fetch(`/api/training-logs?year=${planYear}&month=${planMonth}`)
-      .then((r) => r.json())
-      .then((logs: { meetingId: number; content: string }[]) => {
-        if (Array.isArray(logs)) {
-          const map: Record<number, string> = {};
-          logs.forEach((l) => { map[l.meetingId] = l.content; });
-          setTrainingContents(map);
-        }
-      })
-      .catch(() => {});
+    Promise.all([
+      fetch(`/api/monthly-plans?year=${planYear}&month=${planMonth}`).then((r) => r.json()).catch(() => null),
+      fetch(`/api/training-logs?year=${planYear}&month=${planMonth}`).then((r) => r.json()).catch(() => []),
+    ]).then(([planData, logs]) => {
+      if (planData) {
+        setBeginnerContent(planData.beginnerContent ?? "");
+        setAdvancedContent(planData.advancedContent ?? "");
+      }
+      if (Array.isArray(logs)) {
+        const map: Record<number, string> = {};
+        logs.forEach((l: { meetingId: number; content: string }) => { map[l.meetingId] = l.content; });
+        setTrainingContents(map);
+      }
+    });
   }, [planYear, planMonth]);
 
   async function savePlan() {

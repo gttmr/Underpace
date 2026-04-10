@@ -5,7 +5,9 @@ import { apiOk } from "@/lib/api-response";
 
 export async function GET() {
   const notices = await prisma.notice.findMany({ orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }] });
-  return apiOk(notices);
+  return NextResponse.json(notices, {
+    headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=120" },
+  });
 }
 
 export async function POST(req: NextRequest) {

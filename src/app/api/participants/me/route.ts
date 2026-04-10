@@ -38,34 +38,30 @@ export async function DELETE(req: NextRequest) {
   if (!participant) return NextResponse.json({ error: "신청 내역이 없습니다" }, { status: 404 });
 
   const wasApproved = participant.status === "APPROVED";
+  const mid = parseInt(meetingId);
 
-  // 신청 삭제
-  await prisma.participant.delete({ where: { id: participant.id } });
+  await prisma.$transaction(async (tx) => {
+    await tx.participant.delete({ where: { id: participant.id } });
 
-  // APPROVED 취소 시 대기자 1순위 자동 승격
-  if (wasApproved) {
-    const firstWaitlisted = await prisma.participant.findFirst({
-      where: { meetingId: parseInt(meetingId), status: "WAITLISTED" },
-      orderBy: { waitlistPosition: "asc" },
-    });
-
-    if (firstWaitlisted) {
-      await prisma.participant.update({
-        where: { id: firstWaitlisted.id },
-        data: { status: "APPROVED", waitlistPosition: null, reviewedAt: new Date() },
+    if (wasApproved) {
+      const firstWaitlisted = await tx.participant.findFirst({
+        where: { meetingId: mid, status: "WAITLISTED" },
+        orderBy: { waitlistPosition: "asc" },
       });
 
-      // 나머지 대기 순번 -1
-      await prisma.participant.updateMany({
-        where: {
-          meetingId: parseInt(meetingId),
-          status: "WAITLISTED",
-          waitlistPosition: { gt: 1 },
-        },
-        data: { waitlistPosition: { decrement: 1 } },
-      });
+      if (firstWaitlisted) {
+        await tx.participant.update({
+          where: { id: firstWaitlisted.id },
+          data: { status: "APPROVED", waitlistPosition: null, reviewedAt: new Date() },
+        });
+
+        await tx.participant.updateMany({
+          where: { meetingId: mid, status: "WAITLISTED", waitlistPosition: { gt: 1 } },
+          data: { waitlistPosition: { decrement: 1 } },
+        });
+      }
     }
-  }
+  });
 
   return NextResponse.json({ ok: true, promoted: wasApproved });
 }
